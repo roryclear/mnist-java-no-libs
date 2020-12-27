@@ -1,26 +1,19 @@
 package mnistJava;
-
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.Scanner;
-
 import javax.imageio.ImageIO;
 
-import com.sun.tools.javac.Main;
 
 public class mnistThing {
-	static MnistMatrix[] data;  //training data
-	static MnistMatrix[] data2; //test data
+	static MnistMatrix[] trainData;  //training data
+	static MnistMatrix[] testData; //test data
 	///LAYER SIZES
  	static int inputSize = 28*28;
 	static int hiddenSize = 512;
@@ -32,7 +25,8 @@ public class mnistThing {
 	static int batchSize = 1; 
 	
 	static int randomSamplesDisplayed = 1;
-
+	static int testNNevery = 10000;
+	static int showTrainingAccEvery = 1000;
 	
 	//init nodes
 	static double[] layer0nodes = new double[inputSize];
@@ -48,9 +42,9 @@ public class mnistThing {
 	static double[][] hiddenWeights = new double[inputSize][hiddenSize];
 	static double[][] outputWeights = new double[hiddenSize][outputSize];
 	
-	//one dimensional image data
-	static int[][] odData;
-	static int[][] odData2;
+	//one dimensional data
+	static int[][] odTrainData;
+	static int[][] odTestData;
 	
 	
 	public static void main(String[] args) throws IOException
@@ -77,17 +71,17 @@ public class mnistThing {
 			}
 		}
 		
-		//READ DATA FROM FILES
-		data = readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
-		data2 = readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
+		//READ data FROM FILES
+		trainData = readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
+		testData = readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
 		
 		//TEST RANDOM NN
-		testNN(data, data2);
+		testNN(trainData, testData);
 		
 		//TRAIN NN
-		trainNN(data, data2);
+		trainNN(trainData, testData);
 		
-		testNNwithTestData(data, data2);
+		testNNwithTestData(trainData, testData);
 		
 	
 		
@@ -179,10 +173,10 @@ public class mnistThing {
 		System.out.println(outs);
 	}
 	
-	public static void testNNwithTestData(MnistMatrix[] data, MnistMatrix[] data2) throws IOException
+	public static void testNNwithTestData(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
 		//create one dimensional images with values 0 - 256??...or 253?
-		int[][] odData2 = makeData1D(data2);
+		int[][] odTestData = makeData1D(testData);
 		
 		System.out.println("\n ----TEST ON TEST DATA------\n");
 		HashSet<Integer> randomSamples = new HashSet<>();
@@ -194,15 +188,15 @@ public class mnistThing {
 		}
 		int correct = 0;
 		double loss = 0;
-		HashMap<Integer,Integer> hist = new HashMap();
-		HashMap<Integer,Integer> correctHist = new HashMap();
+		HashMap<Integer,Integer> hist = new HashMap<Integer, Integer>();
+		HashMap<Integer,Integer> correctHist = new HashMap<Integer, Integer>();
 		for(int i = 0; i < 10; i++)
 		{
 			hist.put(i, 0);
 			correctHist.put(i,0);
 		}
 		
-		for(int i = 0; i < data2.length; i++)
+		for(int i = 0; i < testData.length; i++)
 		{
 			//init nodes
 			layer0nodes = new double[inputSize];
@@ -210,7 +204,7 @@ public class mnistThing {
 			layer2nodes = new double[outputSize]; 
 		
 			
-			getOut(odData2[i],false);
+			getOut(odTestData[i],false);
 			
 			
 			//get guess and add to histogram
@@ -218,26 +212,26 @@ public class mnistThing {
 			hist.replace(guess, hist.get(guess)+1);
 			
 			//check if correct
-			if(guess == data2[i].getLabel())
+			if(guess == testData[i].getLabel())
 			{
 				correctHist.replace(guess, correctHist.get(guess)+1);
 				correct+=1;
 			}
 			
 			//getLoss
-			loss+=getLoss(layer2nodes,data2[i].getLabel());
+			loss+=getLoss(layer2nodes,testData[i].getLabel());
 			
 			
 			if(randomSamples.contains(i))
 			{
-				displayDigit(data2[i]);
+				displayDigit(testData[i]);
 				System.out.println("guess = " + guess + "\n\n");
 			}
 			
 		}
 		
-		double accuracy = (double) correct/data2.length;
-		double avgLoss = (double) loss/data2.length;
+		double accuracy = (double) correct/testData.length;
+		double avgLoss = (double) loss/testData.length;
 		System.out.println("accuracy (test) = " + accuracy);
 		System.out.println("avg loss (test) = " + avgLoss);
 		System.out.println(hist);	
@@ -280,14 +274,14 @@ public class mnistThing {
 	}
 	
 	
-	public static void trainNN(MnistMatrix[] data, MnistMatrix[] data2) throws IOException
+	public static void trainNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
 		
 		double[][] hwAdd = new double[hiddenWeights.length][hiddenWeights[0].length];
 		double[][] owAdd = new double[outputWeights.length][outputWeights[0].length];
 		
 		//create one dimensional images with values 0 - 256??...or 253?
-		int[][] odData = makeData1D(data);
+		int[][] odTrainData = makeData1D(trainData);
 		
 		System.out.println("\n\n\n TRAINING????? \n\n");
 		
@@ -298,8 +292,8 @@ public class mnistThing {
 		System.out.println("--EPOCH "+z+"-- \n");
 		int correct = 0;
 		double loss = 0;
-		HashMap<Integer,Integer> hist = new HashMap();
-		HashMap<Integer,Integer> correctHist = new HashMap();
+		HashMap<Integer,Integer> hist = new HashMap<Integer, Integer>();
+		HashMap<Integer,Integer> correctHist = new HashMap<Integer, Integer>();
 		for(int i = 0; i < 10; i++)
 		{
 			hist.put(i, 0);
@@ -307,7 +301,7 @@ public class mnistThing {
 		}
 
 		
-		for(int i = 0; i < data.length; i++)
+		for(int i = 0; i < trainData.length; i++)
 		{
 			if(i % batchSize == 0)
 			{
@@ -320,15 +314,15 @@ public class mnistThing {
 			layer1nodes = new double[hiddenSize];
 			layer2nodes = new double[outputSize]; 
 			
-			if(i % 10000 == 0)
+			if(i % testNNevery == 0)
 			{
-				System.out.println("data : " + i +" of " + data.length);
-				testNNwithTestData(data, data2);
+				System.out.println("data : " + i +" of " + trainData.length);
+				testNNwithTestData(trainData, testData);
 				testNNWithHanddrawn();
 			}
 
 			
-			getOut(odData[i],true);
+			getOut(odTrainData[i],true);
 			
 			
 			//get guess and add to histogram
@@ -336,20 +330,20 @@ public class mnistThing {
 			hist.replace(guess, hist.get(guess)+1);
 			
 			//check if correct
-			if(guess == data[i].getLabel())
+			if(guess == trainData[i].getLabel())
 			{
 				correctHist.replace(guess,correctHist.get(guess)+1);
 				correct+=1;
 			}
 			
 			//getLoss
-			loss+=getLoss(layer2nodes,data[i].getLabel());
+			loss+=getLoss(layer2nodes,trainData[i].getLabel());
 			
 			double[] expectedOutput = new double[10];
 			for(int x = 0; x < 10; x++)
 			{
 				expectedOutput[x] = 0.0;
-				if(x==data[i].getLabel())
+				if(x==trainData[i].getLabel())
 				{
 					expectedOutput[x] = 1.0;
 				}
@@ -420,15 +414,15 @@ public class mnistThing {
 			
 			//remove
 			double accuracy = (double) correct/i;
-			if(i % 1000 == 0)
+			if(i % showTrainingAccEvery == 0)
 			{
 			System.out.println("accuracy (training) = " + accuracy);
 			}
 			
 		}
 		
-		double accuracy = (double) correct/data.length;
-		double avgLoss = (double) loss/data.length;
+		double accuracy = (double) correct/trainData.length;
+		double avgLoss = (double) loss/trainData.length;
 		System.out.println("accuracy = " + accuracy);
 		System.out.println("avg loss = " + avgLoss);
 		System.out.println(hist);
@@ -457,32 +451,30 @@ public class mnistThing {
 		
 	}
 
-	public static void testNN(MnistMatrix[] data, MnistMatrix[] data2) throws IOException
+	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
 		//create one dimensional images with values 0 - 256??...or 253?
-		int[][] odData = makeData1D(data);
-		int[][] odData2 = makeData1D(data2);
-		
+		int[][] odTrainData = makeData1D(trainData);
 		
 		//TEST NN WITH RANDOM WEIGHTS
 		int correct = 0;
 		double loss = 0;
-		HashMap<Integer,Integer> hist = new HashMap();
-		HashMap<Integer,Integer> correctHist = new HashMap();
+		HashMap<Integer,Integer> hist = new HashMap<Integer, Integer>();
+		HashMap<Integer,Integer> correctHist = new HashMap<Integer, Integer>();
 		for(int i = 0; i < 10; i++)
 		{
 			hist.put(i, 0);
 			correctHist.put(i,0);
 		}
 		
-		for(int i = 0; i < data.length; i++)
+		for(int i = 0; i < trainData.length; i++)
 		{
 			//init nodes
 			layer0nodes = new double[inputSize];
 			layer1nodes = new double[hiddenSize];
 			layer2nodes = new double[outputSize]; 
 			
-			getOut(odData[i],false);
+			getOut(odTrainData[i],false);
 			
 			
 			//get guess and add to histogram
@@ -490,19 +482,19 @@ public class mnistThing {
 			hist.replace(guess, hist.get(guess)+1);
 			
 			//check if correct
-			if(guess == data[i].getLabel())
+			if(guess == trainData[i].getLabel())
 			{
 				correct+=1;
 				correctHist.replace(guess, correctHist.get(guess)+1);
 			}
 			
 			//getLoss
-			loss+=getLoss(layer2nodes,data[i].getLabel());
+			loss+=getLoss(layer2nodes,trainData[i].getLabel());
 			
 		}
 		
-		double accuracy = (double) correct/data.length;
-		double avgLoss = (double) loss/data.length;
+		double accuracy = (double) correct/trainData.length;
+		double avgLoss = (double) loss/trainData.length;
 		System.out.println("accuracy = " + accuracy);
 		System.out.println("avg loss = " + avgLoss);
 		System.out.println(hist);
@@ -667,7 +659,7 @@ public class mnistThing {
 	}
 	
 	//converts MnistMatrix[] to int[][]
-	//Array of 1D Image Data instead of 2D
+	//Array of 1D Image data instead of 2D
 	public static int[][] makeData1D(MnistMatrix[] data)
 	{
 		int[][] out = new int[60000][784];
