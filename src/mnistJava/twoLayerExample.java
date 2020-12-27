@@ -11,15 +11,15 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 
-public class mnistThing {
+public class twoLayerExample {
 	static MnistMatrix[] trainData;  //training data
 	static MnistMatrix[] testData; //test data
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 512;
+	static int hiddenSize = 512; //512
 	static int outputSize = 10;
 	static double learningRate = 0.1;
-	static int epochs = 100;
+	static int epochs = 100; //100
 	
 	//ALL BUT 1 IS BROKEN ATM
 	static int batchSize = 1; 
