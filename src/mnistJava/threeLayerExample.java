@@ -1,4 +1,5 @@
 package mnistJava;
+
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -10,53 +11,71 @@ import java.util.HashSet;
 import java.util.Random;
 import javax.imageio.ImageIO;
 
-
-public class twoLayerExample {
-	static MnistMatrix[] trainData;  //training data
-	static MnistMatrix[] testData; //test data
+public class threeLayerExample {
+	static MnistMatrix[] data;  //training data
+	static MnistMatrix[] data2; //test data
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 512; //512
+	static int hiddenSize = 32;
 	static int outputSize = 10;
 	static double learningRate = 0.1;
-	static int epochs = 100; //100
+	static int epochs = 100;
 	
 	//ALL BUT 1 IS BROKEN ATM
 	static int batchSize = 1; 
 	
 	static int randomSamplesDisplayed = 1;
-	static int testNNevery = 10000;
-	static int showTrainingAccEvery = 1000;
-	
+
+		
 	//init nodes
 	static double[] layer0nodes = new double[inputSize];
+	
 	static double[] layer1nodes = new double[hiddenSize];
-	static double[] layer2nodes = new double[outputSize];
+	
+	static double[] layer2nodes = new double[hiddenSize];
+	static double[] layer3nodes = new double[outputSize];
 	
 	//totals for batch
 	static double[] layer0nodesTotal = new double[inputSize];
+	
 	static double[] layer1nodesTotal = new double[hiddenSize];
-	static double[] layer2nodesTotal = new double[outputSize]; 
+	
+	static double[] layer2nodesTotal = new double[hiddenSize];
+	static double[] layer3nodesTotal = new double[outputSize]; 
 	
 	//weights
-	static double[][] hiddenWeights = new double[inputSize][hiddenSize];
+	static double[][] hidden0weights = new double[inputSize][hiddenSize];
+			
+	static double[][] hidden1weights = new double[hiddenSize][hiddenSize];
 	static double[][] outputWeights = new double[hiddenSize][outputSize];
 	
-	//one dimensional data
-	static int[][] odTrainData;
-	static int[][] odTestData;
+	//one dimensional image data
+	static int[][] odData;
+	static int[][] odData2;
 	
 	
 	public static void main(String[] args) throws IOException
 	{
 		//ASSIGN RANDOM WEIGHTS OF RANGE -0.1 to 0.1
-		for(int y = 0; y < hiddenWeights.length; y++)
+		
+		for(int y = 0; y < hidden0weights.length; y++)
 		{
-			for(int x = 0; x < hiddenWeights[y].length; x++)
+			for(int x = 0; x < hidden0weights[y].length; x++)
 			{
 				Random r = new Random();
 				double w = -0.1 + 0.2 * r.nextDouble();
-				hiddenWeights[y][x] = w;
+				hidden0weights[y][x] = w;
+			}
+		}
+		
+		
+		for(int y = 0; y < hidden1weights.length; y++)
+		{
+			for(int x = 0; x < hidden1weights[y].length; x++)
+			{
+				Random r = new Random();
+				double w = -0.1 + 0.2 * r.nextDouble();
+				hidden1weights[y][x] = w;
 			}
 		}
 		
@@ -71,17 +90,17 @@ public class twoLayerExample {
 			}
 		}
 		
-		//READ data FROM FILES
-		trainData = readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
-		testData = readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
+		//READ DATA FROM FILES
+		data = readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
+		data2 = readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
 		
 		//TEST RANDOM NN
-		testNN(trainData, testData);
+		testNN(data, data2);
 		
 		//TRAIN NN
-		trainNN(trainData, testData);
+		trainNN(data, data2);
 		
-		testNNwithTestData(trainData, testData);
+		testNNwithTestData(data, data2);
 		
 	
 		
@@ -105,29 +124,45 @@ public class twoLayerExample {
 			double total = 0;
 			for(int y = 0; y < inputSize; y++)
 			{
-				total += layer0nodes[y]*hiddenWeights[y][x];
+				total += layer0nodes[y]*hidden0weights[y][x];
 			}
 			total = sigmoid(total);
 			layer1nodes[x] = total;
 			if(train)
 			{
-			layer1nodesTotal[x] += total;
+				layer1nodesTotal[x] += total;
 			}
 		}
 		
 		//get layer2 outputs
-		for(int x = 0 ; x < outputSize; x++)
+		for(int x = 0; x < hiddenSize; x++)
 		{
 			double total = 0;
 			for(int y = 0; y < hiddenSize; y++)
 			{
-				total += layer1nodes[y]*outputWeights[y][x];
+				total += layer1nodes[y]*hidden1weights[y][x];
 			}
 			total = sigmoid(total);
 			layer2nodes[x] = total;
 			if(train)
 			{
 			layer2nodesTotal[x] += total;
+			}
+		}
+		
+		//get layer3 outputs
+		for(int x = 0 ; x < outputSize; x++)
+		{
+			double total = 0;
+			for(int y = 0; y < hiddenSize; y++)
+			{
+				total += layer2nodes[y]*outputWeights[y][x];
+			}
+			total = sigmoid(total);
+			layer3nodes[x] = total;
+			if(train)
+			{
+			layer3nodesTotal[x] += total;
 			}
 		}
 		
@@ -143,7 +178,7 @@ public class twoLayerExample {
 		
 		
 		//get guess and add to histogram
-		int guess = getDigit(layer2nodes);
+		int guess = getDigit(layer3nodes);
 		
 		for(int yd = 0; yd < 28; yd++)
 		{
@@ -161,10 +196,10 @@ public class twoLayerExample {
 		}
 		
 		System.out.println("\n----YOU DREW A " + guess + "?------- ");
-		String outs = "0 : "+ layer2nodes[0];
+		String outs = "0 : "+ layer3nodes[0];
 		for(int i = 1; i < 10; i++)
 		{
-			outs+=" , " + i + " : " + layer2nodes[i];
+			outs+=" , " + i + " : " + layer3nodes[i];
 			if(i == 4)
 			{
 				outs+="\n";
@@ -173,10 +208,10 @@ public class twoLayerExample {
 		System.out.println(outs);
 	}
 	
-	public static void testNNwithTestData(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
+	public static void testNNwithTestData(MnistMatrix[] data, MnistMatrix[] data2) throws IOException
 	{
 		//create one dimensional images with values 0 - 256??...or 253?
-		int[][] odTestData = makeData1D(testData);
+		int[][] odData2 = makeData1D(data2);
 		
 		System.out.println("\n ----TEST ON TEST DATA------\n");
 		HashSet<Integer> randomSamples = new HashSet<>();
@@ -196,42 +231,45 @@ public class twoLayerExample {
 			correctHist.put(i,0);
 		}
 		
-		for(int i = 0; i < testData.length; i++)
+		for(int i = 0; i < data2.length; i++)
 		{
 			//init nodes
 			layer0nodes = new double[inputSize];
+			
 			layer1nodes = new double[hiddenSize];
-			layer2nodes = new double[outputSize]; 
+			
+			layer2nodes = new double[hiddenSize];
+			layer3nodes = new double[outputSize]; 
 		
 			
-			getOut(odTestData[i],false);
+			getOut(odData2[i],false);
 			
 			
 			//get guess and add to histogram
-			int guess = getDigit(layer2nodes);
+			int guess = getDigit(layer3nodes);
 			hist.replace(guess, hist.get(guess)+1);
 			
 			//check if correct
-			if(guess == testData[i].getLabel())
+			if(guess == data2[i].getLabel())
 			{
 				correctHist.replace(guess, correctHist.get(guess)+1);
 				correct+=1;
 			}
 			
 			//getLoss
-			loss+=getLoss(layer2nodes,testData[i].getLabel());
+			loss+=getLoss(layer3nodes,data2[i].getLabel());
 			
 			
 			if(randomSamples.contains(i))
 			{
-				displayDigit(testData[i]);
+				displayDigit(data2[i]);
 				System.out.println("guess = " + guess + "\n\n");
 			}
 			
 		}
 		
-		double accuracy = (double) correct/testData.length;
-		double avgLoss = (double) loss/testData.length;
+		double accuracy = (double) correct/data2.length;
+		double avgLoss = (double) loss/data2.length;
 		System.out.println("accuracy (test) = " + accuracy);
 		System.out.println("avg loss (test) = " + avgLoss);
 		System.out.println(hist);	
@@ -248,7 +286,7 @@ public class twoLayerExample {
 				layer0nodes[x] = sigmoid(d[x]);
 			}
 			getOut(d,false);
-			int guess = getDigit(layer2nodes);
+			int guess = getDigit(layer3nodes);
 			output[i] = guess;
 		}
 		
@@ -274,14 +312,15 @@ public class twoLayerExample {
 	}
 	
 	
-	public static void trainNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
+	public static void trainNN(MnistMatrix[] data, MnistMatrix[] data2) throws IOException
 	{
+		double[][] hw0add = new double[hidden0weights.length][hidden0weights[0].length];
 		
-		double[][] hwAdd = new double[hiddenWeights.length][hiddenWeights[0].length];
+		double[][] hw1add = new double[hidden1weights.length][hidden1weights[0].length];
 		double[][] owAdd = new double[outputWeights.length][outputWeights[0].length];
 		
 		//create one dimensional images with values 0 - 256??...or 253?
-		int[][] odTrainData = makeData1D(trainData);
+		int[][] odData = makeData1D(data);
 		
 		System.out.println("\n\n\n TRAINING????? \n\n");
 		
@@ -301,49 +340,55 @@ public class twoLayerExample {
 		}
 
 		
-		for(int i = 0; i < trainData.length; i++)
+		for(int i = 0; i < data.length; i++)
 		{
 			if(i % batchSize == 0)
 			{
 			layer0nodesTotal = new double[inputSize];
+			
 			layer1nodesTotal = new double[hiddenSize];
-			layer2nodesTotal = new double[outputSize]; 
+			
+			layer2nodesTotal = new double[hiddenSize];
+			layer3nodesTotal = new double[outputSize]; 
 			}
 			//init nodes
 			layer0nodes = new double[inputSize];
-			layer1nodes = new double[hiddenSize];
-			layer2nodes = new double[outputSize]; 
 			
-			if(i % testNNevery == 0)
+			layer1nodes =new double[hiddenSize];
+			
+			layer2nodes = new double[hiddenSize];
+			layer3nodes = new double[outputSize]; 
+			
+			if(i % 10000 == 0)
 			{
-				System.out.println("data : " + i +" of " + trainData.length);
-				testNNwithTestData(trainData, testData);
+				System.out.println("data : " + i +" of " + data.length);
+				testNNwithTestData(data, data2);
 				testNNWithHanddrawn();
 			}
 
 			
-			getOut(odTrainData[i],true);
+			getOut(odData[i],true);
 			
 			
 			//get guess and add to histogram
-			int guess = getDigit(layer2nodes);
+			int guess = getDigit(layer3nodes);
 			hist.replace(guess, hist.get(guess)+1);
 			
 			//check if correct
-			if(guess == trainData[i].getLabel())
+			if(guess == data[i].getLabel())
 			{
 				correctHist.replace(guess,correctHist.get(guess)+1);
 				correct+=1;
 			}
 			
 			//getLoss
-			loss+=getLoss(layer2nodes,trainData[i].getLabel());
+			loss+=getLoss(layer3nodes,data[i].getLabel());
 			
 			double[] expectedOutput = new double[10];
 			for(int x = 0; x < 10; x++)
 			{
 				expectedOutput[x] = 0.0;
-				if(x==trainData[i].getLabel())
+				if(x==data[i].getLabel())
 				{
 					expectedOutput[x] = 1.0;
 				}
@@ -352,17 +397,19 @@ public class twoLayerExample {
 			if(i % batchSize == 0)
 			{
 			
-			hwAdd = new double[hiddenWeights.length][hiddenWeights[0].length];
+			hw0add = new double[hidden0weights.length][hidden0weights[0].length];	
+				
+			hw1add = new double[hidden1weights.length][hidden1weights[0].length];
 			owAdd = new double[outputWeights.length][outputWeights[0].length];
 			
 			
 			for(int y = 0; y < outputWeights.length; y++)
 			{
-				double L1Output = layer1nodesTotal[y];
+				double L1Output = layer2nodesTotal[y];
 				for(int x = 0; x < outputWeights[y].length; x++)
 				{
 					///weight between hidden node Y and output node X!!
-					double output = layer2nodesTotal[x];
+					double output = layer3nodesTotal[x];
 					double expected = expectedOutput[x];
 					double dedw = (output - expected)*(output*(1 - output)*(L1Output));
 					owAdd[y][x] += dedw;
@@ -371,29 +418,54 @@ public class twoLayerExample {
 			
 			
 			
-			//adjust hidden layer weights???
-			for(int y = 0; y < hiddenWeights.length; y++)
+			//adjust hidden layer 1 weights???
+			for(int y = 0; y < hidden1weights.length; y++)
 			{
-				for(int x = 0; x < hiddenWeights[y].length; x++)
+				for(int x = 0; x < hidden1weights[y].length; x++)
+				{
+					double totalError = 0;
+					for(int n = 0; n < layer3nodesTotal.length; n++)	
+					{
+						totalError += (outputWeights[x][n]*owAdd[x][n])/layer3nodes.length;
+					}
+					totalError = totalError*(layer2nodesTotal[x]*(1 - layer2nodesTotal[x])*layer1nodesTotal[y]);
+					
+					
+					hw1add[y][x] += totalError;
+				}
+			}
+			
+			//adjust hidden layer 0 weights??
+			for(int y = 0; y < hidden0weights.length; y++)
+			{
+				for(int x = 0; x < hidden0weights[y].length; x++)
 				{
 					double totalError = 0;
 					for(int n = 0; n < layer2nodesTotal.length; n++)	
 					{
-						totalError += (outputWeights[x][n]*owAdd[x][n])/layer2nodes.length;
+						totalError += ((hidden1weights[x][n]*hw1add[x][n])/layer3nodes.length)/layer2nodes.length;
 					}
 					totalError = totalError*(layer1nodesTotal[x]*(1 - layer1nodesTotal[x])*layer0nodesTotal[y]);
 					
 					
-					hwAdd[y][x] += totalError;
+					hw0add[y][x] += totalError;
 				}
 			}
 			
 			
-			for(int y = 0; y < hiddenWeights.length; y++)
+			for(int y = 0; y < hidden0weights.length; y++)
 			{
-				for(int x = 0; x < hiddenWeights[y].length; x++)
+				for(int x = 0; x < hidden0weights[y].length; x++)
 				{
-					hiddenWeights[y][x] -= (learningRate*hwAdd[y][x])/batchSize;
+					hidden0weights[y][x] -= (learningRate*hw0add[y][x])/batchSize;
+				}
+			}
+			
+			for(int y = 0; y < hidden1weights.length; y++)
+			{
+				for(int x = 0; x < hidden1weights[y].length; x++)
+				{
+					hidden1weights[y][x] -= (learningRate*hw1add[y][x])/batchSize;
 				}
 			}
 	
@@ -414,15 +486,15 @@ public class twoLayerExample {
 			
 			//remove
 			double accuracy = (double) correct/i;
-			if(i % showTrainingAccEvery == 0)
+			if(i % 1000 == 0)
 			{
 			System.out.println("accuracy (training) = " + accuracy);
 			}
 			
 		}
 		
-		double accuracy = (double) correct/trainData.length;
-		double avgLoss = (double) loss/trainData.length;
+		double accuracy = (double) correct/data.length;
+		double avgLoss = (double) loss/data.length;
 		System.out.println("accuracy = " + accuracy);
 		System.out.println("avg loss = " + avgLoss);
 		System.out.println(hist);
@@ -435,14 +507,14 @@ public class twoLayerExample {
 		
 		
 		//get guess and add to histogram
-		int guess = getDigit(layer2nodes);
+		int guess = getDigit(layer3nodes);
 		
 		
 		System.out.println("\n----YOU DREW A " + guess + "?------- ");
-		String outs = "0 : " + layer2nodes[0];
+		String outs = "0 : " + layer3nodes[0];
 		for(int i = 1; i < 10; i++)
 		{
-			outs+=" , " + i + " : " + layer2nodes[i];
+			outs+=" , " + i + " : " + layer3nodes[i];
 		}
 		System.out.println(outs);
 		
@@ -451,10 +523,11 @@ public class twoLayerExample {
 		
 	}
 
-	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
+	public static void testNN(MnistMatrix[] data, MnistMatrix[] data2) throws IOException
 	{
 		//create one dimensional images with values 0 - 256??...or 253?
-		int[][] odTrainData = makeData1D(trainData);
+		int[][] odData = makeData1D(data);
+		
 		
 		//TEST NN WITH RANDOM WEIGHTS
 		int correct = 0;
@@ -467,34 +540,37 @@ public class twoLayerExample {
 			correctHist.put(i,0);
 		}
 		
-		for(int i = 0; i < trainData.length; i++)
+		for(int i = 0; i < data.length; i++)
 		{
 			//init nodes
 			layer0nodes = new double[inputSize];
-			layer1nodes = new double[hiddenSize];
-			layer2nodes = new double[outputSize]; 
 			
-			getOut(odTrainData[i],false);
+			layer1nodes = new double[inputSize];
+			
+			layer2nodes = new double[hiddenSize];
+			layer3nodes = new double[outputSize]; 
+			
+			getOut(odData[i],false);
 			
 			
 			//get guess and add to histogram
-			int guess = getDigit(layer2nodes);
+			int guess = getDigit(layer3nodes);
 			hist.replace(guess, hist.get(guess)+1);
 			
 			//check if correct
-			if(guess == trainData[i].getLabel())
+			if(guess == data[i].getLabel())
 			{
 				correct+=1;
 				correctHist.replace(guess, correctHist.get(guess)+1);
 			}
 			
 			//getLoss
-			loss+=getLoss(layer2nodes,trainData[i].getLabel());
+			loss+=getLoss(layer3nodes,data[i].getLabel());
 			
 		}
 		
-		double accuracy = (double) correct/trainData.length;
-		double avgLoss = (double) loss/trainData.length;
+		double accuracy = (double) correct/data.length;
+		double avgLoss = (double) loss/data.length;
 		System.out.println("accuracy = " + accuracy);
 		System.out.println("avg loss = " + avgLoss);
 		System.out.println(hist);
@@ -524,14 +600,17 @@ public class twoLayerExample {
 		
 		//init nodes
 		layer0nodes = new double[inputSize];
+		
 		layer1nodes = new double[hiddenSize];
-		layer2nodes = new double[outputSize]; 
+		
+		layer2nodes = new double[hiddenSize];
+		layer3nodes = new double[outputSize]; 
 
 		getOut(drawn,false);
 		
 		
 		//get guess and add to histogram
-		int guess = getDigit(layer2nodes);
+		int guess = getDigit(layer3nodes);
 		
 		System.out.println("\n----RANDOM GUESS is " + guess + "-------");
 		
@@ -659,7 +738,7 @@ public class twoLayerExample {
 	}
 	
 	//converts MnistMatrix[] to int[][]
-	//Array of 1D Image data instead of 2D
+	//Array of 1D Image Data instead of 2D
 	public static int[][] makeData1D(MnistMatrix[] data)
 	{
 		int[][] out = new int[60000][784];
