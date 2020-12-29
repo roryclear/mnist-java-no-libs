@@ -12,11 +12,11 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 public class threeLayerExample {
-	static MnistMatrix[] data;  //training data
-	static MnistMatrix[] data2; //test data
+	static MnistMatrix[] trainData;  //training trainData
+	static MnistMatrix[] testData; //test trainData
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 32;
+	static int hiddenSize = 8;
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100;
@@ -50,8 +50,8 @@ public class threeLayerExample {
 	static double[][] outputWeights = new double[hiddenSize][outputSize];
 	
 	//one dimensional image data
-	static int[][] odData;
-	static int[][] odData2;
+	static int[][] odTrainData;
+	static int[][] odTestData;
 	
 	
 	public static void main(String[] args) throws IOException
@@ -90,17 +90,16 @@ public class threeLayerExample {
 			}
 		}
 		
-		//READ DATA FROM FILES
-		data = readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
-		data2 = readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
+		//READ data FROM FILES
+		trainData = readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
+		testData = readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
 		
 		//TEST RANDOM NN
-		testNN(data, data2);
+		testNN(trainData, testData);
 		
-		//TRAIN NN
-		trainNN(data, data2);
+		trainNN(trainData, testData);
 		
-		testNNwithTestData(data, data2);
+		testNNwithTestData(trainData, testData);
 		
 	
 		
@@ -208,12 +207,12 @@ public class threeLayerExample {
 		System.out.println(outs);
 	}
 	
-	public static void testNNwithTestData(MnistMatrix[] data, MnistMatrix[] data2) throws IOException
+	public static void testNNwithTestData(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
 		//create one dimensional images with values 0 - 256??...or 253?
-		int[][] odData2 = makeData1D(data2);
+		int[][] odTestData = makeData1D(testData);
 		
-		System.out.println("\n ----TEST ON TEST DATA------\n");
+		System.out.println("\n ----TEST ON TEST trainData------\n");
 		HashSet<Integer> randomSamples = new HashSet<>();
 		for(int q = 0; q < randomSamplesDisplayed; q++)
 		{
@@ -231,7 +230,7 @@ public class threeLayerExample {
 			correctHist.put(i,0);
 		}
 		
-		for(int i = 0; i < data2.length; i++)
+		for(int i = 0; i < testData.length; i++)
 		{
 			//init nodes
 			layer0nodes = new double[inputSize];
@@ -242,7 +241,7 @@ public class threeLayerExample {
 			layer3nodes = new double[outputSize]; 
 		
 			
-			getOut(odData2[i],false);
+			getOut(odTestData[i],false);
 			
 			
 			//get guess and add to histogram
@@ -250,26 +249,26 @@ public class threeLayerExample {
 			hist.replace(guess, hist.get(guess)+1);
 			
 			//check if correct
-			if(guess == data2[i].getLabel())
+			if(guess == testData[i].getLabel())
 			{
 				correctHist.replace(guess, correctHist.get(guess)+1);
 				correct+=1;
 			}
 			
 			//getLoss
-			loss+=getLoss(layer3nodes,data2[i].getLabel());
+			loss+=getLoss(layer3nodes,testData[i].getLabel());
 			
 			
 			if(randomSamples.contains(i))
 			{
-				displayDigit(data2[i]);
+				displayDigit(testData[i]);
 				System.out.println("guess = " + guess + "\n\n");
 			}
 			
 		}
 		
-		double accuracy = (double) correct/data2.length;
-		double avgLoss = (double) loss/data2.length;
+		double accuracy = (double) correct/testData.length;
+		double avgLoss = (double) loss/testData.length;
 		System.out.println("accuracy (test) = " + accuracy);
 		System.out.println("avg loss (test) = " + avgLoss);
 		System.out.println(hist);	
@@ -312,7 +311,7 @@ public class threeLayerExample {
 	}
 	
 	
-	public static void trainNN(MnistMatrix[] data, MnistMatrix[] data2) throws IOException
+	public static void trainNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
 		double[][] hw0add = new double[hidden0weights.length][hidden0weights[0].length];
 		
@@ -320,7 +319,7 @@ public class threeLayerExample {
 		double[][] owAdd = new double[outputWeights.length][outputWeights[0].length];
 		
 		//create one dimensional images with values 0 - 256??...or 253?
-		int[][] odData = makeData1D(data);
+		int[][] odTrainData = makeData1D(trainData);
 		
 		System.out.println("\n\n\n TRAINING????? \n\n");
 		
@@ -340,7 +339,7 @@ public class threeLayerExample {
 		}
 
 		
-		for(int i = 0; i < data.length; i++)
+		for(int i = 0; i < trainData.length; i++)
 		{
 			if(i % batchSize == 0)
 			{
@@ -361,13 +360,13 @@ public class threeLayerExample {
 			
 			if(i % 10000 == 0)
 			{
-				System.out.println("data : " + i +" of " + data.length);
-				testNNwithTestData(data, data2);
+				System.out.println("trainData : " + i +" of " + trainData.length);
+				testNNwithTestData(trainData, testData);
 				testNNWithHanddrawn();
 			}
 
 			
-			getOut(odData[i],true);
+			getOut(odTrainData[i],true);
 			
 			
 			//get guess and add to histogram
@@ -375,20 +374,20 @@ public class threeLayerExample {
 			hist.replace(guess, hist.get(guess)+1);
 			
 			//check if correct
-			if(guess == data[i].getLabel())
+			if(guess == trainData[i].getLabel())
 			{
 				correctHist.replace(guess,correctHist.get(guess)+1);
 				correct+=1;
 			}
 			
 			//getLoss
-			loss+=getLoss(layer3nodes,data[i].getLabel());
+			loss+=getLoss(layer3nodes,trainData[i].getLabel());
 			
 			double[] expectedOutput = new double[10];
 			for(int x = 0; x < 10; x++)
 			{
 				expectedOutput[x] = 0.0;
-				if(x==data[i].getLabel())
+				if(x==trainData[i].getLabel())
 				{
 					expectedOutput[x] = 1.0;
 				}
@@ -493,8 +492,8 @@ public class threeLayerExample {
 			
 		}
 		
-		double accuracy = (double) correct/data.length;
-		double avgLoss = (double) loss/data.length;
+		double accuracy = (double) correct/trainData.length;
+		double avgLoss = (double) loss/trainData.length;
 		System.out.println("accuracy = " + accuracy);
 		System.out.println("avg loss = " + avgLoss);
 		System.out.println(hist);
@@ -523,10 +522,10 @@ public class threeLayerExample {
 		
 	}
 
-	public static void testNN(MnistMatrix[] data, MnistMatrix[] data2) throws IOException
+	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
 		//create one dimensional images with values 0 - 256??...or 253?
-		int[][] odData = makeData1D(data);
+		int[][] odTrainData = makeData1D(trainData);
 		
 		
 		//TEST NN WITH RANDOM WEIGHTS
@@ -540,7 +539,7 @@ public class threeLayerExample {
 			correctHist.put(i,0);
 		}
 		
-		for(int i = 0; i < data.length; i++)
+		for(int i = 0; i < trainData.length; i++)
 		{
 			//init nodes
 			layer0nodes = new double[inputSize];
@@ -550,7 +549,7 @@ public class threeLayerExample {
 			layer2nodes = new double[hiddenSize];
 			layer3nodes = new double[outputSize]; 
 			
-			getOut(odData[i],false);
+			getOut(odTrainData[i],false);
 			
 			
 			//get guess and add to histogram
@@ -558,19 +557,19 @@ public class threeLayerExample {
 			hist.replace(guess, hist.get(guess)+1);
 			
 			//check if correct
-			if(guess == data[i].getLabel())
+			if(guess == trainData[i].getLabel())
 			{
 				correct+=1;
 				correctHist.replace(guess, correctHist.get(guess)+1);
 			}
 			
 			//getLoss
-			loss+=getLoss(layer3nodes,data[i].getLabel());
+			loss+=getLoss(layer3nodes,trainData[i].getLabel());
 			
 		}
 		
-		double accuracy = (double) correct/data.length;
-		double avgLoss = (double) loss/data.length;
+		double accuracy = (double) correct/trainData.length;
+		double avgLoss = (double) loss/trainData.length;
 		System.out.println("accuracy = " + accuracy);
 		System.out.println("avg loss = " + avgLoss);
 		System.out.println(hist);
@@ -696,14 +695,14 @@ public class threeLayerExample {
 	}
 	
 	
-	public static void displayDigit(MnistMatrix data)
+	public static void displayDigit(MnistMatrix trainData)
 	{
-		for(int r = 0; r < data.getNumberOfRows(); r++)
+		for(int r = 0; r < trainData.getNumberOfRows(); r++)
 		{
 			String row = "";
-			for(int c = 0; c < data.getNumberOfColumns(); c++)
+			for(int c = 0; c < trainData.getNumberOfColumns(); c++)
 			{
-				if(data.getValue(r, c) > 0)
+				if(trainData.getValue(r, c) > 0)
 				{
 					row = row + "0";
 				}else {
@@ -712,20 +711,20 @@ public class threeLayerExample {
 			}
 			System.out.println(row);
 		}
-		System.out.println("label = " + data.getLabel());
+		System.out.println("label = " + trainData.getLabel());
 	}
 	
-	public static void displayData(MnistMatrix[] data)
+	public static void displayData(MnistMatrix[] trainData)
 	{
-			for(int i = 0; i < data.length; i++)
+			for(int i = 0; i < trainData.length; i++)
 		{
-			System.out.println("data " + i + " label = " + data[i].getLabel());
-			for(int r = 0; r < data[i].getNumberOfRows(); r++)
+			System.out.println("trainData " + i + " label = " + trainData[i].getLabel());
+			for(int r = 0; r < trainData[i].getNumberOfRows(); r++)
 			{
 				String row = "";
-				for(int c = 0; c < data[i].getNumberOfColumns(); c++)
+				for(int c = 0; c < trainData[i].getNumberOfColumns(); c++)
 				{
-					if(data[i].getValue(r, c) > 0)
+					if(trainData[i].getValue(r, c) > 0)
 					{
 						row = row + " ";
 					}else {
@@ -738,18 +737,18 @@ public class threeLayerExample {
 	}
 	
 	//converts MnistMatrix[] to int[][]
-	//Array of 1D Image Data instead of 2D
-	public static int[][] makeData1D(MnistMatrix[] data)
+	//Array of 1D Image trainData instead of 2D
+	public static int[][] makeData1D(MnistMatrix[] trainData)
 	{
 		int[][] out = new int[60000][784];
-		for(int i = 0; i < data.length; i++)
+		for(int i = 0; i < trainData.length; i++)
 		{
 			int n = 0;
-			for(int r = 0; r < data[i].getNumberOfRows(); r++)
+			for(int r = 0; r < trainData[i].getNumberOfRows(); r++)
 			{
-				for(int c = 0; c < data[i].getNumberOfColumns(); c++)
+				for(int c = 0; c < trainData[i].getNumberOfColumns(); c++)
 				{
-					 out[i][n] = data[i].getValue(r, c);
+					 out[i][n] = trainData[i].getValue(r, c);
 					 n++;
 				}
 			}
