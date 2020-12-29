@@ -12,8 +12,8 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 public class threeLayerExample {
-	static MnistMatrix[] trainData;  //training trainData
-	static MnistMatrix[] testData; //test trainData
+	static MnistMatrix[] trainData;  //training data
+	static MnistMatrix[] testData; //test data
 	///LAYER SIZES
  	static int inputSize = 28*28;
 	static int hiddenSize = 8;
@@ -212,7 +212,7 @@ public class threeLayerExample {
 		//create one dimensional images with values 0 - 256??...or 253?
 		int[][] odTestData = makeData1D(testData);
 		
-		System.out.println("\n ----TEST ON TEST trainData------\n");
+		System.out.println("\n ----TEST ON TEST Data------\n");
 		HashSet<Integer> randomSamples = new HashSet<>();
 		for(int q = 0; q < randomSamplesDisplayed; q++)
 		{
@@ -360,7 +360,7 @@ public class threeLayerExample {
 			
 			if(i % 10000 == 0)
 			{
-				System.out.println("trainData : " + i +" of " + trainData.length);
+				System.out.println("data : " + i +" of " + trainData.length);
 				testNNwithTestData(trainData, testData);
 				testNNWithHanddrawn();
 			}
@@ -718,7 +718,7 @@ public class threeLayerExample {
 	{
 			for(int i = 0; i < trainData.length; i++)
 		{
-			System.out.println("trainData " + i + " label = " + trainData[i].getLabel());
+			System.out.println("data " + i + " label = " + trainData[i].getLabel());
 			for(int r = 0; r < trainData[i].getNumberOfRows(); r++)
 			{
 				String row = "";
@@ -737,18 +737,18 @@ public class threeLayerExample {
 	}
 	
 	//converts MnistMatrix[] to int[][]
-	//Array of 1D Image trainData instead of 2D
-	public static int[][] makeData1D(MnistMatrix[] trainData)
+	//Array of 1D Image data instead of 2D
+	public static int[][] makeData1D(MnistMatrix[] data)
 	{
 		int[][] out = new int[60000][784];
-		for(int i = 0; i < trainData.length; i++)
+		for(int i = 0; i < data.length; i++)
 		{
 			int n = 0;
-			for(int r = 0; r < trainData[i].getNumberOfRows(); r++)
+			for(int r = 0; r < data[i].getNumberOfRows(); r++)
 			{
-				for(int c = 0; c < trainData[i].getNumberOfColumns(); c++)
+				for(int c = 0; c < data[i].getNumberOfColumns(); c++)
 				{
-					 out[i][n] = trainData[i].getValue(r, c);
+					 out[i][n] = data[i].getValue(r, c);
 					 n++;
 				}
 			}
