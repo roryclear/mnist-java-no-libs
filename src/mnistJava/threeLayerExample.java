@@ -16,7 +16,7 @@ public class threeLayerExample {
 	static MnistMatrix[] testData; //test data
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 8;
+	static int hiddenSize = 64;
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100;
@@ -341,15 +341,6 @@ public class threeLayerExample {
 		
 		for(int i = 0; i < trainData.length; i++)
 		{
-			if(i % batchSize == 0)
-			{
-			layer0nodesTotal = new double[inputSize];
-			
-			layer1nodesTotal = new double[hiddenSize];
-			
-			layer2nodesTotal = new double[hiddenSize];
-			layer3nodesTotal = new double[outputSize]; 
-			}
 			//init nodes
 			layer0nodes = new double[inputSize];
 			
@@ -479,6 +470,12 @@ public class threeLayerExample {
 			
 			
 			
+			layer0nodesTotal = new double[inputSize];
+			
+			layer1nodesTotal = new double[hiddenSize];
+			
+			layer2nodesTotal = new double[hiddenSize];
+			layer3nodesTotal = new double[outputSize]; 
 			
 			}
 				

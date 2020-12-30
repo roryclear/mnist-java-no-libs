@@ -303,12 +303,6 @@ public class twoLayerExample {
 		
 		for(int i = 0; i < trainData.length; i++)
 		{
-			if(i % batchSize == 0)
-			{
-			layer0nodesTotal = new double[inputSize];
-			layer1nodesTotal = new double[hiddenSize];
-			layer2nodesTotal = new double[outputSize]; 
-			}
 			//init nodes
 			layer0nodes = new double[inputSize];
 			layer1nodes = new double[hiddenSize];
@@ -351,10 +345,9 @@ public class twoLayerExample {
 			
 			if(i % batchSize == 0)
 			{
-			
+				
 			hwAdd = new double[hiddenWeights.length][hiddenWeights[0].length];
-			owAdd = new double[outputWeights.length][outputWeights[0].length];
-			
+			owAdd = new double[outputWeights.length][outputWeights[0].length];	
 			
 			for(int y = 0; y < outputWeights.length; y++)
 			{
@@ -407,7 +400,9 @@ public class twoLayerExample {
 			}
 			
 			
-			
+			layer0nodesTotal = new double[inputSize];
+			layer1nodesTotal = new double[hiddenSize];
+			layer2nodesTotal = new double[outputSize]; 
 			
 			}
 				
