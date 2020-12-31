@@ -12,8 +12,8 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 
 public class threeLayerExample {
-	static MnistMatrix[] trainData;  //training data
-	static MnistMatrix[] testData; //test data
+	static MnistMatrix[] trainData;  
+	static MnistMatrix[] testData; 
 	///LAYER SIZES
  	static int inputSize = 28*28;
 	static int hiddenSize = 16;
@@ -205,7 +205,7 @@ public class threeLayerExample {
 	
 	public static void testNNwithTestData(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
-		//create one dimensional images with values 0 - 256??...or 253?
+		//create one dimensional images with values 0 - 255
 		int[][] odTestData = makeData1D(testData);
 		
 		System.out.println("\n ----TEST ON TEST Data------\n");
@@ -314,13 +314,11 @@ public class threeLayerExample {
 		double[][] hw1add = new double[hidden1weights.length][hidden1weights[0].length];
 		double[][] owAdd = new double[outputWeights.length][outputWeights[0].length];
 		
-		//create one dimensional images with values 0 - 256??...or 253?
+		//create one dimensional images with values 0 - 255
 		int[][] odTrainData = makeData1D(trainData);
 		
 		System.out.println("\n\n\n TRAINING????? \n\n");
 		
-		//gonna try training using a batch size of one and 1 epoch???
-		//adjust values as it goes???
 		for(int z = 0; z < epochs; z++)
 		{
 		System.out.println("--EPOCH "+z+"-- \n");
@@ -391,7 +389,6 @@ public class threeLayerExample {
 				double L1Output = layer2nodesInput[y];
 				for(int x = 0; x < outputWeights[y].length; x++)
 				{
-					///weight between hidden node Y and output node X!!
 					double output = layer3nodesInput[x];
 					double expected = expectedOutput[x];
 					double dedw = (output - expected)*(output*(1 - output)*(L1Output));
@@ -513,7 +510,7 @@ public class threeLayerExample {
 
 	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
-		//create one dimensional images with values 0 - 256??...or 253?
+		//create one dimensional images with values 0 - 255
 		int[][] odTrainData = makeData1D(trainData);
 		
 		

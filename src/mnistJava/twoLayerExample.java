@@ -12,8 +12,8 @@ import javax.imageio.ImageIO;
 
 
 public class twoLayerExample {
-	static MnistMatrix[] trainData;  //training data
-	static MnistMatrix[] testData; //test data
+	static MnistMatrix[] trainData;  
+	static MnistMatrix[] testData; 
 	///LAYER SIZES
  	static int inputSize = 28*28;
 	static int hiddenSize = 512; //512
@@ -172,7 +172,7 @@ public class twoLayerExample {
 	
 	public static void testNNwithTestData(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
-		//create one dimensional images with values 0 - 256??...or 253?
+		//create one dimensional images with values 0 - 255
 		int[][] odTestData = makeData1D(testData);
 		
 		System.out.println("\n ----TEST ON TEST DATA------\n");
@@ -277,13 +277,12 @@ public class twoLayerExample {
 		double[][] hwAdd = new double[hiddenWeights.length][hiddenWeights[0].length];
 		double[][] owAdd = new double[outputWeights.length][outputWeights[0].length];
 		
-		//create one dimensional images with values 0 - 256??...or 253?
+		//create one dimensional images with values 0 - 255
 		int[][] odTrainData = makeData1D(trainData);
 		
 		System.out.println("\n\n\n TRAINING????? \n\n");
-		
-		//gonna try training using a batch size of one and 1 epoch???
-		//adjust values as it goes???
+	
+	
 		for(int z = 0; z < epochs; z++)
 		{
 		System.out.println("--EPOCH "+z+"-- \n");
@@ -349,7 +348,6 @@ public class twoLayerExample {
 				double L1Output = layer1nodesInput[y];
 				for(int x = 0; x < outputWeights[y].length; x++)
 				{
-					///weight between hidden node Y and output node X!!
 					double output = layer2nodesInput[x];
 					double expected = expectedOutput[x];
 					double dedw = (output - expected)*(output*(1 - output)*(L1Output));
@@ -442,7 +440,7 @@ public class twoLayerExample {
 
 	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
-		//create one dimensional images with values 0 - 256??...or 253?
+		//create one dimensional images with values 0 - 255
 		int[][] odTrainData = makeData1D(trainData);
 		
 		//TEST NN WITH RANDOM WEIGHTS
