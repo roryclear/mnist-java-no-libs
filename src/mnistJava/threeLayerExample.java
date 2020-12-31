@@ -16,13 +16,11 @@ public class threeLayerExample {
 	static MnistMatrix[] testData; //test data
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 64;
+	static int hiddenSize = 16;
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100;
-	
-	//ALL BUT 1 IS BROKEN ATM
-	static int batchSize = 1; 
+
 	
 	static int randomSamplesDisplayed = 1;
 
@@ -35,13 +33,11 @@ public class threeLayerExample {
 	static double[] layer2nodes = new double[hiddenSize];
 	static double[] layer3nodes = new double[outputSize];
 	
-	//totals for batch
-	static double[] layer0nodesTotal = new double[inputSize];
-	
-	static double[] layer1nodesTotal = new double[hiddenSize];
-	
-	static double[] layer2nodesTotal = new double[hiddenSize];
-	static double[] layer3nodesTotal = new double[outputSize]; 
+	//inputs for bp
+	static double[] layer0nodesInput = new double[inputSize];
+	static double[] layer1nodesInput = new double[hiddenSize];
+	static double[] layer2nodesInput = new double[hiddenSize];
+	static double[] layer3nodesInput = new double[outputSize]; 
 	
 	//weights
 	static double[][] hidden0weights = new double[inputSize][hiddenSize];
@@ -113,7 +109,7 @@ public class threeLayerExample {
 			layer0nodes[x] = sigmoid(data[x]);
 			if(train)
 			{
-				layer0nodesTotal[x] += data[x];
+				layer0nodesInput[x] += data[x];
 			}
 		}
 		
@@ -129,7 +125,7 @@ public class threeLayerExample {
 			layer1nodes[x] = total;
 			if(train)
 			{
-				layer1nodesTotal[x] += total;
+				layer1nodesInput[x] += total;
 			}
 		}
 		
@@ -145,7 +141,7 @@ public class threeLayerExample {
 			layer2nodes[x] = total;
 			if(train)
 			{
-			layer2nodesTotal[x] += total;
+			layer2nodesInput[x] += total;
 			}
 		}
 		
@@ -161,7 +157,7 @@ public class threeLayerExample {
 			layer3nodes[x] = total;
 			if(train)
 			{
-			layer3nodesTotal[x] += total;
+			layer3nodesInput[x] += total;
 			}
 		}
 		
@@ -384,9 +380,6 @@ public class threeLayerExample {
 				}
 			}
 			
-			if(i % batchSize == 0)
-			{
-			
 			hw0add = new double[hidden0weights.length][hidden0weights[0].length];	
 				
 			hw1add = new double[hidden1weights.length][hidden1weights[0].length];
@@ -395,11 +388,11 @@ public class threeLayerExample {
 			
 			for(int y = 0; y < outputWeights.length; y++)
 			{
-				double L1Output = layer2nodesTotal[y];
+				double L1Output = layer2nodesInput[y];
 				for(int x = 0; x < outputWeights[y].length; x++)
 				{
 					///weight between hidden node Y and output node X!!
-					double output = layer3nodesTotal[x];
+					double output = layer3nodesInput[x];
 					double expected = expectedOutput[x];
 					double dedw = (output - expected)*(output*(1 - output)*(L1Output));
 					owAdd[y][x] += dedw;
@@ -414,11 +407,11 @@ public class threeLayerExample {
 				for(int x = 0; x < hidden1weights[y].length; x++)
 				{
 					double totalError = 0;
-					for(int n = 0; n < layer3nodesTotal.length; n++)	
+					for(int n = 0; n < layer3nodesInput.length; n++)	
 					{
 						totalError += (outputWeights[x][n]*owAdd[x][n])/layer3nodes.length;
 					}
-					totalError = totalError*(layer2nodesTotal[x]*(1 - layer2nodesTotal[x])*layer1nodesTotal[y]);
+					totalError = totalError*(layer2nodesInput[x]*(1 - layer2nodesInput[x])*layer1nodesInput[y]);
 					
 					
 					hw1add[y][x] += totalError;
@@ -431,11 +424,11 @@ public class threeLayerExample {
 				for(int x = 0; x < hidden0weights[y].length; x++)
 				{
 					double totalError = 0;
-					for(int n = 0; n < layer2nodesTotal.length; n++)	
+					for(int n = 0; n < layer2nodesInput.length; n++)	
 					{
 						totalError += ((hidden1weights[x][n]*hw1add[x][n])/layer3nodes.length)/layer2nodes.length;
 					}
-					totalError = totalError*(layer1nodesTotal[x]*(1 - layer1nodesTotal[x])*layer0nodesTotal[y]);
+					totalError = totalError*(layer1nodesInput[x]*(1 - layer1nodesInput[x])*layer0nodesInput[y]);
 					
 					
 					hw0add[y][x] += totalError;
@@ -447,7 +440,7 @@ public class threeLayerExample {
 			{
 				for(int x = 0; x < hidden0weights[y].length; x++)
 				{
-					hidden0weights[y][x] -= (learningRate*hw0add[y][x])/batchSize;
+					hidden0weights[y][x] -= learningRate*hw0add[y][x];
 				}
 			}
 			
@@ -455,7 +448,7 @@ public class threeLayerExample {
 			{
 				for(int x = 0; x < hidden1weights[y].length; x++)
 				{
-					hidden1weights[y][x] -= (learningRate*hw1add[y][x])/batchSize;
+					hidden1weights[y][x] -= learningRate*hw1add[y][x];
 				}
 			}
 	
@@ -464,20 +457,19 @@ public class threeLayerExample {
 			{
 				for(int x = 0; x < outputWeights[y].length; x++)
 				{
-					outputWeights[y][x] -= (learningRate*owAdd[y][x])/batchSize;
+					outputWeights[y][x] -= learningRate*owAdd[y][x];
 				}
 			}
 			
 			
 			
-			layer0nodesTotal = new double[inputSize];
+			layer0nodesInput = new double[inputSize];
 			
-			layer1nodesTotal = new double[hiddenSize];
+			layer1nodesInput = new double[hiddenSize];
 			
-			layer2nodesTotal = new double[hiddenSize];
-			layer3nodesTotal = new double[outputSize]; 
+			layer2nodesInput = new double[hiddenSize];
+			layer3nodesInput = new double[outputSize]; 
 			
-			}
 				
 			
 			//remove
