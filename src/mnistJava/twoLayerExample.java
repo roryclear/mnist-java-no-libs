@@ -21,9 +21,6 @@ public class twoLayerExample {
 	static double learningRate = 0.1;
 	static int epochs = 100; //100
 	
-	//ALL BUT 1 IS BROKEN ATM
-	static int batchSize = 1; 
-	
 	static int randomSamplesDisplayed = 1;
 	static int testNNevery = 10000;
 	static int showTrainingAccEvery = 1000;
@@ -33,10 +30,10 @@ public class twoLayerExample {
 	static double[] layer1nodes = new double[hiddenSize];
 	static double[] layer2nodes = new double[outputSize];
 	
-	//totals for batch
-	static double[] layer0nodesTotal = new double[inputSize];
-	static double[] layer1nodesTotal = new double[hiddenSize];
-	static double[] layer2nodesTotal = new double[outputSize]; 
+	//inputs for bp
+	static double[] layer0nodesInput = new double[inputSize];
+	static double[] layer1nodesInput = new double[hiddenSize];
+	static double[] layer2nodesInput = new double[outputSize]; 
 	
 	//weights
 	static double[][] hiddenWeights = new double[inputSize][hiddenSize];
@@ -95,7 +92,7 @@ public class twoLayerExample {
 			layer0nodes[x] = sigmoid(data[x]);
 			if(train)
 			{
-				layer0nodesTotal[x] += data[x];
+				layer0nodesInput[x] += data[x];
 			}
 		}
 		
@@ -111,7 +108,7 @@ public class twoLayerExample {
 			layer1nodes[x] = total;
 			if(train)
 			{
-			layer1nodesTotal[x] += total;
+			layer1nodesInput[x] += total;
 			}
 		}
 		
@@ -127,7 +124,7 @@ public class twoLayerExample {
 			layer2nodes[x] = total;
 			if(train)
 			{
-			layer2nodesTotal[x] += total;
+			layer2nodesInput[x] += total;
 			}
 		}
 		
@@ -343,19 +340,17 @@ public class twoLayerExample {
 				}
 			}
 			
-			if(i % batchSize == 0)
-			{
 				
 			hwAdd = new double[hiddenWeights.length][hiddenWeights[0].length];
 			owAdd = new double[outputWeights.length][outputWeights[0].length];	
 			
 			for(int y = 0; y < outputWeights.length; y++)
 			{
-				double L1Output = layer1nodesTotal[y];
+				double L1Output = layer1nodesInput[y];
 				for(int x = 0; x < outputWeights[y].length; x++)
 				{
 					///weight between hidden node Y and output node X!!
-					double output = layer2nodesTotal[x];
+					double output = layer2nodesInput[x];
 					double expected = expectedOutput[x];
 					double dedw = (output - expected)*(output*(1 - output)*(L1Output));
 					owAdd[y][x] += dedw;
@@ -370,11 +365,11 @@ public class twoLayerExample {
 				for(int x = 0; x < hiddenWeights[y].length; x++)
 				{
 					double totalError = 0;
-					for(int n = 0; n < layer2nodesTotal.length; n++)	
+					for(int n = 0; n < layer2nodesInput.length; n++)	
 					{
 						totalError += (outputWeights[x][n]*owAdd[x][n])/layer2nodes.length;
 					}
-					totalError = totalError*(layer1nodesTotal[x]*(1 - layer1nodesTotal[x])*layer0nodesTotal[y]);
+					totalError = totalError*(layer1nodesInput[x]*(1 - layer1nodesInput[x])*layer0nodesInput[y]);
 					
 					
 					hwAdd[y][x] += totalError;
@@ -386,7 +381,7 @@ public class twoLayerExample {
 			{
 				for(int x = 0; x < hiddenWeights[y].length; x++)
 				{
-					hiddenWeights[y][x] -= (learningRate*hwAdd[y][x])/batchSize;
+					hiddenWeights[y][x] -= (learningRate*hwAdd[y][x]);
 				}
 			}
 	
@@ -395,16 +390,15 @@ public class twoLayerExample {
 			{
 				for(int x = 0; x < outputWeights[y].length; x++)
 				{
-					outputWeights[y][x] -= (learningRate*owAdd[y][x])/batchSize;
+					outputWeights[y][x] -= (learningRate*owAdd[y][x]);
 				}
 			}
 			
 			
-			layer0nodesTotal = new double[inputSize];
-			layer1nodesTotal = new double[hiddenSize];
-			layer2nodesTotal = new double[outputSize]; 
+			layer0nodesInput = new double[inputSize];
+			layer1nodesInput = new double[hiddenSize];
+			layer2nodesInput = new double[outputSize]; 
 			
-			}
 				
 			
 			//remove
