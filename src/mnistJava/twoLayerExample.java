@@ -48,7 +48,7 @@ public class twoLayerExample {
 	static int[][] odTestData;
 	
 	//save and load weights
-	static boolean saveWeights = false;
+	static boolean saveWeights = true;
 	static boolean loadWeights = true;
 	
 	static String saveFile = "2layerWeights.txt";
@@ -598,17 +598,7 @@ public class twoLayerExample {
 		//init nodes
 		layer0nodes = new double[inputSize];
 		layer1nodes = new double[hiddenSize];
-		layer2nodes = new double[outputSize]; 
-
-		getOut(drawn,false);
-		
-		
-		//get guess and add to histogram
-		int guess = getDigit(layer2nodes);
-		
-		System.out.println("\n----RANDOM GUESS is " + guess + "-------");
-		
-		
+		layer2nodes = new double[outputSize];		
 	
 	}
 	

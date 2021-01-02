@@ -31,9 +31,7 @@ public class threeLayerExample {
 		
 	//init nodes
 	static double[] layer0nodes = new double[inputSize];
-	
 	static double[] layer1nodes = new double[hiddenSize];
-	
 	static double[] layer2nodes = new double[hiddenSize];
 	static double[] layer3nodes = new double[outputSize];
 	
@@ -55,7 +53,7 @@ public class threeLayerExample {
 	
 	
 	//save and load weights
-	static boolean saveWeights = false;
+	static boolean saveWeights = true;
 	static boolean loadWeights = true;
 	
 	static String saveFile = "3layerWeights.txt";
@@ -698,17 +696,7 @@ public class threeLayerExample {
 		layer1nodes = new double[hiddenSize];
 		
 		layer2nodes = new double[hiddenSize];
-		layer3nodes = new double[outputSize]; 
-
-		getOut(drawn,false);
-		
-		
-		//get guess and add to histogram
-		int guess = getDigit(layer3nodes);
-		
-		System.out.println("\n----RANDOM GUESS is " + guess + "-------");
-		
-		
+		layer3nodes = new double[outputSize]; 		
 	
 	}
 	
