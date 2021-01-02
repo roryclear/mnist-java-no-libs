@@ -58,46 +58,17 @@ public class threeLayerExample {
 	static boolean saveWeights = false;
 	static boolean loadWeights = true;
 	
+	static String saveFile = "3layerWeights.txt";
+	static String loadFile = "3layerWeights.txt";
+	
 	
 	public static void main(String[] args) throws IOException
 	{
-		if(!loadWeights)
+		if(loadWeights)
 		{
-		//ASSIGN RANDOM WEIGHTS OF RANGE -0.1 to 0.1	
-		for(int y = 0; y < hidden0weights.length; y++)
-		{
-			for(int x = 0; x < hidden0weights[y].length; x++)
-			{
-				Random r = new Random();
-				double w = -0.1 + 0.2 * r.nextDouble();
-				hidden0weights[y][x] = w;
-			}
-		}
-		
-		
-		for(int y = 0; y < hidden1weights.length; y++)
-		{
-			for(int x = 0; x < hidden1weights[y].length; x++)
-			{
-				Random r = new Random();
-				double w = -0.1 + 0.2 * r.nextDouble();
-				hidden1weights[y][x] = w;
-			}
-		}
-		
-		
-		for(int y = 0; y < outputWeights.length; y++)
-		{
-			for(int x = 0; x < outputWeights[y].length; x++)
-			{
-				Random r = new Random();
-				double w = -0.1 + 0.2 * r.nextDouble();
-				outputWeights[y][x] = w;
-			}
-		}
-		
-		}else {
 			loadWeights();
+		}else {
+			makeRandomWeights();
 		}
 		//READ data FROM FILES
 		trainData = readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
@@ -117,7 +88,7 @@ public class threeLayerExample {
 	public static void saveWeights()
 	{
 	    try {
-	        FileWriter myWriter = new FileWriter("3layerWeights.txt");
+	        FileWriter myWriter = new FileWriter(saveFile);
 	        myWriter.append("hiddenSize = " + hiddenSize);
 	        for(int y = 0; y < hidden0weights.length; y++)
 	        {
@@ -151,17 +122,54 @@ public class threeLayerExample {
 	        
 	        
 	        myWriter.close();
-	        System.out.println("Successfully wrote to the file.");
+	        System.out.println("weights saved");
 	      } catch (IOException e) {
 	        System.out.println("An error occurred.");
 	        e.printStackTrace();
 	      }
 	}
 	
+	public static void makeRandomWeights()
+	{
+		//ASSIGN RANDOM WEIGHTS OF RANGE -0.1 to 0.1	
+		for(int y = 0; y < hidden0weights.length; y++)
+		{
+			for(int x = 0; x < hidden0weights[y].length; x++)
+			{
+				Random r = new Random();
+				double w = -0.1 + 0.2 * r.nextDouble();
+				hidden0weights[y][x] = w;
+			}
+		}
+		
+		
+		for(int y = 0; y < hidden1weights.length; y++)
+		{
+			for(int x = 0; x < hidden1weights[y].length; x++)
+			{
+				Random r = new Random();
+				double w = -0.1 + 0.2 * r.nextDouble();
+				hidden1weights[y][x] = w;
+			}
+		}
+		
+		
+		for(int y = 0; y < outputWeights.length; y++)
+		{
+			for(int x = 0; x < outputWeights[y].length; x++)
+			{
+				Random r = new Random();
+				double w = -0.1 + 0.2 * r.nextDouble();
+				outputWeights[y][x] = w;
+			}
+		}
+		
+	}
+	
 	public static void loadWeights()
 	{
 	    try {
-	        File myObj = new File("3layerWeights.txt");
+	        File myObj = new File(loadFile);
 	        Scanner myReader = new Scanner(myObj);
 	        myReader.nextLine();
 	        int y = 0;
@@ -406,10 +414,10 @@ public class threeLayerExample {
 	
 	public static void trainNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
-		double[][] hw0add = new double[hidden0weights.length][hidden0weights[0].length];
+		double[][] hw0grads = new double[hidden0weights.length][hidden0weights[0].length];
 		
-		double[][] hw1add = new double[hidden1weights.length][hidden1weights[0].length];
-		double[][] owAdd = new double[outputWeights.length][outputWeights[0].length];
+		double[][] hw1grads = new double[hidden1weights.length][hidden1weights[0].length];
+		double[][] owGrads = new double[outputWeights.length][outputWeights[0].length];
 		
 		//create one dimensional images with values 0 - 255
 		int[][] odTrainData = makeData1D(trainData);
@@ -479,10 +487,10 @@ public class threeLayerExample {
 				}
 			}
 			
-			hw0add = new double[hidden0weights.length][hidden0weights[0].length];	
+			hw0grads = new double[hidden0weights.length][hidden0weights[0].length];	
 				
-			hw1add = new double[hidden1weights.length][hidden1weights[0].length];
-			owAdd = new double[outputWeights.length][outputWeights[0].length];
+			hw1grads = new double[hidden1weights.length][hidden1weights[0].length];
+			owGrads = new double[outputWeights.length][outputWeights[0].length];
 			
 			
 			for(int y = 0; y < outputWeights.length; y++)
@@ -493,7 +501,7 @@ public class threeLayerExample {
 					double output = layer3nodesInput[x];
 					double expected = expectedOutput[x];
 					double dedw = (output - expected)*(output*(1 - output)*(L1Output));
-					owAdd[y][x] += dedw;
+					owGrads[y][x] += dedw;
 				}
 			}
 			
@@ -507,12 +515,12 @@ public class threeLayerExample {
 					double totalError = 0;
 					for(int n = 0; n < layer3nodesInput.length; n++)	
 					{
-						totalError += (outputWeights[x][n]*owAdd[x][n])/layer3nodes.length;
+						totalError += (outputWeights[x][n]*owGrads[x][n])/layer3nodes.length;
 					}
 					totalError = totalError*(layer2nodesInput[x]*(1 - layer2nodesInput[x])*layer1nodesInput[y]);
 					
 					
-					hw1add[y][x] += totalError;
+					hw1grads[y][x] += totalError;
 				}
 			}
 			
@@ -524,12 +532,12 @@ public class threeLayerExample {
 					double totalError = 0;
 					for(int n = 0; n < layer2nodesInput.length; n++)	
 					{
-						totalError += ((hidden1weights[x][n]*hw1add[x][n])/layer3nodes.length)/layer2nodes.length;
+						totalError += ((hidden1weights[x][n]*hw1grads[x][n])/layer3nodes.length)/layer2nodes.length;
 					}
 					totalError = totalError*(layer1nodesInput[x]*(1 - layer1nodesInput[x])*layer0nodesInput[y]);
 					
 					
-					hw0add[y][x] += totalError;
+					hw0grads[y][x] += totalError;
 				}
 			}
 			
@@ -538,7 +546,7 @@ public class threeLayerExample {
 			{
 				for(int x = 0; x < hidden0weights[y].length; x++)
 				{
-					hidden0weights[y][x] -= learningRate*hw0add[y][x];
+					hidden0weights[y][x] -= learningRate*hw0grads[y][x];
 				}
 			}
 			
@@ -546,7 +554,7 @@ public class threeLayerExample {
 			{
 				for(int x = 0; x < hidden1weights[y].length; x++)
 				{
-					hidden1weights[y][x] -= learningRate*hw1add[y][x];
+					hidden1weights[y][x] -= learningRate*hw1grads[y][x];
 				}
 			}
 	
@@ -555,7 +563,7 @@ public class threeLayerExample {
 			{
 				for(int x = 0; x < outputWeights[y].length; x++)
 				{
-					outputWeights[y][x] -= learningRate*owAdd[y][x];
+					outputWeights[y][x] -= learningRate*owGrads[y][x];
 				}
 			}
 			

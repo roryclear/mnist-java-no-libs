@@ -49,35 +49,18 @@ public class twoLayerExample {
 	
 	//save and load weights
 	static boolean saveWeights = false;
-	static boolean loadWeights = false;
+	static boolean loadWeights = true;
+	
+	static String saveFile = "2layerWeights.txt";
+	static String loadFile = "2layerWeights.txt";
 	
 	public static void main(String[] args) throws IOException
 	{
-		if(!loadWeights)
+		if(loadWeights)
 		{
-		//ASSIGN RANDOM WEIGHTS OF RANGE -0.1 to 0.1
-		for(int y = 0; y < hiddenWeights.length; y++)
-		{
-			for(int x = 0; x < hiddenWeights[y].length; x++)
-			{
-				Random r = new Random();
-				double w = -0.1 + 0.2 * r.nextDouble();
-				hiddenWeights[y][x] = w;
-			}
-		}
-		
-		
-		for(int y = 0; y < outputWeights.length; y++)
-		{
-			for(int x = 0; x < outputWeights[y].length; x++)
-			{
-				Random r = new Random();
-				double w = -0.1 + 0.2 * r.nextDouble();
-				outputWeights[y][x] = w;
-			}
-		}
-		}else {
 			loadWeights();
+		}else {
+			makeRandomWeights();
 		}
 		//READ data FROM FILES
 		trainData = readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
@@ -281,10 +264,35 @@ public class twoLayerExample {
 		
 	}
 	
+	public static void makeRandomWeights()
+	{
+		//ASSIGN RANDOM WEIGHTS OF RANGE -0.1 to 0.1
+		for(int y = 0; y < hiddenWeights.length; y++)
+		{
+			for(int x = 0; x < hiddenWeights[y].length; x++)
+			{
+				Random r = new Random();
+				double w = -0.1 + 0.2 * r.nextDouble();
+				hiddenWeights[y][x] = w;
+			}
+		}
+		
+		
+		for(int y = 0; y < outputWeights.length; y++)
+		{
+			for(int x = 0; x < outputWeights[y].length; x++)
+			{
+				Random r = new Random();
+				double w = -0.1 + 0.2 * r.nextDouble();
+				outputWeights[y][x] = w;
+			}
+		}
+	}
+	
 	public static void loadWeights()
 	{
 	    try {
-	        File myObj = new File("2layerWeights.txt");
+	        File myObj = new File(loadFile);
 	        Scanner myReader = new Scanner(myObj);
 	        myReader.nextLine();
 	        int y = 0;
@@ -315,7 +323,7 @@ public class twoLayerExample {
 	public static void saveWeights()
 	{
 	    try {
-	        FileWriter myWriter = new FileWriter("2layerWeights.txt");
+	        FileWriter myWriter = new FileWriter(saveFile);
 	        myWriter.append("hiddenSize = " + hiddenSize);
 	        for(int y = 0; y < hiddenWeights.length; y++)
 	        {
@@ -338,7 +346,7 @@ public class twoLayerExample {
 	        
 	        
 	        myWriter.close();
-	        System.out.println("Successfully wrote to the file.");
+	        System.out.println("weights saved");
 	      } catch (IOException e) {
 	        System.out.println("An error occurred.");
 	        e.printStackTrace();
@@ -348,8 +356,8 @@ public class twoLayerExample {
 	public static void trainNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
 		
-		double[][] hwAdd = new double[hiddenWeights.length][hiddenWeights[0].length];
-		double[][] owAdd = new double[outputWeights.length][outputWeights[0].length];
+		double[][] hwGrads = new double[hiddenWeights.length][hiddenWeights[0].length];
+		double[][] owGrads = new double[outputWeights.length][outputWeights[0].length];
 		
 		//create one dimensional images with values 0 - 255
 		int[][] odTrainData = makeData1D(trainData);
@@ -418,8 +426,8 @@ public class twoLayerExample {
 			}
 			
 				
-			hwAdd = new double[hiddenWeights.length][hiddenWeights[0].length];
-			owAdd = new double[outputWeights.length][outputWeights[0].length];	
+			hwGrads = new double[hiddenWeights.length][hiddenWeights[0].length];
+			owGrads = new double[outputWeights.length][outputWeights[0].length];	
 			
 			for(int y = 0; y < outputWeights.length; y++)
 			{
@@ -429,7 +437,7 @@ public class twoLayerExample {
 					double output = layer2nodesInput[x];
 					double expected = expectedOutput[x];
 					double dedw = (output - expected)*(output*(1 - output)*(L1Output));
-					owAdd[y][x] += dedw;
+					owGrads[y][x] += dedw;
 				}
 			}
 			
@@ -443,12 +451,12 @@ public class twoLayerExample {
 					double totalError = 0;
 					for(int n = 0; n < layer2nodesInput.length; n++)	
 					{
-						totalError += (outputWeights[x][n]*owAdd[x][n])/layer2nodes.length;
+						totalError += (outputWeights[x][n]*owGrads[x][n])/layer2nodes.length;
 					}
 					totalError = totalError*(layer1nodesInput[x]*(1 - layer1nodesInput[x])*layer0nodesInput[y]);
 					
 					
-					hwAdd[y][x] += totalError;
+					hwGrads[y][x] += totalError;
 				}
 			}
 			
@@ -457,7 +465,7 @@ public class twoLayerExample {
 			{
 				for(int x = 0; x < hiddenWeights[y].length; x++)
 				{
-					hiddenWeights[y][x] -= (learningRate*hwAdd[y][x]);
+					hiddenWeights[y][x] -= (learningRate*hwGrads[y][x]);
 				}
 			}
 	
@@ -466,7 +474,7 @@ public class twoLayerExample {
 			{
 				for(int x = 0; x < outputWeights[y].length; x++)
 				{
-					outputWeights[y][x] -= (learningRate*owAdd[y][x]);
+					outputWeights[y][x] -= (learningRate*owGrads[y][x]);
 				}
 			}
 			
