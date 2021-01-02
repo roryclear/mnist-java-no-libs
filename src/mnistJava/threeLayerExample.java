@@ -5,10 +5,14 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Scanner;
+
 import javax.imageio.ImageIO;
 
 public class threeLayerExample {
@@ -16,7 +20,7 @@ public class threeLayerExample {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 16;
+	static int hiddenSize = 32;
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100;
@@ -50,10 +54,16 @@ public class threeLayerExample {
 	static int[][] odTestData;
 	
 	
+	//save and load weights
+	static boolean saveWeights = false;
+	static boolean loadWeights = true;
+	
+	
 	public static void main(String[] args) throws IOException
 	{
-		//ASSIGN RANDOM WEIGHTS OF RANGE -0.1 to 0.1
-		
+		if(!loadWeights)
+		{
+		//ASSIGN RANDOM WEIGHTS OF RANGE -0.1 to 0.1	
 		for(int y = 0; y < hidden0weights.length; y++)
 		{
 			for(int x = 0; x < hidden0weights[y].length; x++)
@@ -86,6 +96,9 @@ public class threeLayerExample {
 			}
 		}
 		
+		}else {
+			loadWeights();
+		}
 		//READ data FROM FILES
 		trainData = readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
 		testData = readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
@@ -99,6 +112,90 @@ public class threeLayerExample {
 		
 	
 		
+	}
+	
+	public static void saveWeights()
+	{
+	    try {
+	        FileWriter myWriter = new FileWriter("3layerWeights.txt");
+	        myWriter.append("hiddenSize = " + hiddenSize);
+	        for(int y = 0; y < hidden0weights.length; y++)
+	        {
+	        	String line = ""+hidden0weights[y][0];
+	        	for(int x = 1; x < hidden0weights[y].length; x++)
+	        	{
+	        		line = line + "," + hidden0weights[y][x];
+	        	}
+	        	myWriter.append("\n" + line);
+	        }
+	        
+	        for(int y = 0; y < hidden1weights.length; y++)
+	        {
+	        	String line = ""+hidden1weights[y][0];
+	        	for(int x = 1; x < hidden1weights[y].length; x++)
+	        	{
+	        		line = line + "," + hidden1weights[y][x];
+	        	}
+	        	myWriter.append("\n" + line);
+	        }
+	        
+	        for(int y = 0; y < outputWeights.length; y++)
+	        {
+	        	String line = ""+outputWeights[y][0];
+	        	for(int x = 1; x < outputWeights[y].length; x++)
+	        	{
+	        		line = line + "," + outputWeights[y][x];
+	        	}
+	        	myWriter.append("\n" + line);
+	        }
+	        
+	        
+	        myWriter.close();
+	        System.out.println("Successfully wrote to the file.");
+	      } catch (IOException e) {
+	        System.out.println("An error occurred.");
+	        e.printStackTrace();
+	      }
+	}
+	
+	public static void loadWeights()
+	{
+	    try {
+	        File myObj = new File("3layerWeights.txt");
+	        Scanner myReader = new Scanner(myObj);
+	        myReader.nextLine();
+	        int y = 0;
+	        while (myReader.hasNextLine()) {
+	          String data = myReader.nextLine();
+	          String[] weightStrings = data.split(",");
+	          if(y < hidden0weights.length)
+	          {
+	        	  for(int x = 0; x < weightStrings.length; x++)
+	        	  {
+	        		  hidden0weights[y][x] = Double.parseDouble(weightStrings[x]);
+	        	  }
+	          }
+	          if(y >= hidden0weights.length && y < (hidden0weights.length + hidden1weights.length))
+	          {
+	        	  for(int x = 0; x < weightStrings.length; x++)
+	        	  {
+	        		  hidden1weights[y - hidden0weights.length][x] = Double.parseDouble(weightStrings[x]);
+	        	  }
+	          }
+	          if(y >= (hidden0weights.length + hidden1weights.length))
+	          {
+	        	  for(int x = 0; x < weightStrings.length; x++)
+	        	  {
+	        		  outputWeights[y - hidden0weights.length - hidden1weights.length][x] = Double.parseDouble(weightStrings[x]);
+	        	  }
+	          }
+	          y++;
+	        }
+	        myReader.close();
+	      } catch (FileNotFoundException e) {
+	        System.out.println("An error occurred.");
+	        e.printStackTrace();
+	      }
 	}
 	
 	public static void getOut(int[] data, boolean train)
@@ -297,7 +394,7 @@ public class threeLayerExample {
 		}
 		if(pass)
 		{
-			System.exit(0);
+	//		System.exit(0);
 		}
 		
 
@@ -321,6 +418,10 @@ public class threeLayerExample {
 		
 		for(int z = 0; z < epochs; z++)
 		{
+		if(saveWeights)
+		{
+			saveWeights();
+		}
 		System.out.println("--EPOCH "+z+"-- \n");
 		int correct = 0;
 		double loss = 0;
