@@ -20,13 +20,13 @@ public class twoLayerExample {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 16; //512
+	static int hiddenSize = 512; //512
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100; //100
 	
 	static int randomSamplesDisplayed = 1;
-	static int testNNevery = 10000;
+	static int testNNevery = 10000; //10000
 	static int showTrainingAccEvery = 1000;
 	
 	//init nodes
@@ -49,7 +49,7 @@ public class twoLayerExample {
 	
 	//save and load weights
 	static boolean saveWeights = false;
-	static boolean loadWeights = true;
+	static boolean loadWeights = false;
 	
 	public static void main(String[] args) throws IOException
 	{
