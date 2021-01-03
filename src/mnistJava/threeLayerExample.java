@@ -293,7 +293,7 @@ public class threeLayerExample {
 		
 		System.out.println("\n----YOU DREW A " + guess + "?------- ");
 		String outs = "0 : "+ layer3nodes[0];
-		for(int i = 1; i < 10; i++)
+		for(int i = 1; i < outputSize; i++)
 		{
 			outs+=" , " + i + " : " + layer3nodes[i];
 			if(i == 4)
@@ -303,6 +303,15 @@ public class threeLayerExample {
 		}
 		System.out.println(outs);
 	}
+	
+	public static void resetNodes()
+	{
+		layer0nodes = new double[inputSize];
+		layer1nodes = new double[hiddenSize];
+		layer2nodes = new double[hiddenSize];
+		layer3nodes = new double[outputSize]; 
+	}
+	
 	
 	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
@@ -321,7 +330,7 @@ public class threeLayerExample {
 		double loss = 0;
 		HashMap<Integer,Integer> hist = new HashMap<Integer, Integer>();
 		HashMap<Integer,Integer> correctHist = new HashMap<Integer, Integer>();
-		for(int i = 0; i < 10; i++)
+		for(int i = 0; i < outputSize; i++)
 		{
 			hist.put(i, 0);
 			correctHist.put(i,0);
@@ -329,13 +338,8 @@ public class threeLayerExample {
 		
 		for(int i = 0; i < testData.length; i++)
 		{
-			//init nodes
-			layer0nodes = new double[inputSize];
 			
-			layer1nodes = new double[hiddenSize];
-			
-			layer2nodes = new double[hiddenSize];
-			layer3nodes = new double[outputSize]; 
+			resetNodes();
 		
 			
 			getOut(odTestData[i],false);
@@ -372,8 +376,8 @@ public class threeLayerExample {
 		System.out.println(correctHist);
 		
 		///guess hand drawn by me
-		int[] output = new int[10];
-		for(int i = 0; i < 10; i++)
+		int[] output = new int[outputSize];
+		for(int i = 0; i < outputSize; i++)
 		{
 		//	int[] d = bmToArray("mnistdata/" + i + ".bmp"); //comic sans
 			int[] d = bmToArray("mnistdata/" + i + "drawn.bmp");
@@ -388,7 +392,7 @@ public class threeLayerExample {
 		
 		System.out.println("output for all digits:");
 		boolean pass = true; 
-		for(int i = 0; i < 10; i++)
+		for(int i = 0; i < outputSize; i++)
 		{
 			System.out.println(i+": " + output[i]);
 			if(output[i] != i)
@@ -431,7 +435,7 @@ public class threeLayerExample {
 		double loss = 0;
 		HashMap<Integer,Integer> hist = new HashMap<Integer, Integer>();
 		HashMap<Integer,Integer> correctHist = new HashMap<Integer, Integer>();
-		for(int i = 0; i < 10; i++)
+		for(int i = 0; i < outputSize; i++)
 		{
 			hist.put(i, 0);
 			correctHist.put(i,0);
@@ -440,13 +444,8 @@ public class threeLayerExample {
 		
 		for(int i = 0; i < trainData.length; i++)
 		{
-			//init nodes
-			layer0nodes = new double[inputSize];
 			
-			layer1nodes =new double[hiddenSize];
-			
-			layer2nodes = new double[hiddenSize];
-			layer3nodes = new double[outputSize]; 
+			resetNodes();
 			
 			if(i % testNNevery == 0)
 			{
@@ -473,8 +472,8 @@ public class threeLayerExample {
 			//getLoss
 			loss+=getLoss(layer3nodes,trainData[i].getLabel());
 			
-			double[] expectedOutput = new double[10];
-			for(int x = 0; x < 10; x++)
+			double[] expectedOutput = new double[outputSize];
+			for(int x = 0; x < outputSize; x++)
 			{
 				expectedOutput[x] = 0.0;
 				if(x==trainData[i].getLabel())
@@ -602,7 +601,7 @@ public class threeLayerExample {
 		
 		System.out.println("\n----YOU DREW A " + guess + "?------- ");
 		String outs = "0 : " + layer3nodes[0];
-		for(int i = 1; i < 10; i++)
+		for(int i = 1; i < outputSize; i++)
 		{
 			outs+=" , " + i + " : " + layer3nodes[i];
 		}
