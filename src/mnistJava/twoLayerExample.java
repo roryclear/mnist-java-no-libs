@@ -24,10 +24,12 @@ public class twoLayerExample {
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100; //100
+	static double randomWeightRange = 0.1;
 	
 	static int randomSamplesDisplayed = 1;
 	static int testNNevery = 10000; //10000
 	static int showTrainingAccEvery = 1000;
+	
 	
 	//init nodes
 	static double[] layer0nodes = new double[inputSize];
@@ -49,7 +51,7 @@ public class twoLayerExample {
 	
 	//save and load weights
 	static boolean saveWeights = false;
-	static boolean loadWeights = true;
+	static boolean loadWeights = false;
 	
 	static String saveFile = "2layerWeights.txt";
 	static String loadFile = "2layerWeights.txt";
@@ -172,7 +174,7 @@ public class twoLayerExample {
 		for(int q = 0; q < randomSamplesDisplayed; q++)
 		{
 			Random r = new Random();
-			int random = r.nextInt(10000);
+			int random = r.nextInt(testNNevery);
 			randomSamples.add(random);
 		}
 		int correct = 0;
@@ -264,13 +266,12 @@ public class twoLayerExample {
 	
 	public static void makeRandomWeights()
 	{
-		//ASSIGN RANDOM WEIGHTS OF RANGE -0.1 to 0.1
 		for(int y = 0; y < hiddenWeights.length; y++)
 		{
 			for(int x = 0; x < hiddenWeights[y].length; x++)
 			{
 				Random r = new Random();
-				double w = -0.1 + 0.2 * r.nextDouble();
+				double w = -randomWeightRange + 2 * randomWeightRange * r.nextDouble();
 				hiddenWeights[y][x] = w;
 			}
 		}
@@ -281,7 +282,7 @@ public class twoLayerExample {
 			for(int x = 0; x < outputWeights[y].length; x++)
 			{
 				Random r = new Random();
-				double w = -0.1 + 0.2 * r.nextDouble();
+				double w = -randomWeightRange + 2 * randomWeightRange * r.nextDouble();
 				outputWeights[y][x] = w;
 			}
 		}
