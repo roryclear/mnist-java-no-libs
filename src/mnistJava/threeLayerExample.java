@@ -53,8 +53,8 @@ public class threeLayerExample {
 	
 	
 	//save and load weights
-	static boolean saveWeights = true;
-	static boolean loadWeights = true;
+	static boolean saveWeights = false;
+	static boolean loadWeights = false;
 	
 	static String saveFile = "3layerWeights.txt";
 	static String loadFile = "3layerWeights.txt";
@@ -72,15 +72,12 @@ public class threeLayerExample {
 		trainData = readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
 		testData = readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
 		
-		//TEST RANDOM NN
 		testNN(trainData, testData);
 		
 		trainNN(trainData, testData);
 		
-		testNNwithTestData(trainData, testData);
-		
-	
-		
+		testNN(trainData, testData);
+			
 	}
 	
 	public static void saveWeights()
@@ -306,7 +303,7 @@ public class threeLayerExample {
 		System.out.println(outs);
 	}
 	
-	public static void testNNwithTestData(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
+	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
 		//create one dimensional images with values 0 - 255
 		int[][] odTestData = makeData1D(testData);
@@ -453,7 +450,7 @@ public class threeLayerExample {
 			if(i % 10000 == 0)
 			{
 				System.out.println("data : " + i +" of " + trainData.length);
-				testNNwithTestData(trainData, testData);
+				testNN(trainData, testData);
 				testNNWithHanddrawn();
 			}
 
@@ -615,91 +612,6 @@ public class threeLayerExample {
 		
 	}
 
-	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
-	{
-		//create one dimensional images with values 0 - 255
-		int[][] odTrainData = makeData1D(trainData);
-		
-		
-		//TEST NN WITH RANDOM WEIGHTS
-		int correct = 0;
-		double loss = 0;
-		HashMap<Integer,Integer> hist = new HashMap<Integer, Integer>();
-		HashMap<Integer,Integer> correctHist = new HashMap<Integer, Integer>();
-		for(int i = 0; i < 10; i++)
-		{
-			hist.put(i, 0);
-			correctHist.put(i,0);
-		}
-		
-		for(int i = 0; i < trainData.length; i++)
-		{
-			//init nodes
-			layer0nodes = new double[inputSize];
-			
-			layer1nodes = new double[inputSize];
-			
-			layer2nodes = new double[hiddenSize];
-			layer3nodes = new double[outputSize]; 
-			
-			getOut(odTrainData[i],false);
-			
-			
-			//get guess and add to histogram
-			int guess = getDigit(layer3nodes);
-			hist.replace(guess, hist.get(guess)+1);
-			
-			//check if correct
-			if(guess == trainData[i].getLabel())
-			{
-				correct+=1;
-				correctHist.replace(guess, correctHist.get(guess)+1);
-			}
-			
-			//getLoss
-			loss+=getLoss(layer3nodes,trainData[i].getLabel());
-			
-		}
-		
-		double accuracy = (double) correct/trainData.length;
-		double avgLoss = (double) loss/trainData.length;
-		System.out.println("accuracy = " + accuracy);
-		System.out.println("avg loss = " + avgLoss);
-		System.out.println(hist);
-		System.out.println(correctHist);
-		
-		
-		System.out.println("\n -----TEST ON MY IMAGE-----\n");
-		
-		int[] drawn = bmToArray("mnistdata/drawn.bmp");
-		
-		for(int y = 0; y < 28; y++)
-		{
-			String line = "";
-			for(int x = 0; x < 28; x++)
-			{
-				int pixel = drawn[y*28 + x]; 
-				if(pixel > 0)
-				{
-					line+="0";
-				}else {
-					line+=" ";
-				}
-			}
-			System.out.println(line);
-		}
-		
-		
-		//init nodes
-		layer0nodes = new double[inputSize];
-		
-		layer1nodes = new double[hiddenSize];
-		
-		layer2nodes = new double[hiddenSize];
-		layer3nodes = new double[outputSize]; 		
-	
-	}
-	
 	
 	public static int[] bmToArray(String BMPFileName) throws IOException
 	{
