@@ -51,7 +51,7 @@ public class twoLayerExample {
 	
 	//save and load weights
 	static boolean saveWeights = false;
-	static boolean loadWeights = false;
+	static boolean loadWeights = true;
 	
 	static String saveFile = "2layerWeights.txt";
 	static String loadFile = "2layerWeights.txt";
@@ -231,10 +231,6 @@ public class twoLayerExample {
 		{
 		//	int[] d = bmToArray("mnistdata/" + i + ".bmp"); //comic sans
 			int[] d = bmToArray("mnistdata/" + i + "drawn.bmp");
-			for(int x = 0; x < inputSize; x++)
-			{
-				layer0nodes[x] = sigmoid(d[x]);
-			}
 			forward(d,false);
 			int guess = getDigit(layer2nodes);
 			output[i] = guess;

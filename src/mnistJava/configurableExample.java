@@ -198,10 +198,6 @@ public class configurableExample {
 		{
 		//	int[] d = bmToArray("mnistdata/" + i + ".bmp"); //comic sans
 			int[] d = bmToArray("mnistdata/" + i + "drawn.bmp");
-			for(int x = 0; x < inputSize; x++)
-			{
-				nodes.get(0)[x] = sigmoid(d[x]);
-			}
 			forward(d,false);
 			int guess = getDigit(nodes.get(nodes.size() - 1));
 			output[i] = guess;

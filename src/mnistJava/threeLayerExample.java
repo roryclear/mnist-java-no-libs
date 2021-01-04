@@ -20,7 +20,7 @@ public class threeLayerExample {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 32;
+	static int hiddenSize = 32; //32 is good
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100;
@@ -381,10 +381,6 @@ public class threeLayerExample {
 		{
 		//	int[] d = bmToArray("mnistdata/" + i + ".bmp"); //comic sans
 			int[] d = bmToArray("mnistdata/" + i + "drawn.bmp");
-			for(int x = 0; x < inputSize; x++)
-			{
-				layer0nodes[x] = sigmoid(d[x]);
-			}
 			forward(d,false);
 			int guess = getDigit(layer3nodes);
 			output[i] = guess;
