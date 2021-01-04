@@ -3,6 +3,7 @@ package mnistJava;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -28,14 +29,14 @@ public class configurableExample {
 	
 	//save and load weights
 	static boolean saveWeights = true;
-	static boolean loadWeights = true;
+	static boolean loadWeights = false;
 	
 	static String saveFile = "confWeights.txt";
 	static String loadFile = "confWeights.txt";
 	
 	static int[] layers = {28*28, 16, 10};
-	static ArrayList<Integer[][]> weights = new ArrayList<>();
-	static ArrayList<Integer[]> nodes = new ArrayList<>();
+	static ArrayList<double[][]> weights = new ArrayList<>();
+	static ArrayList<double[]> nodes = new ArrayList<>();
 	
 	public static void main(String[] args) throws IOException
 	{
@@ -51,6 +52,8 @@ public class configurableExample {
 		trainData = readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
 		testData = readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
 		
+		saveWeights();
+		
 		//TEST RANDOM NN
 		testNN(trainData, testData);
 		
@@ -63,7 +66,35 @@ public class configurableExample {
 	
 	public static void saveWeights()
 	{
-		//TODO
+	    try {
+	        FileWriter myWriter = new FileWriter(saveFile);
+	        String line = ""+layers[0];
+	        for(int i = 1; i < layers.length; i++)
+	        {
+	        	line+= " " + layers[i];
+	        }
+	        myWriter.append(line+"\n");
+	        
+	        for(int i = 0; i < weights.size(); i++)
+	        {
+	        	for(int y = 0; y < weights.get(i).length; y++)
+	        	{
+	        		line = ""+ weights.get(i)[y][0];
+	        		for(int x = 1; x < weights.get(i)[0].length; x++)
+	        		{
+	        			line += "," + weights.get(i)[y][x];
+	        		}
+	        		myWriter.append(line+"\n");
+	        	}
+	        }
+	        
+	        
+	        myWriter.close();
+	        System.out.println("weights saved");
+	      } catch (IOException e) {
+	        System.out.println("An error occurred.");
+	        e.printStackTrace();
+	      }
 	}
 	
 	public static void loadWeights()
@@ -85,6 +116,7 @@ public class configurableExample {
 					layerWeights[y][x] = w;
 				}
 			}
+			weights.add(layerWeights);
 		}
 		
 	}
