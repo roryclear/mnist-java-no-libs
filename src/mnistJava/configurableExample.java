@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 public class configurableExample {
@@ -20,7 +22,10 @@ public class configurableExample {
 	static int epochs = 100;
 	static double randomWeightRange = 0.1;
 
+	
 	static int randomSamplesDisplayed = 1;
+	static int testNNevery = 10000; //10000
+	static int showTrainingAccEvery = 1000;
 	
 	//one dimensional image data
 	static int[][] odTrainData;
@@ -52,13 +57,12 @@ public class configurableExample {
 		trainData = readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
 		testData = readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
 		
-		saveWeights();
-		
 		//TEST RANDOM NN
 		testNN(trainData, testData);
 		
 		trainNN(trainData, testData);
 
+		testNN(trainData, testData);
 		
 	}
 	
@@ -128,6 +132,43 @@ public class configurableExample {
 	
 	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData)
 	{
+		//create one dimensional images with values 0 - 255
+		int[][] odTestData = makeData1D(testData);
+		
+		System.out.println("\n ----TEST ON TEST Data------\n");
+		HashSet<Integer> randomSamples = new HashSet<>();
+		for(int q = 0; q < randomSamplesDisplayed; q++)
+		{
+			Random r = new Random();
+			int random = r.nextInt(testNNevery);
+			randomSamples.add(random);
+		}
+		int correct = 0;
+		double loss = 0;
+		HashMap<Integer,Integer> hist = new HashMap<Integer, Integer>();
+		HashMap<Integer,Integer> correctHist = new HashMap<Integer, Integer>();
+		for(int i = 0; i < outputSize; i++)
+		{
+			hist.put(i, 0);
+			correctHist.put(i,0);
+		}
+		
+		
+		for(int i = 0; i < testData.length; i++)
+		{
+			
+			resetNodes();
+		
+			
+			forward(odTestData[i],false);
+			
+		}
+		
+		//TODO
+	}
+	
+	public static void resetNodes()
+	{
 		//TODO
 	}
 	
@@ -137,6 +178,26 @@ public class configurableExample {
 	}
 	
 	
+	//converts MnistMatrix[] to int[][]
+	//Array of 1D Image data instead of 2D
+	public static int[][] makeData1D(MnistMatrix[] data)
+	{
+		int[][] out = new int[60000][784];
+		for(int i = 0; i < data.length; i++)
+		{
+			int n = 0;
+			for(int r = 0; r < data[i].getNumberOfRows(); r++)
+			{
+				for(int c = 0; c < data[i].getNumberOfColumns(); c++)
+				{
+					 out[i][n] = data[i].getValue(r, c);
+					 n++;
+				}
+			}
+		}
+				
+		return out;
+	}
 	
 	
 	//copied this stuff from stackoverflow
