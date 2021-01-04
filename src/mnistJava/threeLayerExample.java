@@ -56,7 +56,7 @@ public class threeLayerExample {
 	
 	//save and load weights
 	static boolean saveWeights = false;
-	static boolean loadWeights = false;
+	static boolean loadWeights = true;
 	
 	static String saveFile = "3layerWeights.txt";
 	static String loadFile = "3layerWeights.txt";
@@ -202,7 +202,7 @@ public class threeLayerExample {
 	      }
 	}
 	
-	public static void getOut(int[] data, boolean train)
+	public static void forward(int[] data, boolean train)
 	{		
 		
 		for(int x = 0; x < inputSize; x++)
@@ -269,7 +269,7 @@ public class threeLayerExample {
 		///guess hand drawn by me
 		int[] drawn = bmToArray("mnistdata/drawn.bmp");
 		
-		getOut(drawn,false);
+		forward(drawn,false);
 		
 		
 		
@@ -342,7 +342,7 @@ public class threeLayerExample {
 			resetNodes();
 		
 			
-			getOut(odTestData[i],false);
+			forward(odTestData[i],false);
 			
 			
 			//get guess and add to histogram
@@ -385,7 +385,7 @@ public class threeLayerExample {
 			{
 				layer0nodes[x] = sigmoid(d[x]);
 			}
-			getOut(d,false);
+			forward(d,false);
 			int guess = getDigit(layer3nodes);
 			output[i] = guess;
 		}
@@ -455,7 +455,7 @@ public class threeLayerExample {
 			}
 
 			
-			getOut(odTrainData[i],true);
+			forward(odTrainData[i],true);
 			
 			
 			//get guess and add to histogram
@@ -592,7 +592,7 @@ public class threeLayerExample {
 		///guess hand drawn by me
 		int[] drawn = bmToArray("mnistdata/drawn.bmp");
 		
-		getOut(drawn,false);
+		forward(drawn,false);
 		
 		
 		//get guess and add to histogram

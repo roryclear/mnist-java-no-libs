@@ -89,7 +89,7 @@ public class configurableExample {
 		
 	}
 	
-	public static void getOut(int[] data, boolean train)
+	public static void forward(int[] data, boolean train)
 	{
 		//TODO
 	}

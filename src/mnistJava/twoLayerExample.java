@@ -78,7 +78,7 @@ public class twoLayerExample {
 		
 	}
 	
-	public static void getOut(int[] data, boolean train)
+	public static void forward(int[] data, boolean train)
 	{		
 		
 		for(int x = 0; x < inputSize; x++)
@@ -129,7 +129,7 @@ public class twoLayerExample {
 		///guess hand drawn by me
 		int[] drawn = bmToArray("mnistdata/drawn.bmp");
 		
-		getOut(drawn,false);
+		forward(drawn,false);
 		
 		
 		
@@ -192,7 +192,7 @@ public class twoLayerExample {
 			resetNodes();
 		
 			
-			getOut(odTestData[i],false);
+			forward(odTestData[i],false);
 			
 			
 			//get guess and add to histogram
@@ -235,7 +235,7 @@ public class twoLayerExample {
 			{
 				layer0nodes[x] = sigmoid(d[x]);
 			}
-			getOut(d,false);
+			forward(d,false);
 			int guess = getDigit(layer2nodes);
 			output[i] = guess;
 		}
@@ -398,7 +398,7 @@ public class twoLayerExample {
 			}
 
 			
-			getOut(odTrainData[i],true);
+			forward(odTrainData[i],true);
 			
 			
 			//get guess and add to histogram
@@ -504,7 +504,7 @@ public class twoLayerExample {
 		///guess hand drawn by me
 		int[] drawn = bmToArray("mnistdata/drawn.bmp");
 		
-		getOut(drawn,false);
+		forward(drawn,false);
 		
 		
 		//get guess and add to histogram
