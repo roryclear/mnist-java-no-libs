@@ -1,7 +1,9 @@
 package mnistJava;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,6 +12,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
+
 public class configurableExample {
 
 	static MnistMatrix[] trainData;  
@@ -17,7 +21,6 @@ public class configurableExample {
 	///LAYER SIZES
  	static int inputSize = 28*28;
 	static int hiddenSize = 32;
-	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100;
 	static double randomWeightRange = 0.1;
@@ -130,7 +133,7 @@ public class configurableExample {
 		//TODO
 	}
 	
-	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData)
+	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
 		//create one dimensional images with values 0 - 255
 		int[][] odTestData = makeData1D(testData);
@@ -147,7 +150,7 @@ public class configurableExample {
 		double loss = 0;
 		HashMap<Integer,Integer> hist = new HashMap<Integer, Integer>();
 		HashMap<Integer,Integer> correctHist = new HashMap<Integer, Integer>();
-		for(int i = 0; i < outputSize; i++)
+		for(int i = 0; i < layers[layers.length - 1]; i++)
 		{
 			hist.put(i, 0);
 			correctHist.put(i,0);
@@ -159,17 +162,158 @@ public class configurableExample {
 			
 			resetNodes();
 		
-			
 			forward(odTestData[i],false);
+			int guess = getDigit(nodes.get(nodes.size() - 1));
+			hist.replace(guess, hist.get(guess)+1);
+
+			//check if correct
+			if(guess == testData[i].getLabel())
+			{
+				correctHist.replace(guess, correctHist.get(guess)+1);
+				correct+=1;
+			}
+			
+			//getLoss
+			loss+=getLoss(nodes.get(nodes.size() - 1),testData[i].getLabel());
+			
+			
+			if(randomSamples.contains(i))
+			{
+				displayDigit(testData[i]);
+				System.out.println("guess = " + guess + "\n\n");
+			}
 			
 		}
+		
+		double accuracy = (double) correct/testData.length;
+		double avgLoss = (double) loss/testData.length;
+		System.out.println("accuracy (test) = " + accuracy);
+		System.out.println("avg loss (test) = " + avgLoss);
+		System.out.println(hist);	
+		System.out.println(correctHist);
+		
+		///guess hand drawn by me
+		int[] output = new int[layers[layers.length - 1]];
+		for(int i = 0; i < layers[layers.length - 1]; i++)
+		{
+		//	int[] d = bmToArray("mnistdata/" + i + ".bmp"); //comic sans
+			int[] d = bmToArray("mnistdata/" + i + "drawn.bmp");
+			for(int x = 0; x < inputSize; x++)
+			{
+				nodes.get(0)[x] = sigmoid(d[x]);
+			}
+			forward(d,false);
+			int guess = getDigit(nodes.get(nodes.size() - 1));
+			output[i] = guess;
+		}
+		
+		System.out.println("output for all digits:");
+		boolean pass = true; 
+		for(int i = 0; i < layers[layers.length - 1]; i++)
+		{
+			System.out.println(i+": " + output[i]);
+			if(output[i] != i)
+			{
+				pass = false;
+			}
+		}
+		if(pass)
+		{
+	//		System.exit(0);
+		}
+		
 		
 		//TODO
 	}
 	
+	
+	public static double sigmoid(double input)
+	{
+		   double output = 1 / (1 + Math.exp(-input));
+		return output;
+	}
+	
+	//calculate loss using output layer and correct answer
+	public static double getLoss(double[] output, int answer)
+	{
+		double loss = 0;
+		for(int i = 0; i < output.length; i++)
+		{
+			if(i == answer)
+			{
+				loss += (1 - output[i])*(1 - output[i]);
+			}else {
+				loss += (0 - output[i])*(0 - output[i]);
+			}
+		}
+		return loss;
+	}
+	
+	//returns highest output of output layer (NN's "guess")
+	public static int getDigit(double[] outputs)
+	{
+		int output = 0;
+		double largest = outputs[0];
+		for(int i = 1; i < outputs.length; i++)
+		{
+			if(outputs[i] > largest)
+			{
+				output = i;
+				largest = outputs[i];
+			}
+		}
+		return output;
+	}
+	
+	public static int[] bmToArray(String BMPFileName) throws IOException
+	{
+	int[] out = new int[28*28];
+	int index = 0;	
+    BufferedImage image = ImageIO.read(new File(BMPFileName));
+    for(int y = 0; y < image.getHeight(); y++)
+    {
+    	for(int x = 0; x < image.getWidth(); x++)
+    	{
+    		out[index] = -image.getRGB(x, y)/(256*256);	
+    		if(out[index] > 255)
+    		{
+    			out[index] = 255;
+    		}	
+    		index++;
+    	}
+    }
+	
+	return out;
+	}
+	
+	public static void displayDigit(MnistMatrix data)
+	{
+		for(int r = 0; r < data.getNumberOfRows(); r++)
+		{
+			String row = "";
+			for(int c = 0; c < data.getNumberOfColumns(); c++)
+			{
+				if(data.getValue(r, c) > 0)
+				{
+					row = row + "0";
+				}else {
+					row = row + " ";
+				}
+			}
+			System.out.println(row);
+		}
+		System.out.println("label = " + data.getLabel());
+	}
+	
+	
 	public static void resetNodes()
 	{
-		//TODO
+		nodes = new ArrayList<>();
+		for(int i = 0; i < layers.length; i++)
+		{
+			double[] layerNodes = new double[layers[i]];
+			nodes.add(layerNodes);
+		}
 	}
 	
 	public static void trainNN(MnistMatrix[] trainData, MnistMatrix[] testData)
