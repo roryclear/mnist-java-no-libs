@@ -36,7 +36,7 @@ public class configurableExample {
 	
 	
 	//save and load weights
-	static boolean saveWeights = true;
+	static boolean saveWeights = false;
 	static boolean loadWeights = false;
 	
 	static String saveFile = "confWeights.txt";
@@ -45,6 +45,9 @@ public class configurableExample {
 	static int[] layers = {28*28, 16, 10};
 	static ArrayList<double[][]> weights = new ArrayList<>();
 	static ArrayList<double[]> nodes = new ArrayList<>();
+	
+	//may not really need this
+	static ArrayList<double[]> nodeInputs = new ArrayList<>();
 	
 	public static void main(String[] args) throws IOException
 	{
@@ -130,7 +133,29 @@ public class configurableExample {
 	
 	public static void forward(int[] data, boolean train)
 	{
-		//TODO
+		for(int i = 0; i < layers[0]; i++)
+		{
+			nodes.get(0)[i] = sigmoid(data[i]);
+		}
+		
+		for(int i = 1; i < layers.length - 1; i++)
+		{
+			for(int x = 0; x < layers[i]; x++)
+			{
+				double total = 0;
+				for(int y = 0; y < layers[i-1]; y++)
+				{
+					total += nodes.get(i - 1)[y] * weights.get(i - 1)[y][x];
+				}
+				total = sigmoid(total);
+				nodes.get(i)[x] = total;
+				if(train)
+				{
+					nodeInputs.get(i)[x] = total;
+				}
+			}
+		}
+		
 	}
 	
 	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
@@ -309,11 +334,101 @@ public class configurableExample {
 		{
 			double[] layerNodes = new double[layers[i]];
 			nodes.add(layerNodes);
+			nodeInputs.add(layerNodes);
 		}
 	}
 	
-	public static void trainNN(MnistMatrix[] trainData, MnistMatrix[] testData)
+	public static void trainNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
+		ArrayList<double[][]> grads = new ArrayList<>();
+		for(int i = 0; i < layers.length - 1; i++)
+		{
+			double[][] gradArray = new double[layers[i]][layers[i+1]];
+			grads.add(gradArray);
+		}
+		
+		//create one dimensional images with values 0 - 255
+		int[][] odTrainData = makeData1D(trainData);
+		
+		System.out.println("\n\n\n TRAINING????? \n\n");
+		
+		for(int z = 0; z < epochs; z++)
+		{
+		if(saveWeights)
+		{
+			saveWeights();
+		}
+		
+		System.out.println("--EPOCH "+z+"-- \n");
+		int correct = 0;
+		double loss = 0;
+		HashMap<Integer,Integer> hist = new HashMap<Integer, Integer>();
+		HashMap<Integer,Integer> correctHist = new HashMap<Integer, Integer>();
+		
+		for(int i = 0; i < layers[layers.length - 1]; i++)
+		{
+			hist.put(i, 0);
+			correctHist.put(i,0);
+		}
+		
+		for(int i = 0; i < trainData.length; i++)
+		{
+			
+			resetNodes();
+			
+			if(i % testNNevery == 0)
+			{
+				System.out.println("data : " + i +" of " + trainData.length);
+				testNN(trainData, testData);
+			}
+			
+			forward(odTrainData[i],true);
+			
+			//get guess and add to histogram
+			int guess = getDigit(nodes.get(nodes.size() - 1));
+			hist.replace(guess, hist.get(guess)+1);
+			
+			//check if correct
+			if(guess == trainData[i].getLabel())
+			{
+				correctHist.replace(guess,correctHist.get(guess)+1);
+				correct+=1;
+			}
+			
+			//getLoss
+			loss+=getLoss(nodes.get(nodes.size() - 1),trainData[i].getLabel());
+			
+			double[] expectedOutput = new double[layers[layers.length - 1]];
+			for(int x = 0; x < layers[layers.length - 1]; x++)
+			{
+				expectedOutput[x] = 0.0;
+				if(x==trainData[i].getLabel())
+				{
+					expectedOutput[x] = 1.0;
+				}
+			}
+		
+			grads = new ArrayList<>();
+			for(int p = 0; p < layers.length - 1; p++)
+			{
+				double[][] gradArray = new double[layers[p]][layers[p+1]];
+				grads.add(gradArray);
+			}
+			
+			//adjust weights 
+			
+			
+			double accuracy = (double) correct/i;
+			if(i % showTrainingAccEvery == 0)
+			{
+			System.out.println("accuracy (training) = " + accuracy);
+			}
+			
+		}//training sample
+		
+		
+		}//epoch
+		
 		//TODO
 	}
 	
