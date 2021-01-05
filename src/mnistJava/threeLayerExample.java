@@ -20,7 +20,7 @@ public class threeLayerExample {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 32; //32 is good
+	static int hiddenSize = 16; //32 is good
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100;
@@ -56,7 +56,7 @@ public class threeLayerExample {
 	
 	//save and load weights
 	static boolean saveWeights = false;
-	static boolean loadWeights = true;
+	static boolean loadWeights = false;
 	
 	static String saveFile = "3layerWeights.txt";
 	static String loadFile = "3layerWeights.txt";
@@ -309,7 +309,13 @@ public class threeLayerExample {
 		layer0nodes = new double[inputSize];
 		layer1nodes = new double[hiddenSize];
 		layer2nodes = new double[hiddenSize];
-		layer3nodes = new double[outputSize]; 
+		layer3nodes = new double[outputSize];
+		
+		layer0nodesInput = new double[inputSize];
+		layer1nodesInput = new double[hiddenSize];
+		layer2nodesInput = new double[hiddenSize];
+		layer3nodesInput = new double[outputSize]; 
+		
 	}
 	
 	
@@ -559,14 +565,7 @@ public class threeLayerExample {
 			}
 			
 			
-			
-			layer0nodesInput = new double[inputSize];
-			
-			layer1nodesInput = new double[hiddenSize];
-			
-			layer2nodesInput = new double[hiddenSize];
-			layer3nodesInput = new double[outputSize]; 
-			
+		
 				
 			
 			//remove

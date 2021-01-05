@@ -51,7 +51,7 @@ public class twoLayerExample {
 	
 	//save and load weights
 	static boolean saveWeights = false;
-	static boolean loadWeights = true;
+	static boolean loadWeights = false;
 	
 	static String saveFile = "2layerWeights.txt";
 	static String loadFile = "2layerWeights.txt";
@@ -349,7 +349,11 @@ public class twoLayerExample {
 	{
 		layer0nodes = new double[inputSize];
 		layer1nodes = new double[hiddenSize];
-		layer2nodes = new double[outputSize]; 
+		layer2nodes = new double[outputSize];
+		
+		layer0nodesInput = new double[inputSize];
+		layer1nodesInput = new double[hiddenSize];
+		layer2nodesInput = new double[outputSize]; 
 	}
 	
 	public static void trainNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
@@ -473,13 +477,7 @@ public class twoLayerExample {
 					outputWeights[y][x] -= (learningRate*owGrads[y][x]);
 				}
 			}
-			
-			
-			layer0nodesInput = new double[inputSize];
-			layer1nodesInput = new double[hiddenSize];
-			layer2nodesInput = new double[outputSize]; 
-			
-				
+							
 			
 			//remove
 			double accuracy = (double) correct/i;
