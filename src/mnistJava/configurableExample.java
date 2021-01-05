@@ -42,7 +42,7 @@ public class configurableExample {
 	static String saveFile = "confWeights.txt";
 	static String loadFile = "confWeights.txt";
 	
-	static int[] layers = {28*28, 16, 10};
+	static int[] layers = {28*28, 512, 10};
 	static ArrayList<double[][]> weights = new ArrayList<>();
 	static ArrayList<double[]> nodes = new ArrayList<>();
 	
@@ -424,9 +424,9 @@ public class configurableExample {
 			
 			//LAST LAYER
 			double[][] lastLayerGrads = grads.get(grads.size() - 1);
-			for(int y = 0; y < layers[layers.length - 1]; y++)
+			for(int y = 0; y < weights.get(weights.size() - 1).length; y++)
 			{
-				for(int x = 0; x < weights.get(weights.size() - 1)[y].length; x++)
+				for(int x = 0; x < weights.get(weights.size() - 1)[0].length; x++)
 				{
 					double output = nodes.get(nodes.size() - 1)[x];
 					double expected = expectedOutput[x];
