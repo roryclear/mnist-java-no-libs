@@ -20,7 +20,7 @@ public class threeLayerExample {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 16; //32 is good
+	static int hiddenSize = 32; //32 is good but slow
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100;

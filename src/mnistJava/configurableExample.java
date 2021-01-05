@@ -138,7 +138,7 @@ public class configurableExample {
 			nodes.get(0)[i] = sigmoid(data[i]);
 		}
 		
-		for(int i = 1; i < layers.length - 1; i++)
+		for(int i = 1; i < layers.length; i++)
 		{
 			for(int x = 0; x < layers[i]; x++)
 			{
@@ -148,15 +148,19 @@ public class configurableExample {
 					total += nodes.get(i - 1)[y] * weights.get(i - 1)[y][x];
 				}
 				total = sigmoid(total);
-				nodes.get(i)[x] = total;
+				double[] nodesTemp = nodes.get(i);
+				nodesTemp[x] = total;
+				nodes.set(i, nodesTemp);
 				if(train)
 				{
-					nodeInputs.get(i)[x] = total;
+					nodeInputs.set(i, nodesTemp);
 				}
 			}
 		}
 		
+		
 	}
+	
 	
 	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
@@ -380,6 +384,7 @@ public class configurableExample {
 			{
 				System.out.println("data : " + i +" of " + trainData.length);
 				testNN(trainData, testData);
+				testNNWithHanddrawn();
 			}
 			
 			forward(odTrainData[i],true);
@@ -417,6 +422,29 @@ public class configurableExample {
 			
 			//adjust weights 
 			
+			//LAST LAYER
+			double[][] lastLayerGrads = grads.get(grads.size() - 1);
+			for(int y = 0; y < layers[layers.length - 1]; y++)
+			{
+				for(int x = 0; x < weights.get(weights.size() - 1)[y].length; x++)
+				{
+					double output = nodes.get(nodes.size() - 1)[x];
+					double expected = expectedOutput[x];
+					double dedw = (output - expected)*(output*(1 - output)*(nodes.get(nodes.size() - 2)[y]));
+					lastLayerGrads[y][x] = dedw;
+				}
+			}
+			grads.set(grads.size() - 1, lastLayerGrads);
+			
+			for(int y = 0; y < weights.get(weights.size() - 1).length; y++)
+			{
+				for(int x = 0; x < weights.get(weights.size() - 1)[y].length; x++)
+				{
+					double[][] newWeights = weights.get(weights.size() - 1);
+					newWeights[y][x] -= learningRate*grads.get(grads.size() - 1)[y][x];
+					weights.set(weights.size() - 1, newWeights);
+				}
+			}
 			
 			double accuracy = (double) correct/i;
 			if(i % showTrainingAccEvery == 0)
@@ -432,6 +460,46 @@ public class configurableExample {
 		//TODO
 	}
 	
+	
+	public static void testNNWithHanddrawn() throws IOException
+	{
+		///guess hand drawn by me
+		int[] drawn = bmToArray("mnistdata/drawn.bmp");
+		
+		forward(drawn,false);
+		
+		
+		
+		//get guess and add to histogram
+		int guess = getDigit(nodes.get(nodes.size() - 1));
+		
+		for(int yd = 0; yd < 28; yd++)
+		{
+			String line = "";
+			for(int xd = 0; xd < 28; xd++)
+			{
+				if(drawn[yd*28 + xd] > 0)
+				{
+				line+="0";
+				}else {
+					line+=" ";
+				}
+			}
+			System.out.println(line);
+		}
+		
+		System.out.println("\n----YOU DREW A " + guess + "?------- ");
+		String outs = "0 : "+ nodes.get(nodes.size() - 1)[0];
+		for(int i = 1; i < layers[layers.length - 1]; i++)
+		{
+			outs+=" , " + i + " : " + nodes.get(nodes.size() - 1)[i];
+			if(i == 4)
+			{
+				outs+="\n";
+			}
+		}
+		System.out.println(outs);
+	}
 	
 	//converts MnistMatrix[] to int[][]
 	//Array of 1D Image data instead of 2D

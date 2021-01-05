@@ -469,7 +469,7 @@ public class twoLayerExample {
 				}
 			}
 	
-			
+		
 			for(int y = 0; y < outputWeights.length; y++)
 			{
 				for(int x = 0; x < outputWeights[y].length; x++)
