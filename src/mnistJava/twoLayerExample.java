@@ -36,10 +36,10 @@ public class twoLayerExample {
 	static double[] layer1nodes = new double[hiddenSize];
 	static double[] layer2nodes = new double[outputSize];
 	
-	//inputs for bp
-	static double[] layer0nodesInput = new double[inputSize];
-	static double[] layer1nodesInput = new double[hiddenSize];
-	static double[] layer2nodesInput = new double[outputSize]; 
+	//totals for bp
+	static double[] layer0nodesTotal = new double[inputSize];
+	static double[] layer1nodesTotal = new double[hiddenSize];
+	static double[] layer2nodesTotal = new double[outputSize]; 
 	
 	//weights
 	static double[][] hiddenWeights = new double[inputSize][hiddenSize];
@@ -86,7 +86,7 @@ public class twoLayerExample {
 			layer0nodes[x] = sigmoid(data[x]);
 			if(train)
 			{
-				layer0nodesInput[x] += data[x];
+				layer0nodesTotal[x] += data[x];
 			}
 		}
 		
@@ -102,7 +102,7 @@ public class twoLayerExample {
 			layer1nodes[x] = total;
 			if(train)
 			{
-			layer1nodesInput[x] += total;
+			layer1nodesTotal[x] += total;
 			}
 		}
 		
@@ -118,7 +118,7 @@ public class twoLayerExample {
 			layer2nodes[x] = total;
 			if(train)
 			{
-			layer2nodesInput[x] += total;
+			layer2nodesTotal[x] += total;
 			}
 		}
 		
@@ -351,9 +351,9 @@ public class twoLayerExample {
 		layer1nodes = new double[hiddenSize];
 		layer2nodes = new double[outputSize];
 		
-		layer0nodesInput = new double[inputSize];
-		layer1nodesInput = new double[hiddenSize];
-		layer2nodesInput = new double[outputSize]; 
+		layer0nodesTotal = new double[inputSize];
+		layer1nodesTotal = new double[hiddenSize];
+		layer2nodesTotal = new double[outputSize]; 
 	}
 	
 	public static void trainNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
@@ -431,10 +431,10 @@ public class twoLayerExample {
 			
 			for(int y = 0; y < outputWeights.length; y++)
 			{
-				double L1Output = layer1nodesInput[y];
+				double L1Output = layer1nodesTotal[y];
 				for(int x = 0; x < outputWeights[y].length; x++)
 				{
-					double output = layer2nodesInput[x];
+					double output = layer2nodesTotal[x];
 					double expected = expectedOutput[x];
 					double dedw = (output - expected)*(output*(1 - output)*(L1Output));
 					owGrads[y][x] += dedw;
@@ -449,11 +449,11 @@ public class twoLayerExample {
 				for(int x = 0; x < hiddenWeights[y].length; x++)
 				{
 					double totalError = 0;
-					for(int n = 0; n < layer2nodesInput.length; n++)	
+					for(int n = 0; n < layer2nodesTotal.length; n++)	
 					{
 						totalError += (outputWeights[x][n]*owGrads[x][n])/layer2nodes.length;
 					}
-					totalError = totalError*(layer1nodesInput[x]*(1 - layer1nodesInput[x])*layer0nodesInput[y]);
+					totalError = totalError*(layer1nodesTotal[x]*(1 - layer1nodesTotal[x])*layer0nodesTotal[y]);
 					
 					
 					hwGrads[y][x] += totalError;

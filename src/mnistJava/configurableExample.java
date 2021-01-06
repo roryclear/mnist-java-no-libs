@@ -436,15 +436,67 @@ public class configurableExample {
 			}
 			grads.set(grads.size() - 1, lastLayerGrads);
 			
-			for(int y = 0; y < weights.get(weights.size() - 1).length; y++)
+			
+			//other weights
+			for(int r = grads.size() - 2; r > -1; r--)
 			{
-				for(int x = 0; x < weights.get(weights.size() - 1)[y].length; x++)
+				double[][] layerGrads = grads.get(r);
+				for(int y = 0; y < weights.get(r).length; y++)
 				{
-					double[][] newWeights = weights.get(weights.size() - 1);
-					newWeights[y][x] -= learningRate*grads.get(grads.size() - 1)[y][x];
-					weights.set(weights.size() - 1, newWeights);
+					for(int x = 0; x < weights.get(r)[0].length; x++)
+					{
+						double totalError = 0;
+						for(int n = 0; n < nodes.get(r+2).length; n++)
+						{
+							totalError += (weights.get(r+1)[x][n]*grads.get(r+1)[x][n])/nodes.get(r+2).length;
+						}
+						totalError = totalError*(nodes.get(r+1)[x]*(1 - nodes.get(r+1)[x])*nodes.get(r)[y]);
+						
+						
+						layerGrads[y][x] = totalError;
+					}
+				}
+				
+				grads.set(r, layerGrads);
+				
+			}
+			
+			/*
+			//adjust hidden layer weights??? ((((weight 0))
+			for(int y = 0; y < hiddenWeights.length; y++)
+			{
+				for(int x = 0; x < hiddenWeights[y].length; x++)
+				{
+					double totalError = 0;
+					for(int n = 0; n < layer2nodesInput.length; n++)	
+					{
+						totalError += (outputWeights[x][n]*owGrads[x][n])/layer2nodes.length;
+					}
+					totalError = totalError*(layer1nodesInput[x]*(1 - layer1nodesInput[x])*layer0nodesInput[y]);
+					
+					
+					hwGrads[y][x] += totalError;
 				}
 			}
+			*/
+			
+			//add grads
+			for(int r = 0; r < weights.size(); r++)
+			{
+			
+			for(int y = 0; y < weights.get(r).length; y++)
+			{
+				for(int x = 0; x < weights.get(r)[y].length; x++)
+				{
+					double[][] newWeights = weights.get(r);
+					newWeights[y][x] -= learningRate*grads.get(r)[y][x];
+					weights.set(r, newWeights);
+				}
+			}
+			
+			}
+			
+			
 			
 			double accuracy = (double) correct/i;
 			if(i % showTrainingAccEvery == 0)
