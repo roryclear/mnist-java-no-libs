@@ -48,11 +48,11 @@ public class configurableExample {
 	static int[][] odTestData;
 	
 	//save and load weights
-	static boolean saveWeights = false;
-	static boolean loadWeights = true;
+	static boolean saveWeights = true;
+	static boolean loadWeights = false;
 	
-	static String saveFile = "confWeights.txt";
-	static String loadFile = "confWeights.txt";
+	static String saveFile = "confWeights";
+	static String loadFile = "confWeights";
 	
 	public static void main(String[] args) throws IOException
 	{
@@ -266,7 +266,11 @@ public class configurableExample {
 	
 	public static void loadWeights()
 	{
-		
+		String layersString = ""+layers[0];
+		for(int i = 1; i < layers.length; i++)
+		{
+			layersString+="-" + layers[i];
+		}
 		for(int i = 0; i < layers.length - 1; i++)
 		{
 			double[][] layerWeights = new double[layers[i]][layers[i+1]];		
@@ -274,7 +278,7 @@ public class configurableExample {
 		}
 		
 	    try {
-	        File myObj = new File(loadFile);
+	        File myObj = new File(loadFile+layersString+".txt");
 	        Scanner myReader = new Scanner(myObj);
 	        myReader.nextLine();
 	       
@@ -307,9 +311,13 @@ public class configurableExample {
 	
 	public static void saveWeights()
 	{
+		String layersString = ""+layers[0];
+		for(int i = 1; i < layers.length; i++)
+		{
+			layersString+="-" + layers[i];
+		}
 	    try {
-	        FileWriter myWriter = new FileWriter(saveFile);
-	        String layersString = ""+layers[0];
+	        FileWriter myWriter = new FileWriter(saveFile+layersString+".txt");
 	        for(int i = 1; i < layers.length; i++)
 	        {
 	        	layersString += " " + layers[i];
