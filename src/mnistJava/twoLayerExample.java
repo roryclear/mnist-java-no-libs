@@ -248,7 +248,7 @@ public class twoLayerExample {
 		}
 		if(pass)
 		{
-//			System.exit(0);
+			System.exit(0);
 		}
 		
 

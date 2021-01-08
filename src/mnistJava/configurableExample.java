@@ -29,7 +29,7 @@ public class configurableExample {
 	static int showTrainingAccEvery = 1000; //1000
 	
 	//conf
-	static int layers[] = {784,16,16,10};
+	static int layers[] = {784,512,10};
 	static int outputSize = layers[layers.length - 1];
 	static int numberOfLayers = layers.length;
 	
@@ -49,7 +49,7 @@ public class configurableExample {
 	
 	//save and load weights
 	static boolean saveWeights = false;
-	static boolean loadWeights = true;
+	static boolean loadWeights = false;
 	
 	static String saveFile = "confWeights";
 	static String loadFile = "confWeights";
@@ -235,7 +235,7 @@ public class configurableExample {
 		}
 		if(pass)
 		{
-	//		System.exit(0);
+			System.exit(0);
 		}
 		
 
