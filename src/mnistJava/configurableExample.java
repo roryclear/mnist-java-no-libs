@@ -20,9 +20,9 @@ public class configurableExample {
 	static MnistMatrix[] trainData;  
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
-	static double learningRate = 0.1;
+	static double learningRate = 0.1; //0.5 for 4+ layers?
 	static int epochs = 1000; //100
-	static double randomWeightRange = 0.1;
+	static double randomWeightRange = 0.1; 
 	
 	static int randomSamplesDisplayed = 1;
 	static int testNNevery = 10000; //10000
@@ -49,7 +49,7 @@ public class configurableExample {
 	
 	//save and load weights
 	static boolean saveWeights = false;
-	static boolean loadWeights = false;
+	static boolean loadWeights = true;
 	
 	static String saveFile = "confWeights";
 	static String loadFile = "confWeights";
@@ -318,10 +318,6 @@ public class configurableExample {
 		}
 	    try {
 	        FileWriter myWriter = new FileWriter(saveFile+layersString+".txt");
-	        for(int i = 1; i < layers.length; i++)
-	        {
-	        	layersString += " " + layers[i];
-	        }
 	        myWriter.append(layersString);
 	        
 	        for(int i = 0; i < weights.size(); i++)
@@ -549,10 +545,6 @@ public class configurableExample {
 	
 	return out;
 	}
-	
-	
-	
-	
 	
 	
 	//calculate loss using output layer and correct answer
