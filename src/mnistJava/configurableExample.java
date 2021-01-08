@@ -21,15 +21,15 @@ public class configurableExample {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
 	static double learningRate = 0.1;
-	static int epochs = 100; //100
+	static int epochs = 1000; //100
 	static double randomWeightRange = 0.1;
 	
 	static int randomSamplesDisplayed = 1;
 	static int testNNevery = 10000; //10000
-	static int showTrainingAccEvery = 1000;
+	static int showTrainingAccEvery = 1000; //1000
 	
 	//conf
-	static int layers[] = {784, 512, 10};
+	static int layers[] = {784,16,16,10};
 	static int outputSize = layers[layers.length - 1];
 	static int numberOfLayers = layers.length;
 	
@@ -48,7 +48,7 @@ public class configurableExample {
 	static int[][] odTestData;
 	
 	//save and load weights
-	static boolean saveWeights = true;
+	static boolean saveWeights = false;
 	static boolean loadWeights = false;
 	
 	static String saveFile = "confWeights";
@@ -121,7 +121,7 @@ public class configurableExample {
 		
 		
 		//get guess and add to histogram
-		int guess = getDigit(nodes.get(2));
+		int guess = getDigit(nodes.get(numberOfLayers - 1));
 		
 		for(int yd = 0; yd < 28; yd++)
 		{
@@ -139,10 +139,10 @@ public class configurableExample {
 		}
 		
 		System.out.println("\n----YOU DREW A " + guess + "?------- ");
-		String outs = "0 : "+ nodes.get(2)[0];
+		String outs = "0 : "+ nodes.get(numberOfLayers - 1)[0];
 		for(int i = 1; i < layers[numberOfLayers - 1]; i++)
 		{
-			outs+=" , " + i + " : " + nodes.get(2)[i];
+			outs+=" , " + i + " : " + nodes.get(numberOfLayers - 1)[i];
 			if(i == 4)
 			{
 				outs+="\n";
@@ -183,7 +183,7 @@ public class configurableExample {
 			
 			
 			//get guess and add to histogram
-			int guess = getDigit(nodes.get(2));
+			int guess = getDigit(nodes.get(numberOfLayers - 1));
 			hist.replace(guess, hist.get(guess)+1);
 			
 			//check if correct
@@ -194,7 +194,7 @@ public class configurableExample {
 			}
 			
 			//getLoss
-			loss+=getLoss(nodes.get(2),testData[i].getLabel());
+			loss+=getLoss(nodes.get(numberOfLayers - 1),testData[i].getLabel());
 			
 			
 			if(randomSamples.contains(i))
@@ -219,7 +219,7 @@ public class configurableExample {
 		//	int[] d = bmToArray("mnistdata/" + i + ".bmp"); //comic sans
 			int[] d = bmToArray("mnistdata/" + i + "drawn.bmp");
 			forward(d,false);
-			int guess = getDigit(nodes.get(2));
+			int guess = getDigit(nodes.get(numberOfLayers - 1));
 			output[i] = guess;
 		}
 		
@@ -406,7 +406,7 @@ public class configurableExample {
 			
 			
 			//get guess and add to histogram
-			int guess = getDigit(nodes.get(2));
+			int guess = getDigit(nodes.get(numberOfLayers - 1));
 			hist.replace(guess, hist.get(guess)+1);
 			
 			//check if correct
@@ -417,7 +417,7 @@ public class configurableExample {
 			}
 			
 			//getLoss
-			loss+=getLoss(nodes.get(2),trainData[i].getLabel());
+			loss+=getLoss(nodes.get(numberOfLayers - 1),trainData[i].getLabel());
 			
 			double[] expectedOutput = new double[layers[numberOfLayers - 1]];
 			for(int x = 0; x < layers[numberOfLayers - 1]; x++)
@@ -437,55 +437,55 @@ public class configurableExample {
 			} 
 
 			
-			
-			for(int y = 0; y < weights.get(1).length; y++)
+			//output
+			for(int y = 0; y < weights.get(numberOfLayers - 2).length; y++)
 			{
-				double L1Output = nodesTotal.get(1)[y];
-				for(int x = 0; x < weights.get(1)[y].length; x++)
+				double L1Output = nodesTotal.get(numberOfLayers - 2)[y];
+				for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
 				{
-					double output = nodesTotal.get(2)[x];
+					double output = nodesTotal.get(numberOfLayers - 1)[x];
 					double expected = expectedOutput[x];
 					double dedw = (output - expected)*(output*(1 - output)*(L1Output));
-					grads.get(1)[y][x] += dedw;
+					grads.get(numberOfLayers - 2)[y][x] += dedw;
 				}
 			}
 			
 			
 			
-			//adjust hidden layer weights???
-			for(int y = 0; y < weights.get(0).length; y++)
+			//all other weights
+			for(int r = numberOfLayers - 3; r > -1; r--)
 			{
-				for(int x = 0; x < weights.get(0)[y].length; x++)
+			
+			for(int y = 0; y < weights.get(r).length; y++)
+			{
+				for(int x = 0; x < weights.get(r)[y].length; x++)
 				{
 					double totalError = 0;
-					for(int n = 0; n < nodesTotal.get(2).length; n++)	
+					for(int n = 0; n < nodesTotal.get(r+2).length; n++)	
 					{
-						totalError += (weights.get(1)[x][n]*grads.get(1)[x][n])/nodes.get(2).length;
+						totalError += (weights.get(r+1)[x][n]*grads.get(r+1)[x][n])/nodes.get(r+2).length;
 					}
-					totalError = totalError*(nodesTotal.get(1)[x]*(1 - nodesTotal.get(1)[x])*nodesTotal.get(0)[y]);
+					totalError = totalError*(nodesTotal.get(r+1)[x]*(1 - nodesTotal.get(r+1)[x])*nodesTotal.get(r)[y]);
 					
 					
-					grads.get(0)[y][x] += totalError;
+					grads.get(r)[y][x] += totalError;
 				}
 			}
 			
+			}
 			
-			for(int y = 0; y < weights.get(0).length; y++)
+			for(int r = 0; r < numberOfLayers - 1; r++)
 			{
-				for(int x = 0; x < weights.get(0)[y].length; x++)
+			
+			for(int y = 0; y < weights.get(r).length; y++)
+			{
+				for(int x = 0; x < weights.get(r)[y].length; x++)
 				{
-					weights.get(0)[y][x] -= (learningRate*grads.get(0)[y][x]);
+					weights.get(r)[y][x] -= (learningRate*grads.get(r)[y][x]);
 				}
+			}
 			}
 	
-		
-			for(int y = 0; y < weights.get(1).length; y++)
-			{
-				for(int x = 0; x < weights.get(1)[y].length; x++)
-				{
-					weights.get(1)[y][x] -= (learningRate*grads.get(1)[y][x]);
-				}
-			}
 							
 			
 			//remove
@@ -511,14 +511,14 @@ public class configurableExample {
 		
 		
 		//get guess and add to histogram
-		int guess = getDigit(nodes.get(2));
+		int guess = getDigit(nodes.get(numberOfLayers - 1));
 		
 		
 		System.out.println("\n----YOU DREW A " + guess + "?------- ");
-		String outs = "0 : " + nodes.get(2)[0];
+		String outs = "0 : " + nodes.get(numberOfLayers - 1)[0];
 		for(int i = 1; i < layers[numberOfLayers - 1]; i++)
 		{
-			outs+=" , " + i + " : " + nodes.get(2)[i];
+			outs+=" , " + i + " : " + nodes.get(numberOfLayers - 1)[i];
 		}
 		System.out.println(outs);
 		
