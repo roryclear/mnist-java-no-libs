@@ -20,16 +20,16 @@ public class configurableExample {
 	static MnistMatrix[] trainData;  
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
-	static double learningRate = 0.1; //0.5 for 4+ layers?
-	static int epochs = 1000; //100
-	static double randomWeightRange = 0.1; 
+	static double learningRate = 0.1;
+	static int epochs = 500; //100
+	static double randomWeightRange = 0.5; 
 	
 	static int randomSamplesDisplayed = 1;
 	static int testNNevery = 10000; //10000
 	static int showTrainingAccEvery = 1000; //1000
 	
 	//conf
-	static int layers[] = {784,512,10};
+	static int layers[] = {784,10,10,10,10,10};
 	static int outputSize = layers[layers.length - 1];
 	static int numberOfLayers = layers.length;
 	
@@ -48,7 +48,7 @@ public class configurableExample {
 	static int[][] odTestData;
 	
 	//save and load weights
-	static boolean saveWeights = false;
+	static boolean saveWeights = true;
 	static boolean loadWeights = false;
 	
 	static String saveFile = "confWeights";
