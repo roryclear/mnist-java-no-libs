@@ -21,7 +21,7 @@ public class configurableExampleWithMomentum {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
 	static double learningRate = 0.1;
-	static int epochs = 50; //100
+	static int epochs = 1; //100
 	static double randomWeightRange = 0.1; 
 	
 	static double momentum = 0.5;
@@ -32,7 +32,7 @@ public class configurableExampleWithMomentum {
 	static int showTrainingAccEvery = 1000; //1000
 	
 	//conf
-	static int layers[] = {784,512,10};
+	static int layers[] = {784,16,10};
 	static int outputSize = layers[layers.length - 1];
 	static int numberOfLayers = layers.length;
 	
@@ -219,6 +219,7 @@ public class configurableExampleWithMomentum {
 		System.out.println(hist);	
 		System.out.println(correctHist);
 		
+		
 		///guess hand drawn by me
 		int[] output = new int[layers[numberOfLayers - 1]];
 		for(int i = 0; i < layers[numberOfLayers - 1]; i++)
@@ -242,7 +243,7 @@ public class configurableExampleWithMomentum {
 		}
 		if(pass)
 		{
-			System.exit(0);
+	//		System.exit(0);
 		}
 		
 
@@ -394,7 +395,6 @@ public class configurableExampleWithMomentum {
 		
 		System.out.println("\n\n\n TRAINING????? \n\n");
 	
-	
 		for(int z = 0; z < epochs; z++)
 		{
 		if(saveWeights)
@@ -452,6 +452,8 @@ public class configurableExampleWithMomentum {
 				}
 			}
 			
+			if(gradsSize > 1)
+			{
 			setGrads();
 			ArrayList<double[][]> currentGrads = new ArrayList<>();	
 			for(int r = 0; r < layers.length - 1; r++)
@@ -520,47 +522,105 @@ public class configurableExampleWithMomentum {
 				}
 			}
 			}
+			}else {	//gradsSize < 1
+				ArrayList<double[][]> grads = new ArrayList<>();	
+				for(int r = 0; r < layers.length - 1; r++)
+				{
+					double[][] layerGrads = new double[weights.get(r).length][weights.get(r)[0].length];
+					grads.add(layerGrads);
+				} 
+
+				
+				//output
+				for(int y = 0; y < weights.get(numberOfLayers - 2).length; y++)
+				{
+					double L1Output = nodesTotal.get(numberOfLayers - 2)[y];
+					for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
+					{
+						double output = nodesTotal.get(numberOfLayers - 1)[x];
+						double expected = expectedOutput[x];
+						double dedw = (output - expected)*(output*(1 - output)*(L1Output));
+						grads.get(numberOfLayers - 2)[y][x] += dedw;
+					}
+				}
+				
+				
+				
+				//all other weights
+				for(int r = numberOfLayers - 3; r > -1; r--)
+				{
+				
+				for(int y = 0; y < weights.get(r).length; y++)
+				{
+					for(int x = 0; x < weights.get(r)[y].length; x++)
+					{
+						double totalError = 0;
+						for(int n = 0; n < nodesTotal.get(r+2).length; n++)	
+						{
+							totalError += (weights.get(r+1)[x][n]*grads.get(r+1)[x][n])/nodes.get(r+2).length;
+						}
+						totalError = totalError*(nodesTotal.get(r+1)[x]*(1 - nodesTotal.get(r+1)[x])*nodesTotal.get(r)[y]);
+						
+						
+						grads.get(r)[y][x] += totalError;
+					}
+				}
+				
+				}
+				
+				for(int r = 0; r < numberOfLayers - 1; r++)
+				{
+				
+				for(int y = 0; y < weights.get(r).length; y++)
+				{
+					for(int x = 0; x < weights.get(r)[y].length; x++)
+					{
+						weights.get(r)[y][x] -= (learningRate*grads.get(r)[y][x]);
+					}
+				}
+				}
+			}
 	
 							
 			
-			//remove
-			double accuracy = (double) correct/i;
 			if(i % showTrainingAccEvery == 0)
 			{
+			//remove
+			double accuracy = (double) correct/i;
 			System.out.println("accuracy (training) = " + accuracy);
 			}
 			
-		}
+			}
 		
-		double accuracy = (double) correct/trainData.length;
-		double avgLoss = (double) loss/trainData.length;
-		System.out.println("accuracy = " + accuracy);
-		System.out.println("avg loss = " + avgLoss);
-		System.out.println(hist);
-		System.out.println(correctHist);
+			double accuracy = (double) correct/trainData.length;
+			double avgLoss = (double) loss/trainData.length;
+			System.out.println("accuracy = " + accuracy);
+			System.out.println("avg loss = " + avgLoss);
+			System.out.println(hist);
+			System.out.println(correctHist);
 		
-		///guess hand drawn by me
-		int[] drawn = bmToArray("mnistdata/drawn.bmp");
+			///guess hand drawn by me
+			int[] drawn = bmToArray("mnistdata/drawn.bmp");
 		
-		forward(drawn,false);
-		
-		
-		//get guess and add to histogram
-		int guess = getDigit(nodes.get(numberOfLayers - 1));
+			forward(drawn,false);
 		
 		
-		System.out.println("\n----YOU DREW A " + guess + "?------- ");
-		String outs = "0 : " + nodes.get(numberOfLayers - 1)[0];
-		for(int i = 1; i < layers[numberOfLayers - 1]; i++)
-		{
-			outs+=" , " + i + " : " + nodes.get(numberOfLayers - 1)[i];
-		}
-		System.out.println(outs);
+			//get guess and add to histogram
+			int guess = getDigit(nodes.get(numberOfLayers - 1));
 		
 		
-	}//epochs
+			System.out.println("\n----YOU DREW A " + guess + "?------- ");
+			String outs = "0 : " + nodes.get(numberOfLayers - 1)[0];
+			for(int i = 1; i < layers[numberOfLayers - 1]; i++)
+			{
+				outs+=" , " + i + " : " + nodes.get(numberOfLayers - 1)[i];
+			}
+			System.out.println(outs);
 		
-	}
+		
+			}//epochs
+		
+			}
 
 	
 	
