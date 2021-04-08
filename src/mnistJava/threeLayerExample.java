@@ -20,7 +20,7 @@ public class threeLayerExample {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 32; //32 is good but slow
+	static int hiddenSize = 16; //32 is good but slow
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100;
@@ -372,6 +372,20 @@ public class threeLayerExample {
 		
 		
 		
+	}
+	
+	public static int bitmapToDigit(String filename)
+	{
+		try {
+			int[] d = bmToArray(filename);
+			forward(d,false);
+			int guess = getDigit(layer3nodes);
+			return guess;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
 	}
 	
 	

@@ -29,7 +29,7 @@ public class configurableExample {
 	static int showTrainingAccEvery = 1000; //1000
 	
 	//conf
-	static int layers[] = {784,10,10,10,10,10};
+	static int layers[] = {784,10,10,10,10};
 	static int outputSize = layers[layers.length - 1];
 	static int numberOfLayers = layers.length;
 	
@@ -48,7 +48,7 @@ public class configurableExample {
 	static int[][] odTestData;
 	
 	//save and load weights
-	static boolean saveWeights = true;
+	static boolean saveWeights = false;
 	static boolean loadWeights = false;
 	
 	static String saveFile = "confWeights";
@@ -177,11 +177,7 @@ public class configurableExample {
 		int[] output = new int[layers[numberOfLayers - 1]];
 		for(int i = 0; i < layers[numberOfLayers - 1]; i++)
 		{
-		//	int[] d = bmToArray("mnistdata/" + i + ".bmp"); //comic sans
-			int[] d = bmToArray("mnistdata/" + i + "drawn.bmp");
-			forward(d,false);
-			int guess = getDigit(nodes.get(numberOfLayers - 1));
-			output[i] = guess;
+			output[i] = bitmapToDigit("mnistdata/" + i + "drawn.bmp");
 		}
 		
 		System.out.println("output for all digits:");
@@ -203,6 +199,20 @@ public class configurableExample {
 		
 		
 		
+	}
+	
+	
+	public static int bitmapToDigit(String filename)
+	{
+		try {
+			int[] d = bmToArray(filename);
+			forward(d,false);
+			return getDigit(nodes.get(numberOfLayers - 1));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
 	}
 	
 	public static void makeRandomWeights()

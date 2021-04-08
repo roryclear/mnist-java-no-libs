@@ -20,7 +20,7 @@ public class twoLayerExample {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 512; //512
+	static int hiddenSize = 32; //512
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100; //100
@@ -190,11 +190,7 @@ public class twoLayerExample {
 		int[] output = new int[outputSize];
 		for(int i = 0; i < outputSize; i++)
 		{
-		//	int[] d = bmToArray("mnistdata/" + i + ".bmp"); //comic sans
-			int[] d = bmToArray("mnistdata/" + i + "drawn.bmp");
-			forward(d,false);
-			int guess = getDigit(layer2nodes);
-			output[i] = guess;
+			output[i] = bitmapToDigit("mnistdata/" + i + "drawn.bmp");
 		}
 		
 		System.out.println("output for all digits:");
@@ -213,9 +209,19 @@ public class twoLayerExample {
 		}
 		
 
-		
-		
-		
+	}
+	
+	public static int bitmapToDigit(String filename)
+	{
+		try {
+			int[] d = bmToArray(filename);
+			forward(d,false);
+			return getDigit(layer2nodes);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
 	}
 	
 	public static void makeRandomWeights()

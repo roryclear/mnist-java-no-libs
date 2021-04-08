@@ -22,18 +22,18 @@ public class configurableExampleWithMomentum {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
 	static double learningRate = 0.1;
-	static int epochs = 1; //100
+	static int epochs = 100; //100
 	static double randomWeightRange = 0.1; 
 	
 	static double momentum = 0.5;
-	static int gradsSize = 1;
+	static int gradsSize = 5;
 	
 	static int randomSamplesDisplayed = 1;
 	static int testNNevery = 10000; //10000
 	static int showTrainingAccEvery = 1000; //1000
 	
 	//conf
-	static int layers[] = {784,16,10};
+	static int layers[] = {784,32,10};
 	static int outputSize = layers[layers.length - 1];
 	static int numberOfLayers = layers.length;
 	
@@ -186,11 +186,7 @@ public class configurableExampleWithMomentum {
 		int[] output = new int[layers[numberOfLayers - 1]];
 		for(int i = 0; i < layers[numberOfLayers - 1]; i++)
 		{
-		//	int[] d = bmToArray("mnistdata/" + i + ".bmp"); //comic sans
-			int[] d = bmToArray("mnistdata/" + i + "drawn.bmp");
-			forward(d,false);
-			int guess = getDigit(nodes.get(numberOfLayers - 1));
-			output[i] = guess;
+			output[i] = bitmapToDigit("mnistdata/" + i + "drawn.bmp");
 		}
 		
 		System.out.println("output for all digits:");
@@ -212,6 +208,19 @@ public class configurableExampleWithMomentum {
 		
 		
 		
+	}
+	
+	public static int bitmapToDigit(String filename)
+	{
+		try {
+			int[] d = bmToArray(filename);
+			forward(d,false);
+			return getDigit(nodes.get(numberOfLayers - 1));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
 	}
 	
 	public static void makeRandomWeights()
