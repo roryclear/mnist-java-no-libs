@@ -187,12 +187,8 @@ public class twoLayerExample {
 		System.out.println(correctHist);
 		
 		///guess hand drawn by me
-		int[] output = new int[outputSize];
-		for(int i = 0; i < outputSize; i++)
-		{
-			output[i] = bitmapToDigit("mnistdata/" + i + "drawn.bmp");
-		}
-		
+		int[] output = zeroToNineTest();
+				
 		System.out.println("output for all digits:");
 		boolean pass = true; 
 		for(int i = 0; i < outputSize; i++)
@@ -209,6 +205,39 @@ public class twoLayerExample {
 		}
 		
 
+	}
+	
+	public static int[] zeroToNineTest() throws IOException
+	{
+		int[] guesses = new int[10];
+		
+		for(int i = 0; i < 10; i++)
+		{
+		int xOffset = (i % 5) * 29;
+		int yOffset = (i / 5) * 29;
+			
+		int[] out = new int[28*28];
+		int index = 0;	
+	    BufferedImage image = ImageIO.read(new File("mnistdata/digitsGrid.bmp"));
+	    for(int y = 0; y < 28; y++)
+	    {
+	    	for(int x = 0; x < 28; x++)
+	    	{
+	    		out[index] = -image.getRGB(xOffset + x, yOffset + y)/(256*256);	
+	    		if(out[index] > 255)
+	    		{
+	    			out[index] = 255;
+	    		}	
+	    		index++;
+	    	}
+	    }
+	    
+		forward(out,false);
+		guesses[i] = getDigit(layer2nodes);
+	    
+		}
+		    
+	    return guesses;
 	}
 	
 	public static int bitmapToDigit(String filename)
