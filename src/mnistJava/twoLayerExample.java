@@ -124,45 +124,6 @@ public class twoLayerExample {
 		
 	}
 	
-	public static void testNNWithHanddrawn() throws IOException
-	{
-		///guess hand drawn by me
-		int[] drawn = bmToArray("mnistdata/drawn.bmp");
-		
-		forward(drawn,false);
-		
-		
-		
-		//get guess and add to histogram
-		int guess = getDigit(layer2nodes);
-		
-		for(int yd = 0; yd < 28; yd++)
-		{
-			String line = "";
-			for(int xd = 0; xd < 28; xd++)
-			{
-				if(drawn[yd*28 + xd] > 0)
-				{
-				line+="0";
-				}else {
-					line+=" ";
-				}
-			}
-			System.out.println(line);
-		}
-		
-		System.out.println("\n----YOU DREW A " + guess + "?------- ");
-		String outs = "0 : "+ layer2nodes[0];
-		for(int i = 1; i < outputSize; i++)
-		{
-			outs+=" , " + i + " : " + layer2nodes[i];
-			if(i == 4)
-			{
-				outs+="\n";
-			}
-		}
-		System.out.println(outs);
-	}
 	
 	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
@@ -394,7 +355,6 @@ public class twoLayerExample {
 			{
 				System.out.println("data : " + i +" of " + trainData.length);
 				testNN(trainData, testData);
-				testNNWithHanddrawn();
 			}
 
 			

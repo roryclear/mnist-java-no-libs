@@ -111,45 +111,6 @@ public class configurableExample {
 		
 	}
 	
-	public static void testNNWithHanddrawn() throws IOException
-	{
-		///guess hand drawn by me
-		int[] drawn = bmToArray("mnistdata/drawn.bmp");
-		
-		forward(drawn,false);
-		
-		
-		
-		//get guess and add to histogram
-		int guess = getDigit(nodes.get(numberOfLayers - 1));
-		
-		for(int yd = 0; yd < 28; yd++)
-		{
-			String line = "";
-			for(int xd = 0; xd < 28; xd++)
-			{
-				if(drawn[yd*28 + xd] > 0)
-				{
-				line+="0";
-				}else {
-					line+=" ";
-				}
-			}
-			System.out.println(line);
-		}
-		
-		System.out.println("\n----YOU DREW A " + guess + "?------- ");
-		String outs = "0 : "+ nodes.get(numberOfLayers - 1)[0];
-		for(int i = 1; i < layers[numberOfLayers - 1]; i++)
-		{
-			outs+=" , " + i + " : " + nodes.get(numberOfLayers - 1)[i];
-			if(i == 4)
-			{
-				outs+="\n";
-			}
-		}
-		System.out.println(outs);
-	}
 	
 	public static void testNN(MnistMatrix[] trainData, MnistMatrix[] testData) throws IOException
 	{
@@ -394,7 +355,6 @@ public class configurableExample {
 			{
 				System.out.println("data : " + i +" of " + trainData.length);
 				testNN(trainData, testData);
-				testNNWithHanddrawn();
 			}
 
 			
