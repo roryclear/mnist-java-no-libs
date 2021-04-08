@@ -569,25 +569,7 @@ public class configurableExampleWithMomentum {
 			System.out.println("avg loss = " + avgLoss);
 			System.out.println(hist);
 			System.out.println(correctHist);
-		
-			///guess hand drawn by me
-			int[] drawn = bmToArray("mnistdata/drawn.bmp");
-		
-			forward(drawn,false);
-		
-		
-			//get guess and add to histogram
-			int guess = getDigit(nodes.get(numberOfLayers - 1));
-		
-		
-			System.out.println("\n----YOU DREW A " + guess + "?------- ");
-			String outs = "0 : " + nodes.get(numberOfLayers - 1)[0];
-			for(int i = 1; i < layers[numberOfLayers - 1]; i++)
-			{
-				outs+=" , " + i + " : " + nodes.get(numberOfLayers - 1)[i];
-			}
-			System.out.println(outs);
-		
+				
 		
 			}//epochs
 		

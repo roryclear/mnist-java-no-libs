@@ -460,25 +460,7 @@ public class twoLayerExample {
 		System.out.println("avg loss = " + avgLoss);
 		System.out.println(hist);
 		System.out.println(correctHist);
-		
-		///guess hand drawn by me
-		int[] drawn = bmToArray("mnistdata/drawn.bmp");
-		
-		forward(drawn,false);
-		
-		
-		//get guess and add to histogram
-		int guess = getDigit(layer2nodes);
-		
-		
-		System.out.println("\n----YOU DREW A " + guess + "?------- ");
-		String outs = "0 : " + layer2nodes[0];
-		for(int i = 1; i < outputSize; i++)
-		{
-			outs+=" , " + i + " : " + layer2nodes[i];
-		}
-		System.out.println(outs);
-		
+				
 		
 	}//epochs
 		
