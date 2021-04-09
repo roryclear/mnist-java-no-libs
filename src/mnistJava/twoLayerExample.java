@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
@@ -20,7 +21,7 @@ public class twoLayerExample {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 32; //512
+	static int hiddenSize = 128; //512
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100; //100
@@ -187,19 +188,8 @@ public class twoLayerExample {
 		System.out.println(correctHist);
 		
 		///guess hand drawn by me
-		int[] output = zeroToNineTest();
-				
-		System.out.println("output for all digits:");
-		boolean pass = true; 
-		for(int i = 0; i < outputSize; i++)
-		{
-			System.out.println(i+": " + output[i]);
-			if(output[i] != i)
-			{
-				pass = false;
-			}
-		}
-		if(pass)
+	
+		if(zeroToNineTest())
 		{
 			System.exit(0);
 		}
@@ -207,7 +197,7 @@ public class twoLayerExample {
 
 	}
 	
-	public static int[] zeroToNineTest() throws IOException
+	public static boolean zeroToNineTest() throws IOException
 	{
 		int[] guesses = new int[10];
 		
@@ -236,8 +226,20 @@ public class twoLayerExample {
 		guesses[i] = getDigit(layer2nodes);
 	    
 		}
-		    
-	    return guesses;
+		
+		System.out.println("output for all digits:");
+		for(int i = 0; i < outputSize; i++)
+		{
+			System.out.println(i+": " + guesses[i]);
+		}
+		
+		int[] desiredOutput = new int[] {0,1,2,3,4,5,6,7,8,9};
+		
+		if(Arrays.equals(desiredOutput,guesses))
+		{
+			return true;
+		}
+	    return false;
 	}
 	
 	public static int bitmapToDigit(String filename)
