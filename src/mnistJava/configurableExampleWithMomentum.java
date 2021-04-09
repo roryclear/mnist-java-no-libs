@@ -34,7 +34,7 @@ public class configurableExampleWithMomentum {
 	static int showTrainingAccEvery = 1000; //1000
 	
 	//conf
-	static int layers[] = {784,32,10};
+	static int layers[] = {784,50,10,10,10};
 	static int outputSize = layers[layers.length - 1];
 	static int numberOfLayers = layers.length;
 	
@@ -58,7 +58,7 @@ public class configurableExampleWithMomentum {
 	
 	//save and load weights
 	static boolean saveWeights = false;
-	static boolean loadWeights = false;
+	static boolean loadWeights = true;
 	
 	static String saveFile = "confWeights";
 	static String loadFile = "confWeights";
@@ -190,24 +190,11 @@ public class configurableExampleWithMomentum {
 			output[i] = bitmapToDigit("mnistdata/" + i + "drawn.bmp");
 		}
 		
-		System.out.println("output for all digits:");
-		boolean pass = true; 
-		for(int i = 0; i < layers[numberOfLayers - 1]; i++)
-		{
-			System.out.println(i+": " + output[i]);
-			if(output[i] != i)
-			{
-				pass = false;
-			}
-		}
 		if(zeroToNineTest())
 		{
 			System.exit(0);
 		}
-		
-
-		
-		
+			
 		
 	}
 	
