@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
@@ -199,15 +200,60 @@ public class configurableExampleWithMomentum {
 				pass = false;
 			}
 		}
-		if(pass)
+		if(zeroToNineTest())
 		{
-	//		System.exit(0);
+			System.exit(0);
 		}
 		
 
 		
 		
 		
+	}
+	
+	public static boolean zeroToNineTest() throws IOException
+	{
+		int[] guesses = new int[10];
+		
+		for(int i = 0; i < 10; i++)
+		{
+		int xOffset = (i % 5) * 29;
+		int yOffset = (i / 5) * 29;
+			
+		int[] out = new int[28*28];
+		int index = 0;	
+	    BufferedImage image = ImageIO.read(new File("mnistdata/digitsGrid.bmp"));
+	    for(int y = 0; y < 28; y++)
+	    {
+	    	for(int x = 0; x < 28; x++)
+	    	{
+	    		out[index] = -image.getRGB(xOffset + x, yOffset + y)/(256*256);	
+	    		if(out[index] > 255)
+	    		{
+	    			out[index] = 255;
+	    		}	
+	    		index++;
+	    	}
+	    }
+	    
+		forward(out,false);
+		guesses[i] = getDigit(nodes.get(numberOfLayers - 1));
+	    
+		}
+		
+		System.out.println("output for all digits:");
+		for(int i = 0; i < outputSize; i++)
+		{
+			System.out.println(i+": " + guesses[i]);
+		}
+		
+		int[] desiredOutput = new int[] {0,1,2,3,4,5,6,7,8,9};
+		
+		if(Arrays.equals(desiredOutput,guesses))
+		{
+			return true;
+		}
+	    return false;
 	}
 	
 	public static int bitmapToDigit(String filename)

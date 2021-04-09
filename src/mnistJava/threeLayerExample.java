@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
@@ -20,7 +21,7 @@ public class threeLayerExample {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 16; //32 is good but slow
+	static int hiddenSize = 64; //32 is good but slow
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100;
@@ -343,35 +344,61 @@ public class threeLayerExample {
 		System.out.println(correctHist);
 		
 		///guess hand drawn by me
-		int[] output = new int[outputSize];
-		for(int i = 0; i < outputSize; i++)
+		if(zeroToNineTest())
 		{
-		//	int[] d = bmToArray("mnistdata/" + i + ".bmp"); //comic sans
-			int[] d = bmToArray("mnistdata/" + i + "drawn.bmp");
-			forward(d,false);
-			int guess = getDigit(layer3nodes);
-			output[i] = guess;
-		}
-		
-		System.out.println("output for all digits:");
-		boolean pass = true; 
-		for(int i = 0; i < outputSize; i++)
-		{
-			System.out.println(i+": " + output[i]);
-			if(output[i] != i)
-			{
-				pass = false;
-			}
-		}
-		if(pass)
-		{
-	//		System.exit(0);
+			System.exit(0);
 		}
 		
 
 		
 		
 		
+	}
+	
+	
+	public static boolean zeroToNineTest() throws IOException
+	{
+		int[] guesses = new int[10];
+		
+		for(int i = 0; i < 10; i++)
+		{
+		int xOffset = (i % 5) * 29;
+		int yOffset = (i / 5) * 29;
+			
+		int[] out = new int[28*28];
+		int index = 0;	
+	    BufferedImage image = ImageIO.read(new File("mnistdata/digitsGrid.bmp"));
+	    for(int y = 0; y < 28; y++)
+	    {
+	    	for(int x = 0; x < 28; x++)
+	    	{
+	    		out[index] = -image.getRGB(xOffset + x, yOffset + y)/(256*256);	
+	    		if(out[index] > 255)
+	    		{
+	    			out[index] = 255;
+	    		}	
+	    		index++;
+	    	}
+	    }
+	    
+		forward(out,false);
+		guesses[i] = getDigit(layer3nodes);
+	    
+		}
+		
+		System.out.println("output for all digits:");
+		for(int i = 0; i < outputSize; i++)
+		{
+			System.out.println(i+": " + guesses[i]);
+		}
+		
+		int[] desiredOutput = new int[] {0,1,2,3,4,5,6,7,8,9};
+		
+		if(Arrays.equals(desiredOutput,guesses))
+		{
+			return true;
+		}
+	    return false;
 	}
 	
 	public static int bitmapToDigit(String filename)
