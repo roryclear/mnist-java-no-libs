@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +22,7 @@ public class threeLayerExample {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
  	static int inputSize = 28*28;
-	static int hiddenSize = 64; //32 is good but slow
+	static int hiddenSize = 16; //32 is good but slow
 	static int outputSize = 10;
 	static double learningRate = 0.1;
 	static int epochs = 100;
@@ -570,10 +571,13 @@ public class threeLayerExample {
 				
 			
 			//remove
-			double accuracy = (double) correct/i;
+			DecimalFormat df = new DecimalFormat("#.####");
 			if(i % showTrainingAccEvery == 0)
 			{
-			System.out.println("accuracy (training) = " + accuracy);
+			//remove
+			double accuracy = (double) correct/i;
+			double avgLoss = loss/i;
+			System.out.println("accuracy (training) = " + df.format(accuracy) + "	loss (training) = " + df.format(avgLoss));
 			}
 			
 		}

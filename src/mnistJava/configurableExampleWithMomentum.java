@@ -588,7 +588,6 @@ public class configurableExampleWithMomentum {
 			DecimalFormat df = new DecimalFormat("#.####");
 			if(i % showTrainingAccEvery == 0)
 			{
-			//remove
 			double accuracy = (double) correct/i;
 			double avgLoss = loss/i;
 			System.out.println("accuracy (training) = " + df.format(accuracy) + "	loss (training) = " + df.format(avgLoss));

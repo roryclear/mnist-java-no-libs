@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -482,13 +483,14 @@ public class configurableExample {
 			}
 			}
 	
-							
-			
-			//remove
-			double accuracy = (double) correct/i;
+		
+			DecimalFormat df = new DecimalFormat("#.####");
 			if(i % showTrainingAccEvery == 0)
 			{
-			System.out.println("accuracy (training) = " + accuracy);
+			//remove
+			double accuracy = (double) correct/i;
+			double avgLoss = loss/i;
+			System.out.println("accuracy (training) = " + df.format(accuracy) + "	loss (training) = " + df.format(avgLoss));
 			}
 			
 		}
