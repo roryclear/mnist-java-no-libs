@@ -23,7 +23,7 @@ public class configurableExample {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
 	static double learningRate = 0.1;
-	static int epochs = 500; //100
+	static int epochs = 1; //100
 	static double randomWeightRange = 0.5; 
 	
 	static int randomSamplesDisplayed = 1;
@@ -31,7 +31,7 @@ public class configurableExample {
 	static int showTrainingAccEvery = 1000; //1000
 	
 	//conf
-	static int layers[] = {784,10,10,10,10};
+	static int layers[] = {784,16,10};
 	static int outputSize = layers[layers.length - 1];
 	static int numberOfLayers = layers.length;
 	
