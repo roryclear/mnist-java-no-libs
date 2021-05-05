@@ -54,7 +54,7 @@ public class Net {
 	static String loadFile = "confWeights";
 	
 	
-	public static void forward(int[] data, boolean train)
+	public void forward(int[] data, boolean train)
 	{		
 		
 		for(int x = 0; x < layers[0]; x++)
@@ -89,14 +89,159 @@ public class Net {
 		
 	}
 	
+	
+
+	
+	public static void backProp(int answer) {		
+		double[] expectedOutput = new double[layers[numberOfLayers - 1]];
+		for(int x = 0; x < layers[numberOfLayers - 1]; x++)
+		{
+			expectedOutput[x] = 0.0;
+			if(x==answer)
+			{
+				expectedOutput[x] = 1.0;
+			}
+		}
+		
+		if(gradsSize > 1)
+		{
+		setGrads();
+		ArrayList<double[][]> currentGrads = new ArrayList<>();	
+		for(int r = 0; r < layers.length - 1; r++)
+		{
+			double[][] layerGrads = new double[weights.get(r).length][weights.get(r)[0].length];
+			currentGrads.add(layerGrads);
+		} 
+		
+		grads.set(gradsSize - 1,  currentGrads);
+		
+		//output
+		for(int y = 0; y < weights.get(numberOfLayers - 2).length; y++)
+		{
+			double L1Output = nodesTotal.get(numberOfLayers - 2)[y];
+			for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
+			{
+				double output = nodesTotal.get(numberOfLayers - 1)[x];
+				double expected = expectedOutput[x];
+				double dedw = (output - expected)*(output*(1 - output)*(L1Output));
+				grads.get(gradsSize - 1).get(numberOfLayers - 2)[y][x] += dedw;
+			}
+		}
+		
+		
+		
+		//all other weights
+		for(int r = numberOfLayers - 3; r > -1; r--)
+		{
+		
+		for(int y = 0; y < weights.get(r).length; y++)
+		{
+			for(int x = 0; x < weights.get(r)[y].length; x++)
+			{
+				double totalError = 0;
+				for(int n = 0; n < nodesTotal.get(r+2).length; n++)	
+				{
+					totalError += (weights.get(r+1)[x][n]*grads.get(gradsSize - 1).get(r+1)[x][n])/nodes.get(r+2).length;
+				}
+				totalError = totalError*(nodesTotal.get(r+1)[x]*(1 - nodesTotal.get(r+1)[x])*nodesTotal.get(r)[y]);
+				
+				
+				grads.get(gradsSize - 1).get(r)[y][x] += totalError;
+			}
+		}
+		
+		}
+		
+		for(int r = 0; r < numberOfLayers - 1; r++)
+		{
+			
+		for(int y = 0; y < weights.get(r).length; y++)
+		{
+			for(int x = 0; x < weights.get(r)[y].length; x++)
+			{
+				double gradient = 0;
+				for(int g = 0; g < gradsSize; g++)
+				{
+					if(grads.get(gradsSize - 1 - g).size() > 0)
+					{
+					gradient += grads.get(gradsSize - 1 - g).get(r)[y][x]*(Math.pow(momentum, g));
+					}
+				}
+				gradient = gradient/gradsSize;
+				
+				weights.get(r)[y][x] -= (learningRate*gradient);
+			}
+		}
+		}
+		}else {	//gradsSize < 1
+			ArrayList<double[][]> grads = new ArrayList<>();	
+			for(int r = 0; r < layers.length - 1; r++)
+			{
+				double[][] layerGrads = new double[weights.get(r).length][weights.get(r)[0].length];
+				grads.add(layerGrads);
+			} 
+
+			
+			//output
+			for(int y = 0; y < weights.get(numberOfLayers - 2).length; y++)
+			{
+				double L1Output = nodesTotal.get(numberOfLayers - 2)[y];
+				for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
+				{
+					double output = nodesTotal.get(numberOfLayers - 1)[x];
+					double expected = expectedOutput[x];
+					double dedw = (output - expected)*(output*(1 - output)*(L1Output));
+					grads.get(numberOfLayers - 2)[y][x] += dedw;
+				}
+			}
+			
+			
+			
+			//all other weights
+			for(int r = numberOfLayers - 3; r > -1; r--)
+			{
+			
+			for(int y = 0; y < weights.get(r).length; y++)
+			{
+				for(int x = 0; x < weights.get(r)[y].length; x++)
+				{
+					double totalError = 0;
+					for(int n = 0; n < nodesTotal.get(r+2).length; n++)	
+					{
+						totalError += (weights.get(r+1)[x][n]*grads.get(r+1)[x][n])/nodes.get(r+2).length;
+					}
+					totalError = totalError*(nodesTotal.get(r+1)[x]*(1 - nodesTotal.get(r+1)[x])*nodesTotal.get(r)[y]);
+					
+					
+					grads.get(r)[y][x] += totalError;
+				}
+			}
+			
+			}
+			
+			for(int r = 0; r < numberOfLayers - 1; r++)
+			{
+			
+			for(int y = 0; y < weights.get(r).length; y++)
+			{
+				for(int x = 0; x < weights.get(r)[y].length; x++)
+				{
+					weights.get(r)[y][x] -= (learningRate*grads.get(r)[y][x]);
+				}
+			}
+			}
+		}
+	}
+	
 	public static double sigmoid(double input)
 	{
 		double output = 1 / (1 + Math.exp(-input));
 		return output;
 	}
 	
-	public static double getLoss(double[] output, int answer)
+	public double getLoss(int answer)
 	{
+		double[] output = nodes.get(nodes.size() - 1);
 		double loss = 0;
 		for(int i = 0; i < output.length; i++)
 		{
@@ -111,7 +256,7 @@ public class Net {
 	}
 	
 	//returns highest output of output layer (NN's "guess")
-	public static int getDigit()
+	public int getDigit()
 	{
 		int output = 0;
 		double[] outputs = nodes.get(nodes.size() - 1);
@@ -203,6 +348,26 @@ public class Net {
 			weights.add(layerWeights);
 		}
 		
+	}
+	
+	public static void setGrads()
+	{
+		if(grads.size() < gradsSize)
+		{
+			for(int i = 0; i < gradsSize; i++)
+			{
+				ArrayList<double[][]> layerGrads = new ArrayList<>();
+				grads.add(layerGrads);
+			}
+			
+		}else {
+			for(int i = 0; i < gradsSize - 1; i++)
+			{
+				grads.set(i, grads.get(i+1));
+			}
+			ArrayList<double[][]> layerGrads = new ArrayList<>();
+			grads.set(gradsSize - 1,  layerGrads);
+		}
 	}
 	
 	public static void loadWeights()
@@ -300,7 +465,7 @@ public class Net {
 	
 	//converts MnistMatrix[] to int[][]
 	//Array of 1D Image data instead of 2D
-	public static int[][] makeData1D(MnistMatrix[] data)
+	public int[][] makeData1D(MnistMatrix[] data)
 	{
 		int[][] out = new int[60000][784];
 		for(int i = 0; i < data.length; i++)

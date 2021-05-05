@@ -23,13 +23,28 @@ public class Example {
 		for(int i = 0; i < odTrainData.length; i++)
 		{
 			n.forward(odTrainData[i], true);
+			n.backProp(trainData[i].getLabel());
 			if(n.getDigit() == trainData[i].getLabel())
 			{
 				correct += 1;
-				System.out.println("correct " + n.getDigit());
+			}
+			totalLoss += n.getLoss(n.getDigit());
+			n.resetNodes();
+			
+			//delete
+			if(i % 1000 == 0)
+			{
+				double accuracy = (double) correct / i;
+				double avgLoss = (double) totalLoss / i;
+				
+				System.out.println("acc = " + accuracy + "    avgLoss = " + avgLoss);
 			}
 		}
 		
+		double accuracy = (double) correct / odTrainData.length;
+		double avgLoss = (double) totalLoss / odTrainData.length;
+		
+		System.out.println("acc = " + accuracy + "    avgLoss = " + avgLoss);
 		
 		n.initWeights();
 		
