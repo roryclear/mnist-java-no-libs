@@ -8,8 +8,11 @@ public class Example {
 	{		
 		System.out.println("eyup");
 		Net n = new Net();
-		int[] shape = {784,8,10};
+		int[] shape = {784,10,10};
 		n.setShape(shape);
+		n.setGradsSize(0);
+		n.setMomentum(0.5);
+		
 		n.initWeights();
 		n.resetNodes();
 		
@@ -22,6 +25,8 @@ public class Example {
 		
 		double correct = 0;
 		double totalLoss = 0;
+
+			
 		for(int i = 0; i < odTrainData.length; i++)
 		{
 			n.forward(odTrainData[i], true);
@@ -42,6 +47,7 @@ public class Example {
 				System.out.println("acc = " + accuracy + "    avgLoss = " + avgLoss);
 			}
 		}
+
 		
 		double accuracy = (double) correct / odTrainData.length;
 		double avgLoss = (double) totalLoss / odTrainData.length;

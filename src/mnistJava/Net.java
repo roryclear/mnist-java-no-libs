@@ -20,7 +20,7 @@ public class Net {
 	static double randomWeightRange = 0.1; 
 	
 	static double momentum = 0.5;
-	static int gradsSize = 5;
+	static int gradsSize = 0;
 	
 	static int randomSamplesDisplayed = 1;
 	static int testNNevery = 10000; //10000
@@ -52,6 +52,16 @@ public class Net {
 	
 	static String saveFile = "confWeights";
 	static String loadFile = "confWeights";
+	
+	public void setGradsSize(int size)
+	{
+		gradsSize = size;
+	}
+	
+	public void setMomentum(double m)
+	{
+		momentum = m;
+	}
 	
 	public void setShape(int[] shape)
 	{
