@@ -8,10 +8,12 @@ public class Example {
 	{		
 		System.out.println("eyup");
 		Net n = new Net();
-		int[] shape = {784,10,10};
+		int[] shape = {784,16,16,10};
 		n.setShape(shape);
 		n.setGradsSize(0);
 		n.setMomentum(0.5);
+		
+	//	n.loadWeights();
 		
 		n.initWeights();
 		n.resetNodes();
@@ -25,6 +27,7 @@ public class Example {
 		
 		double correct = 0;
 		double totalLoss = 0;
+		
 
 			
 		for(int i = 0; i < odTrainData.length; i++)
@@ -47,12 +50,32 @@ public class Example {
 				System.out.println("acc = " + accuracy + "    avgLoss = " + avgLoss);
 			}
 		}
-
+		
 		
 		double accuracy = (double) correct / odTrainData.length;
 		double avgLoss = (double) totalLoss / odTrainData.length;
 		
 		System.out.println("acc = " + accuracy + "    avgLoss = " + avgLoss);
+		
+		
+		//testing data
+		correct = 0; 
+		totalLoss = 0;
+		
+		for(int i = 0; i < odTestData.length; i++)
+		{
+			n.forward(odTestData[i], false);
+			if(n.getDigit() == testData[i].getLabel())
+			{
+				correct +=1;
+			}
+			totalLoss += n.getLoss(testData[i].getLabel());
+		}
+		
+		avgLoss = (double) totalLoss / trainData.length;
+		accuracy = (double) correct / trainData.length;
+		
+		System.out.println("TEST acc = " + accuracy + " avgLoss = " + avgLoss);
 		
 		n.initWeights();
 		

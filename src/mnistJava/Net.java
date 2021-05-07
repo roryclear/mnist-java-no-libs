@@ -384,7 +384,7 @@ public class Net {
 		}
 	}
 	
-	public static void loadWeights()
+	public void loadWeights()
 	{
 		String layersString = ""+layers[0];
 		for(int i = 1; i < layers.length; i++)
@@ -481,7 +481,7 @@ public class Net {
 	//Array of 1D Image data instead of 2D
 	public int[][] makeData1D(MnistMatrix[] data)
 	{
-		int[][] out = new int[60000][784];
+		int[][] out = new int[data.length][784];
 		for(int i = 0; i < data.length; i++)
 		{
 			int n = 0;
