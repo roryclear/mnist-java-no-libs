@@ -27,7 +27,7 @@ public class Net {
 	static int showTrainingAccEvery = 1000; //1000
 	
 	//conf
-	static int layers[] = {784,32,10};
+	static int layers[] = {784,16,10};
 	static int outputSize = layers[layers.length - 1];
 	static int numberOfLayers = layers.length;
 	

@@ -8,7 +8,7 @@ public class Example {
 	{		
 		System.out.println("eyup");
 		Net n = new Net();
-		int[] shape = {784,16,16,10};
+		int[] shape = {784,16,10};
 		n.setShape(shape);
 		n.setGradsSize(0);
 		n.setMomentum(0.5);
@@ -38,7 +38,7 @@ public class Example {
 			{
 				correct += 1;
 			}
-			totalLoss += n.getLoss(n.getDigit());
+			totalLoss += n.getLoss(trainData[i].getLabel());
 			n.resetNodes();
 			
 			//delete
@@ -64,6 +64,7 @@ public class Example {
 		
 		for(int i = 0; i < odTestData.length; i++)
 		{
+			n.resetNodes();
 			n.forward(odTestData[i], false);
 			if(n.getDigit() == testData[i].getLabel())
 			{
