@@ -92,7 +92,7 @@ public class Net {
 	
 
 	
-	public static void backProp(int answer) {		
+	public void backProp(int answer) {		
 		double[] expectedOutput = new double[layers[numberOfLayers - 1]];
 		for(int x = 0; x < layers[numberOfLayers - 1]; x++)
 		{
@@ -291,7 +291,7 @@ public class Net {
 		System.out.println("label = " + data.getLabel());
 	}
 	
-    public static MnistMatrix[] readData(String dataFilePath, String labelFilePath) throws IOException {
+    public MnistMatrix[] readData(String dataFilePath, String labelFilePath) throws IOException {
 
         DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new FileInputStream(dataFilePath)));
         int magicNumber = dataInputStream.readInt();
