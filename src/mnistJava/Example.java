@@ -8,6 +8,8 @@ public class Example {
 	{		
 		System.out.println("eyup");
 		Net n = new Net();
+		int[] shape = {784,8,10};
+		n.setShape(shape);
 		n.initWeights();
 		n.resetNodes();
 		

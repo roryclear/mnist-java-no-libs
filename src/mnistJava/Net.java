@@ -53,6 +53,10 @@ public class Net {
 	static String saveFile = "confWeights";
 	static String loadFile = "confWeights";
 	
+	public void setShape(int[] shape)
+	{
+		layers = shape;
+	}
 	
 	public void forward(int[] data, boolean train)
 	{		
