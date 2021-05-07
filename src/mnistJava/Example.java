@@ -73,8 +73,8 @@ public class Example {
 			totalLoss += n.getLoss(testData[i].getLabel());
 		}
 		
-		avgLoss = (double) totalLoss / trainData.length;
-		accuracy = (double) correct / trainData.length;
+		avgLoss = (double) totalLoss / testData.length;
+		accuracy = (double) correct / testData.length;
 		
 		System.out.println("TEST acc = " + accuracy + " avgLoss = " + avgLoss);
 		
