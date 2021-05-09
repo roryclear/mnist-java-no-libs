@@ -22,9 +22,6 @@ public class Net {
 	static double momentum = 0.5;
 	static int gradsSize = 0;
 	
-	static int randomSamplesDisplayed = 1;
-	static int testNNevery = 10000; //10000
-	static int showTrainingAccEvery = 1000; //1000
 	
 	//conf
 	static int layers[] = {784,16,10};
