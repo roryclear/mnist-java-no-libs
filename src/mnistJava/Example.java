@@ -24,7 +24,7 @@ public class Example {
 		int[][] odTrainData = n.makeData1D(trainData);
 		int[][] odTestData = n.makeData1D(testData);
 		
-		int epochs = 1;
+		int epochs = 100;
 		
 		double correct = 0;
 		double totalLoss = 0;
@@ -32,6 +32,8 @@ public class Example {
 		
 		for(int z = 0; z < epochs; z++)
 		{
+		correct = 0;
+		totalLoss = 0;
 		System.out.println("--------EPOCH " + z + "--------");
 		
 			
@@ -83,6 +85,7 @@ public class Example {
 		
 		System.out.println("TEST acc = " + accuracy + " avgLoss = " + avgLoss);
 		
+		n.resetNodes();
 		}//epoch
 		
 		
