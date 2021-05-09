@@ -24,11 +24,16 @@ public class Example {
 		int[][] odTrainData = n.makeData1D(trainData);
 		int[][] odTestData = n.makeData1D(testData);
 		
+		int epochs = 1;
 		
 		double correct = 0;
 		double totalLoss = 0;
 		
-
+		
+		for(int z = 0; z < epochs; z++)
+		{
+		System.out.println("--------EPOCH " + z + "--------");
+		
 			
 		for(int i = 0; i < odTrainData.length; i++)
 		{
@@ -42,10 +47,10 @@ public class Example {
 			n.resetNodes();
 			
 			//delete
-			if(i % 1000 == 0)
+			if(i % 1000 == 0 && i > 0)
 			{
-				double accuracy = (double) correct / i;
-				double avgLoss = (double) totalLoss / i;
+				double accuracy = (double) correct / (i+1);
+				double avgLoss = (double) totalLoss / (i+1);
 				
 				System.out.println("acc = " + accuracy + "    avgLoss = " + avgLoss);
 			}
@@ -78,7 +83,8 @@ public class Example {
 		
 		System.out.println("TEST acc = " + accuracy + " avgLoss = " + avgLoss);
 		
-		n.initWeights();
+		}//epoch
+		
 		
 		
 	}
