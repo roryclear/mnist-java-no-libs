@@ -26,7 +26,6 @@ public class Net {
 	//conf
 	static int layers[] = {784,16,10};
 	static int outputSize = layers[layers.length - 1];
-	static int numberOfLayers = layers.length;
 	
 	
 	//init nodes
@@ -103,7 +102,8 @@ public class Net {
 	
 
 	
-	public void backProp(int answer) {		
+	public void backProp(int answer) {
+		int numberOfLayers = layers.length;
 		double[] expectedOutput = new double[layers[numberOfLayers - 1]];
 		for(int x = 0; x < layers[numberOfLayers - 1]; x++)
 		{
