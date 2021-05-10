@@ -1,6 +1,7 @@
 package mnistJava;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class Example {
 
@@ -8,7 +9,7 @@ public class Example {
 	{		
 		System.out.println("eyup");
 		Net n = new Net();
-		int[] shape = {784,16,10};
+		int[] shape = {784,10,10,10};
 		n.setShape(shape);
 		n.setGradsSize(0);
 		n.setMomentum(0.5);
@@ -69,13 +70,23 @@ public class Example {
 		correct = 0; 
 		totalLoss = 0;
 		
+		HashMap<Integer, Integer> guesses = new HashMap<>();
+		HashMap<Integer, Integer> correctGuesses = new HashMap<>();
+		for(int i = 0; i < 10; i++)
+		{
+			guesses.put(i, 0);
+			correctGuesses.put(i, 0);
+		}
+		
 		for(int i = 0; i < odTestData.length; i++)
 		{
 			n.resetNodes();
 			n.forward(odTestData[i], false);
+			guesses.put(n.getDigit(),guesses.get(n.getDigit())+1); //inc
 			if(n.getDigit() == testData[i].getLabel())
 			{
 				correct +=1;
+				correctGuesses.put(n.getDigit(),correctGuesses.get(n.getDigit())+1); //inc
 			}
 			totalLoss += n.getLoss(testData[i].getLabel());
 		}
@@ -84,6 +95,8 @@ public class Example {
 		accuracy = (double) correct / testData.length;
 		
 		System.out.println("TEST acc = " + accuracy + " avgLoss = " + avgLoss);
+		System.out.println(guesses);
+		System.out.println(correctGuesses);
 		
 		n.resetNodes();
 		}//epoch
