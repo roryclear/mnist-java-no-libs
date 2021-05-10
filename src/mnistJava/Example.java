@@ -11,6 +11,7 @@ public class Example {
 		Net n = new Net();
 		int[] shape = {784,10,10,10};
 		n.setShape(shape);
+		n.setLearningRate(0.1);
 		n.setGradsSize(0);
 		n.setMomentum(0.5);
 		

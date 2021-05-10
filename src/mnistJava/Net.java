@@ -16,7 +16,6 @@ public class Net {
 	static MnistMatrix[] testData; 
 	///LAYER SIZES
 	static double learningRate = 0.1;
-	static int epochs = 100; //100
 	static double randomWeightRange = 0.1; 
 	
 	static double momentum = 0.5;
@@ -25,7 +24,6 @@ public class Net {
 	
 	//conf
 	static int layers[] = {784,16,10};
-	static int outputSize = layers[layers.length - 1];
 	
 	
 	//init nodes
@@ -48,6 +46,11 @@ public class Net {
 	
 	static String saveFile = "confWeights";
 	static String loadFile = "confWeights";
+	
+	public void setLearningRate(double lr)
+	{
+		learningRate = lr;
+	}
 	
 	public void setGradsSize(int size)
 	{
