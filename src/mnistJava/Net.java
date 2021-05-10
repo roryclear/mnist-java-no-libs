@@ -187,7 +187,7 @@ public class Net {
 			}
 		}
 		}
-		}else {	//gradsSize < 1
+		}else {	//gradsSize < 2
 			ArrayList<double[][]> grads = new ArrayList<>();	
 			for(int r = 0; r < layers.length - 1; r++)
 			{
@@ -247,7 +247,7 @@ public class Net {
 		}
 	}
 	
-	public static double sigmoid(double input)
+	public double sigmoid(double input)
 	{
 		double output = 1 / (1 + Math.exp(-input));
 		return output;
@@ -286,7 +286,7 @@ public class Net {
 		return output;
 	}
 	
-	public static void displayDigit(MnistMatrix data)
+	public void displayDigit(MnistMatrix data)
 	{
 		for(int r = 0; r < data.getNumberOfRows(); r++)
 		{
@@ -364,7 +364,7 @@ public class Net {
 		
 	}
 	
-	public static void setGrads()
+	public void setGrads()
 	{
 		if(grads.size() < gradsSize)
 		{
@@ -429,7 +429,7 @@ public class Net {
 	      }
 	}
 	
-	public static void saveWeights()
+	public void saveWeights()
 	{
 		String layersString = ""+layers[0];
 		for(int i = 1; i < layers.length; i++)
