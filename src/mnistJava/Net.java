@@ -132,12 +132,12 @@ public class Net {
 		//output
 		for(int y = 0; y < weights.get(numberOfLayers - 2).length; y++)
 		{
-			double L1Output = nodesTotal.get(numberOfLayers - 2)[y];
+			double prevOutput = nodesTotal.get(numberOfLayers - 2)[y];
 			for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
 			{
 				double output = nodesTotal.get(numberOfLayers - 1)[x];
 				double expected = expectedOutput[x];
-				double dedw = (output - expected)*(output*(1 - output)*(L1Output));
+				double dedw = (output - expected)*(output*(1 - output)*(prevOutput));
 				grads.get(gradsSize - 1).get(numberOfLayers - 2)[y][x] += dedw;
 			}
 		}

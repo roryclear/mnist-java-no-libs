@@ -494,12 +494,12 @@ public class threeLayerExample {
 			
 			for(int y = 0; y < outputWeights.length; y++)
 			{
-				double L1Output = layer2nodesTotal[y];
+				double prevOutput = layer2nodesTotal[y];
 				for(int x = 0; x < outputWeights[y].length; x++)
 				{
 					double output = layer3nodesTotal[x];
 					double expected = expectedOutput[x];
-					double dedw = (output - expected)*(output*(1 - output)*(L1Output));
+					double dedw = (output - expected)*(output*(1 - output)*(prevOutput));
 					owGrads[y][x] += dedw;
 				}
 			}
