@@ -11,10 +11,10 @@ import javax.imageio.ImageIO;
 public class Example {
 
 	public static void main(String[] args) throws IOException
-	{		
+	{	
 		System.out.println("eyup");
 		Net n = new Net();
-		int[] shape = {784,32,10,10};
+		int[] shape = {784,64,10,10};
 		n.setShape(shape);
 		n.setLearningRate(0.1);
 		n.setGradsSize(0);
@@ -31,6 +31,7 @@ public class Example {
 		int[][] odTrainData = n.makeData1D(trainData);
 		int[][] odTestData = n.makeData1D(testData);
 		
+		int showTrainAccuracyInterval = 10000;
 		int epochs = 100;
 		
 		double correct = 0;
@@ -41,7 +42,7 @@ public class Example {
 		{
 		correct = 0;
 		totalLoss = 0;
-		System.out.println("--------EPOCH " + z + "--------");
+		System.out.println("\n--------EPOCH " + z + "--------");
 		
 			
 		for(int i = 0; i < odTrainData.length; i++)
@@ -56,7 +57,7 @@ public class Example {
 			n.resetNodes();
 			
 			//delete
-			if(i % 1000 == 0 && i > 0)
+			if(i % showTrainAccuracyInterval == 0 && i > 0)
 			{
 				double accuracy = (double) correct / (i+1);
 				double avgLoss = (double) totalLoss / (i+1);
@@ -100,7 +101,7 @@ public class Example {
 		avgLoss = (double) totalLoss / testData.length;
 		accuracy = (double) correct / testData.length;
 		
-		System.out.println("TEST acc = " + accuracy + " avgLoss = " + avgLoss);
+		System.out.println("\n\nTEST acc = " + accuracy + " avgLoss = " + avgLoss);
 		System.out.println(guesses);
 		System.out.println(correctGuesses);
 		
