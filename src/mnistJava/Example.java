@@ -1,7 +1,12 @@
 package mnistJava;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+
+import javax.imageio.ImageIO;
 
 public class Example {
 
@@ -9,7 +14,7 @@ public class Example {
 	{		
 		System.out.println("eyup");
 		Net n = new Net();
-		int[] shape = {784,10,10,10};
+		int[] shape = {784,32,10,10};
 		n.setShape(shape);
 		n.setLearningRate(0.1);
 		n.setGradsSize(0);
@@ -98,6 +103,60 @@ public class Example {
 		System.out.println("TEST acc = " + accuracy + " avgLoss = " + avgLoss);
 		System.out.println(guesses);
 		System.out.println(correctGuesses);
+		
+		//0 - 9 test
+		int[] output = new int[10];
+		
+		for(int i = 0; i < 10; i++)
+		{
+		int xOffset = (i % 5) * 29;
+		int yOffset = (i / 5) * 29;
+			
+		int[] digitArray = new int[28*28];
+		int index = 0;	
+	    BufferedImage image = ImageIO.read(new File("mnistdata/digitsGrid.bmp"));
+	    for(int y = 0; y < 28; y++)
+	    {
+	    	for(int x = 0; x < 28; x++)
+	    	{
+	    		digitArray[index] = -image.getRGB(xOffset + x, yOffset + y)/(256*256);	
+	    		if(digitArray[index] > 255)
+	    		{
+	    			digitArray[index] = 255;
+	    		}	
+	    		index++;
+	    	}
+	    }
+	    
+	    n.forward(digitArray, false);
+		output[i] = n.getDigit();
+	    
+		}
+		
+		System.out.println("\n\nzero to nine output:");
+		int[] desiredOutput = {0,1,2,3,4,5,6,7,8,9};
+		accuracy = 0;
+		correct = 0;
+		for(int i = 0; i < 10; i++)
+		{
+			System.out.println(i + " -> " + output[i]);
+			if(output[i] == desiredOutput[i])
+			{
+				correct +=1;
+			}
+		}
+		
+		accuracy = (double) correct / output.length;
+		
+		System.out.println("0-9 accuracy = " + accuracy);
+		if(Arrays.equals(desiredOutput, output))
+		{
+			System.exit(0);	
+		}
+		
+		
+		//0-9
+		
 		
 		n.resetNodes();
 		}//epoch
