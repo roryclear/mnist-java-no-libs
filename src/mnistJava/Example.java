@@ -139,7 +139,7 @@ public class Example {
 		correct = 0;
 		for(int i = 0; i < 10; i++)
 		{
-			System.out.println(i + " -> " + output[i]);
+			System.out.println(desiredOutput[i] + " -> " + output[i]);
 			if(output[i] == desiredOutput[i])
 			{
 				correct +=1;
