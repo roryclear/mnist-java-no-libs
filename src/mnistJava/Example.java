@@ -12,17 +12,16 @@ public class Example {
 
 	public static void main(String[] args) throws IOException
 	{	
-		System.out.println("eyup");
 		Net n = new Net();
-		int[] shape = {784,64,10,10};
+		int[] shape = {784,10,10,10};
 		n.setShape(shape);
 		n.setLearningRate(0.1);
 		n.setGradsSize(0);
-		n.setMomentum(0.5);
-		
-	//	n.loadWeights();
-		
+		n.setMomentum(0.0);
+			
 		n.initWeights();
+		n.loadWeights();
+		
 		n.resetNodes();
 		
 		MnistMatrix[] trainData = n.readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
@@ -38,11 +37,11 @@ public class Example {
 		double totalLoss = 0;
 		
 		
-		for(int z = 0; z < epochs; z++)
+		for(int epoch = 0; epoch < epochs; epoch++)
 		{
 		correct = 0;
 		totalLoss = 0;
-		System.out.println("\n--------EPOCH " + z + "--------");
+		System.out.println("\n--------EPOCH " + epoch + "--------");
 		
 			
 		for(int i = 0; i < odTrainData.length; i++)
