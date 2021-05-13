@@ -13,7 +13,7 @@ public class Example {
 	public static void main(String[] args) throws IOException
 	{	
 		Net n = new Net();
-		int[] shape = {784,10,10,10};
+		int[] shape = {784,50,20,10};
 		n.setShape(shape);
 		n.setLearningRate(0.1);
 		n.setGradsSize(0);
@@ -35,7 +35,7 @@ public class Example {
 		
 		double correct = 0;
 		double totalLoss = 0;
-		
+		double lowestLoss = 10;
 		
 		for(int epoch = 0; epoch < epochs; epoch++)
 		{
@@ -103,6 +103,19 @@ public class Example {
 		System.out.println("\n\nTEST acc = " + accuracy + " avgLoss = " + avgLoss);
 		System.out.println(guesses);
 		System.out.println(correctGuesses);
+		
+		
+		//save if lowest loss
+		if(epoch == 0)
+		{
+			lowestLoss = avgLoss;
+		}else {
+			if(avgLoss < lowestLoss)
+			{
+				lowestLoss = avgLoss;
+				n.saveWeights();
+			}
+		}
 		
 		//0 - 9 test
 		int[] output = new int[10];
