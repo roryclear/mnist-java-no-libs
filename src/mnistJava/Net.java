@@ -12,8 +12,6 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Net {
-	static MnistMatrix[] trainData;  
-	static MnistMatrix[] testData; 
 	///LAYER SIZES
 	static double learningRate = 0.1;
 	static double randomWeightRange = 0.1; 
@@ -40,8 +38,6 @@ public class Net {
 	static ArrayList<ArrayList<double[][]>> grads = new ArrayList<>();	
 	
 	//one dimensional data
-	static int[][] odTrainData;
-	static int[][] odTestData;
 	
 	
 	static String saveFile = "confWeights";
