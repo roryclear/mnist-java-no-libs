@@ -93,12 +93,44 @@ public class Net {
 				}
 			}
 		}
+	}
 		
-	
+	public void forward(double[] data, boolean train)
+	{		
 		
+		for(int x = 0; x < layers[0]; x++)
+		{
+			nodes.get(0)[x] = sigmoid(data[x]);
+			if(train)
+			{
+				nodesTotal.get(0)[x] += data[x];
+			}
+		}
+		
+		//get rest
+		for(int i = 1; i < layers.length; i++)
+		{
+			for(int x = 0; x < layers[i]; x++)
+			{
+				double total = 0;
+				for(int y = 0; y < layers[i-1]; y++)
+				{
+					total += nodes.get(i-1)[y]*weights.get(i-1)[y][x];
+				}
+				total = sigmoid(total);
+				nodes.get(i)[x] = total;
+				if(train)
+				{
+					nodesTotal.get(i)[x] += total;
+				}
+			}
+		}
 	}
 	
-	
+	public static double getNodeValue(int layer, int node)
+	{
+		return nodes.get(layer)[node];
+	}
 
 	
 	public void backProp(int answer) {
