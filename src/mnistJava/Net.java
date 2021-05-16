@@ -40,8 +40,8 @@ public class Net {
 	//one dimensional data
 	
 	
-	static String saveFile = "confWeights";
-	static String loadFile = "confWeights";
+	static String saveFile = "weights";
+	static String loadFile = "weights";
 	
 	public void setLearningRate(double lr)
 	{

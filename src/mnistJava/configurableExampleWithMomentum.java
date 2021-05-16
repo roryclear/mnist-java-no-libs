@@ -60,8 +60,8 @@ public class configurableExampleWithMomentum {
 	static boolean saveWeights = false;
 	static boolean loadWeights = true;
 	
-	static String saveFile = "confWeights";
-	static String loadFile = "confWeights";
+	static String saveFile = "weights";
+	static String loadFile = "weights";
 	
 	public static void main(String[] args) throws IOException
 	{
