@@ -9,11 +9,19 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 public class Example {
+	static MnistMatrix[] trainData;
+	static MnistMatrix[] testData;
+	
+	static int[][] odTrainData;
+	static int[][] odTestData;
+	
+	static double avgLoss;
+	static double accuracy;
 
 	public static void main(String[] args) throws IOException
 	{	
 		Net n = new Net();
-		int[] shape = {784,50,20,10};
+		int[] shape = {784,30,10};
 		n.setShape(shape);
 		n.setLearningRate(0.1);
 		n.setGradsSize(0);
@@ -24,18 +32,20 @@ public class Example {
 		
 		n.resetNodes();
 		
-		MnistMatrix[] trainData = n.readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
-		MnistMatrix[] testData = n.readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
+		trainData = n.readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
+		testData = n.readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
 		
-		int[][] odTrainData = n.makeData1D(trainData);
-		int[][] odTestData = n.makeData1D(testData);
+		odTrainData = n.makeData1D(trainData);
+		odTestData = n.makeData1D(testData);
 		
 		int showTrainAccuracyInterval = 10000;
 		int epochs = 100;
 		
 		double correct = 0;
 		double totalLoss = 0;
-		double lowestLoss = 10;
+		
+		testNN(n);
+		double lowestLoss = avgLoss;
 		
 		for(int epoch = 0; epoch < epochs; epoch++)
 		{
@@ -58,23 +68,41 @@ public class Example {
 			//delete
 			if(i % showTrainAccuracyInterval == 0 && i > 0)
 			{
-				double accuracy = (double) correct / (i+1);
-				double avgLoss = (double) totalLoss / (i+1);
+				accuracy = (double) correct / (i+1);
+				avgLoss = (double) totalLoss / (i+1);
 				
 				System.out.println("acc = " + accuracy + "    avgLoss = " + avgLoss);
 			}
 		}
 		
 		
-		double accuracy = (double) correct / odTrainData.length;
-		double avgLoss = (double) totalLoss / odTrainData.length;
+		accuracy = (double) correct / odTrainData.length;
+		avgLoss = (double) totalLoss / odTrainData.length;
 		
 		System.out.println("acc = " + accuracy + "    avgLoss = " + avgLoss);
 		
 		
+		
+		testNN(n);
+
+		if(avgLoss < lowestLoss)
+		{
+			lowestLoss = avgLoss;
+			n.saveWeights();
+		}
+		
+		n.resetNodes();
+		}//epoch
+		
+		
+		
+	}
+	
+	public static void testNN(Net n) throws IOException
+	{
 		//testing data
-		correct = 0; 
-		totalLoss = 0;
+		double correct = 0; 
+		double totalLoss = 0;
 		
 		HashMap<Integer, Integer> guesses = new HashMap<>();
 		HashMap<Integer, Integer> correctGuesses = new HashMap<>();
@@ -103,19 +131,7 @@ public class Example {
 		System.out.println("\n\nTEST acc = " + accuracy + " avgLoss = " + avgLoss);
 		System.out.println(guesses);
 		System.out.println(correctGuesses);
-		
-		
-		//save if lowest loss
-		if(epoch == 0)
-		{
-			lowestLoss = avgLoss;
-		}else {
-			if(avgLoss < lowestLoss)
-			{
-				lowestLoss = avgLoss;
-				n.saveWeights();
-			}
-		}
+	
 		
 		//0 - 9 test
 		int[] output = new int[10];
@@ -169,13 +185,6 @@ public class Example {
 		
 		
 		//0-9
-		
-		
-		n.resetNodes();
-		}//epoch
-		
-		
-		
 	}
 	
 }
