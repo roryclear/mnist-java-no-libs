@@ -21,7 +21,7 @@ public class Example {
 	public static void main(String[] args) throws IOException
 	{	
 		Net n = new Net();
-		int[] shape = {784,30,10};
+		int[] shape = {784,16,10};
 		n.setShape(shape);
 		n.setLearningRate(0.1);
 		n.setGradsSize(0);
@@ -71,7 +71,7 @@ public class Example {
 				accuracy = (double) correct / (i+1);
 				avgLoss = (double) totalLoss / (i+1);
 				
-				System.out.println("acc = " + accuracy + "    avgLoss = " + avgLoss);
+				System.out.println(i + "/" + trainData.length + ": acc = " + accuracy + "    avgLoss = " + avgLoss);
 			}
 		}
 		
@@ -79,7 +79,7 @@ public class Example {
 		accuracy = (double) correct / odTrainData.length;
 		avgLoss = (double) totalLoss / odTrainData.length;
 		
-		System.out.println("acc = " + accuracy + "    avgLoss = " + avgLoss);
+		System.out.println(trainData.length + "/" + trainData.length +  ": acc = " + accuracy + "    avgLoss = " + avgLoss);
 		
 		
 		
