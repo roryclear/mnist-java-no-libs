@@ -13,40 +13,41 @@ import java.util.Scanner;
 
 public class Net {
 	///LAYER SIZES
-	static double learningRate = 0.1;
-	static double randomWeightRange = 0.1; 
+	double learningRate = 0.1;
+	double randomWeightRange = 0.1; 
 	
-	static double momentum = 0.5;
-	static int gradsSize = 0;
+	double momentum = 0.5;
+	int gradsSize = 0;
 	
 	
 	//conf
-	static int layers[] = {784,16,10};
+	int layers[] = {784,16,10};
 	
 	
 	//init nodes
-	static ArrayList<double[]> nodes = new ArrayList<>();
+	ArrayList<double[]> nodes = new ArrayList<>();
 	
 	//totals for bp
-	static ArrayList<double[]> nodesTotal = new ArrayList<>();
+	ArrayList<double[]> nodesTotal = new ArrayList<>();
 	
 	//weights
-	static ArrayList<double[][]> weights = new ArrayList<>();
+	ArrayList<double[][]> weights = new ArrayList<>();
 	
 	//grads + prev grads
 	//static ArrayList<double[][]> grads = new ArrayList<>();	
-	static ArrayList<ArrayList<double[][]>> grads = new ArrayList<>();	
+	ArrayList<ArrayList<double[][]>> grads = new ArrayList<>();	
 	
 	//one dimensional data
 	
 	
-	static String saveFile = "weights";
-	static String loadFile = "weights";
+	String saveFile = "weights";
+	String loadFile = "weights";
 	
 	public void setLearningRate(double lr)
 	{
 		learningRate = lr;
 	}
+	
 	
 	public void setGradsSize(int size)
 	{
