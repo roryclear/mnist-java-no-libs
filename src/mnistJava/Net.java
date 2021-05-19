@@ -132,6 +132,10 @@ public class Net {
 		return nodes.get(layer)[node];
 	}
 
+	public static double[] getLayer(int layer)
+	{
+		return nodes.get(layer);
+	}
 	
 	public void backProp(int answer) {
 		int numberOfLayers = layers.length;
