@@ -127,14 +127,19 @@ public class Net {
 		}
 	}
 	
-	public static double getNodeValue(int layer, int node)
+	public double getNodeValue(int layer, int node)
 	{
 		return nodes.get(layer)[node];
 	}
 
-	public static double[] getLayer(int layer)
+	public double[] getLayer(int layer)
 	{
 		return nodes.get(layer);
+	}
+	
+	public int[] getShape()
+	{
+		return layers;
 	}
 	
 	public void backProp(int answer) {
