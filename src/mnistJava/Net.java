@@ -43,26 +43,6 @@ public class Net {
 	String saveFile = "weights";
 	String loadFile = "weights";
 	
-	public void setLearningRate(double lr)
-	{
-		learningRate = lr;
-	}
-	
-	
-	public void setGradsSize(int size)
-	{
-		gradsSize = size;
-	}
-	
-	public void setMomentum(double m)
-	{
-		momentum = m;
-	}
-	
-	public void setShape(int[] shape)
-	{
-		layers = shape;
-	}
 	
 	public void forward(int[] data, boolean train)
 	{		

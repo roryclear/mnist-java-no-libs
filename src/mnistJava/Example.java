@@ -22,13 +22,14 @@ public class Example {
 	{	
 		Net n = new Net();
 		int[] shape = {784,16,10};
-		n.setShape(shape);
-		n.setLearningRate(0.1);
-		n.setGradsSize(0);
-		n.setMomentum(0.0);
+		//n.setShape(shape);
+		n.layers = shape;
+		n.learningRate = 0.1;
+		n.gradsSize = 0;
+		n.momentum = 0.0;
 			
 		n.initWeights();
-		n.loadWeights();
+	//	n.loadWeights();
 		
 		n.resetNodes();
 		
