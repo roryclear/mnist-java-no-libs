@@ -19,6 +19,7 @@ public class Net {
 	double momentum = 0.5;
 	int gradsSize = 0;
 	
+	String activationFunction = "sigmoid";
 	
 	//conf
 	int layers[] = {784,16,10};
@@ -49,7 +50,7 @@ public class Net {
 		
 		for(int x = 0; x < layers[0]; x++)
 		{
-			nodes.get(0)[x] = sigmoid(data[x]);
+			nodes.get(0)[x] = activationFunction(data[x]);
 			if(train)
 			{
 				nodesTotal.get(0)[x] += data[x];
@@ -66,7 +67,7 @@ public class Net {
 				{
 					total += nodes.get(i-1)[y]*weights.get(i-1)[y][x];
 				}
-				total = sigmoid(total);
+				total = activationFunction(total);
 				nodes.get(i)[x] = total;
 				if(train)
 				{
@@ -81,7 +82,7 @@ public class Net {
 		
 		for(int x = 0; x < layers[0]; x++)
 		{
-			nodes.get(0)[x] = sigmoid(data[x]);
+			nodes.get(0)[x] = activationFunction(data[x]);
 			if(train)
 			{
 				nodesTotal.get(0)[x] += data[x];
@@ -98,7 +99,7 @@ public class Net {
 				{
 					total += nodes.get(i-1)[y]*weights.get(i-1)[y][x];
 				}
-				total = sigmoid(total);
+				total = activationFunction(total);
 				nodes.get(i)[x] = total;
 				if(train)
 				{
@@ -265,10 +266,21 @@ public class Net {
 		}
 	}
 	
-	public double sigmoid(double input)
+	public double activationFunction(double input)
 	{
+		if(activationFunction.equals("sigmoid"))
+		{
 		double output = 1 / (1 + Math.exp(-input));
 		return output;
+		}else { //relu
+			
+			if(input > 0)
+			{
+				return input;
+			}
+			return 0;
+			
+		}
 	}
 	
 	public double getLoss(int answer)
