@@ -291,6 +291,9 @@ public class Net {
 			return 0.01*input;
 		}
 		
+		//default sigmoid?
+		return 1 / (1 + Math.exp(-input));
+		
 	}
 	
 	public double getLoss(int answer)
