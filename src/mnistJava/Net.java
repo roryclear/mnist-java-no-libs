@@ -268,19 +268,29 @@ public class Net {
 	
 	public double activationFunction(double input)
 	{
-		if(activationFunction.equals("sigmoid"))
+		if(activationFunction.equalsIgnoreCase("sigmoid"))
 		{
 		double output = 1 / (1 + Math.exp(-input));
 		return output;
-		}else { //relu
-			
+		}
+		if(activationFunction.equalsIgnoreCase("relu"))
+		{
 			if(input > 0)
 			{
 				return input;
 			}
 			return 0;
-			
 		}
+		
+		if(activationFunction.equals("leakyrelu"))
+		{
+			if(input > 0)
+			{
+				return input;
+			}
+			return 0.01*input;
+		}
+		
 	}
 	
 	public double getLoss(int answer)
