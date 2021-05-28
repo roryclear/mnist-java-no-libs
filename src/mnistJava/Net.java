@@ -12,7 +12,6 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Net {
-	///LAYER SIZES
 	double learningRate = 0.1;
 	double randomWeightRange = 0.1; 
 	
@@ -20,25 +19,16 @@ public class Net {
 	int gradsSize = 0;
 	
 	String activationFunction = "sigmoid";
-	
-	//conf
+
 	int layers[] = {784,16,10};
 	
 	
-	//init nodes
 	ArrayList<double[]> nodes = new ArrayList<>();
 	
-	//totals for bp
 	ArrayList<double[]> nodesTotal = new ArrayList<>();
-	
-	//weights
 	ArrayList<double[][]> weights = new ArrayList<>();
-	
-	//grads + prev grads
-	//static ArrayList<double[][]> grads = new ArrayList<>();	
+		
 	ArrayList<ArrayList<double[][]>> grads = new ArrayList<>();	
-	
-	//one dimensional data
 	
 	
 	String saveFile = "weights";
@@ -57,7 +47,6 @@ public class Net {
 			}
 		}
 		
-		//get rest
 		for(int i = 1; i < layers.length; i++)
 		{
 			for(int x = 0; x < layers[i]; x++)
@@ -89,7 +78,6 @@ public class Net {
 			}
 		}
 		
-		//get rest
 		for(int i = 1; i < layers.length; i++)
 		{
 			for(int x = 0; x < layers[i]; x++)
@@ -268,6 +256,7 @@ public class Net {
 	
 	public double activationFunction(double input)
 	{
+		//only sigmoid works atm
 		if(activationFunction.equalsIgnoreCase("sigmoid"))
 		{
 		double output = 1 / (1 + Math.exp(-input));
