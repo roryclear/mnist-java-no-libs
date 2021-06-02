@@ -271,7 +271,7 @@ public class Net {
 			return 0;
 		}
 		
-		if(activationFunction.equals("leakyrelu"))
+		if(activationFunction.equalsIgnoreCase("leakyrelu"))
 		{
 			if(input > 0)
 			{
