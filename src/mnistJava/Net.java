@@ -282,8 +282,39 @@ public class Net {
 		
 		//default sigmoid?
 		return 1 / (1 + Math.exp(-input));
-		
 	}
+	
+	public double derivateActivationFunction(double input)
+	{
+		if(activationFunction.equalsIgnoreCase("sigmoid"))
+		{
+			return input * (1 - input);
+		}
+		if(activationFunction.equalsIgnoreCase("relu"))
+		{
+			if(input > 0)
+			{
+				return 1;
+			}else {
+				return 0;
+			}
+		}
+		
+		if(activationFunction.equalsIgnoreCase("leakyrelu"))
+		{
+			if(input > 0)
+			{
+				return 1;
+			}else {
+				return 0.01; //clean later
+			}
+		}
+		
+		//sigmoid default
+		return input * (1 - input);
+	
+	}
+	
 	
 	public double getLoss(int answer)
 	{
