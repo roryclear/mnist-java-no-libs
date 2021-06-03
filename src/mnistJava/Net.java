@@ -144,7 +144,7 @@ public class Net {
 			{
 				double output = nodesTotal.get(numberOfLayers - 1)[x];
 				double expected = expectedOutput[x];
-				double dedw = (output - expected)*(output*(1 - output)*(prevOutput));
+				double dedw = (output - expected) * derivateActivationFunction(output) * prevOutput;
 				grads.get(gradsSize - 1).get(numberOfLayers - 2)[y][x] += dedw;
 			}
 		}
@@ -164,7 +164,7 @@ public class Net {
 				{
 					totalError += (weights.get(r+1)[x][n]*grads.get(gradsSize - 1).get(r+1)[x][n])/nodes.get(r+2).length;
 				}
-				totalError = totalError*(nodesTotal.get(r+1)[x]*(1 - nodesTotal.get(r+1)[x])*nodesTotal.get(r)[y]);
+				totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x]) * nodesTotal.get(r)[y];
 				
 				
 				grads.get(gradsSize - 1).get(r)[y][x] += totalError;
@@ -211,7 +211,7 @@ public class Net {
 				{
 					double output = nodesTotal.get(numberOfLayers - 1)[x];
 					double expected = expectedOutput[x];
-					double dedw = (output - expected)*(output*(1 - output)*(prevOutput));
+					double dedw = (output - expected) * derivateActivationFunction(output) * (prevOutput);
 					grads.get(numberOfLayers - 2)[y][x] += dedw;
 				}
 			}
@@ -231,7 +231,7 @@ public class Net {
 					{
 						totalError += (weights.get(r+1)[x][n]*grads.get(r+1)[x][n])/nodes.get(r+2).length;
 					}
-					totalError = totalError*(nodesTotal.get(r+1)[x]*(1 - nodesTotal.get(r+1)[x])*nodesTotal.get(r)[y]);
+					totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x]) * nodesTotal.get(r)[y];
 					
 					
 					grads.get(r)[y][x] += totalError;
@@ -280,6 +280,11 @@ public class Net {
 			return 0.01*input;
 		}
 		
+		if(activationFunction.equalsIgnoreCase("tanh"))
+		{
+			return Math.tanh(input);
+		}
+		
 		//default sigmoid?
 		return 1 / (1 + Math.exp(-input));
 	}
@@ -308,6 +313,11 @@ public class Net {
 			}else {
 				return 0.01; //clean later
 			}
+		}
+		
+		if(activationFunction.equalsIgnoreCase("tanh"))
+		{
+			return 1 - (Math.tanh(input) * Math.tanh(input)); //?
 		}
 		
 		//sigmoid default
