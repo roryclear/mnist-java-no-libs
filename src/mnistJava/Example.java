@@ -22,7 +22,6 @@ public class Example {
 	{	
 		Net n = new Net();
 		int[] shape = {784,16,10};
-		//n.setShape(shape);
 		n.layers = shape;
 		n.learningRate = 0.1;
 		n.gradsSize = 0;
