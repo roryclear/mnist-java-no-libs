@@ -13,7 +13,6 @@ import java.util.Scanner;
 
 public class Net {
 	double learningRate = 0.1;
-	double randomWeightRange = 0.1; 
 	
 	double momentum = 0.5;
 	int gradsSize = 0;
@@ -419,6 +418,7 @@ public class Net {
     
 	public void initWeights()
 	{		
+		//uniform 6:00
 		for(int i = 0; i < layers.length - 1; i++)
 		{
 			double[][] layerWeights = new double[layers[i]][layers[i+1]];
@@ -427,14 +427,13 @@ public class Net {
 				for(int x = 0; x < layerWeights[y].length; x++)
 				{
 					Random r = new Random();
-					double w = -randomWeightRange + 2 * randomWeightRange * r.nextDouble();
+					double w = -1/(Math.sqrt(layerWeights.length)) + 2 * 1/(Math.sqrt(layerWeights.length)) * r.nextDouble();				
 					layerWeights[y][x] = w;
 				}
 			}
 			
 			weights.add(layerWeights);
 		}
-		
 	}
 	
 	public void setGrads()
