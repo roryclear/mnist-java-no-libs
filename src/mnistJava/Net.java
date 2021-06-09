@@ -570,4 +570,24 @@ public class Net {
 		return out;
 	}
 	
+	//double 0-1
+	public double[][] makeData1DDouble(MnistMatrix[] data)
+	{
+		double[][] out = new double[data.length][784];
+		for(int i = 0; i < data.length; i++)
+		{
+			int n = 0;
+			for(int r = 0; r < data[i].getNumberOfRows(); r++)
+			{
+				for(int c = 0; c < data[i].getNumberOfColumns(); c++)
+				{
+					 out[i][n] = data[i].getValue(r, c) / 255;
+					 n++;
+				}
+			}
+		}
+		
+		return out;
+	}
+	
 }
