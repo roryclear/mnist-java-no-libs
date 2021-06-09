@@ -141,18 +141,14 @@ public class Example {
 		int xOffset = (i % 5) * 29;
 		int yOffset = (i / 5) * 29;
 			
-		int[] digitArray = new int[28*28];
+		double[] digitArray = new double[28*28];
 		int index = 0;	
 	    BufferedImage image = ImageIO.read(new File("mnistdata/digitsGrid.bmp"));
 	    for(int y = 0; y < 28; y++)
 	    {
 	    	for(int x = 0; x < 28; x++)
 	    	{
-	    		digitArray[index] = -image.getRGB(xOffset + x, yOffset + y)/(256*256);	
-	    		if(digitArray[index] > 255)
-	    		{
-	    			digitArray[index] = 255;
-	    		}	
+	    		digitArray[index] = Double.valueOf(-image.getRGB(xOffset + x, yOffset + y)/(256*256)) / 255;		
 	    		index++;
 	    	}
 	    }
