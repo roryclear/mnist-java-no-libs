@@ -581,7 +581,7 @@ public class Net {
 			{
 				for(int c = 0; c < data[i].getNumberOfColumns(); c++)
 				{
-					 out[i][n] = data[i].getValue(r, c) / 255;
+					 out[i][n] = Double.valueOf(data[i].getValue(r, c)) / 255;
 					 n++;
 				}
 			}
