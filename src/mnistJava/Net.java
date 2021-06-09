@@ -70,7 +70,7 @@ public class Net {
 		
 		for(int x = 0; x < layers[0]; x++)
 		{
-			nodes.get(0)[x] = activationFunction(data[x]);
+			nodes.get(0)[x] = data[x];
 			if(train)
 			{
 				nodesTotal.get(0)[x] += data[x];

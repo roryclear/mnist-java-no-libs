@@ -12,8 +12,8 @@ public class Example {
 	static MnistMatrix[] trainData;
 	static MnistMatrix[] testData;
 	
-	static int[][] odTrainData;
-	static int[][] odTestData;
+	static double[][] odTrainData;
+	static double[][] odTestData;
 	
 	static double avgLoss;
 	static double accuracy;
@@ -35,11 +35,11 @@ public class Example {
 		trainData = n.readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
 		testData = n.readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
 		
-		odTrainData = n.makeData1D(trainData);
-		odTestData = n.makeData1D(testData);
+		odTrainData = n.makeData1DDouble(trainData);
+		odTestData = n.makeData1DDouble(testData);
 		
 		int showTrainAccuracyInterval = 10000;
-		int epochs = 100;
+		int epochs = 10;
 		
 		double correct = 0;
 		double totalLoss = 0;
