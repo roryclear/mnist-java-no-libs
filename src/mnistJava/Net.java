@@ -470,7 +470,7 @@ public class Net {
 		}
 		
 	    try {
-	        File myObj = new File(loadFile+layersString+".txt");
+	        File myObj = new File(activationFunction + "-" +loadFile+layersString+".txt");
 	        Scanner myReader = new Scanner(myObj);
 	        myReader.nextLine();
 	       
@@ -509,7 +509,7 @@ public class Net {
 			layersString+="-" + layers[i];
 		}
 	    try {
-	        FileWriter myWriter = new FileWriter(saveFile+layersString+".txt");
+	        FileWriter myWriter = new FileWriter(activationFunction + "-" + saveFile+layersString+".txt");
 	        myWriter.append(layersString);
 	        
 	        for(int i = 0; i < weights.size(); i++)
