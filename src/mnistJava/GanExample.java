@@ -3,6 +3,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -18,7 +20,7 @@ public class GanExample {
 	
 	static int resolution = 28;
 	
-	static double avgLoss;
+	static double avgLoss = 5;
 	static double accuracy;
 	
 	static int logInterval = 10000;
@@ -42,7 +44,7 @@ public class GanExample {
 		g.resetNodes();
 		g.initWeights();
 		
-		//disriminator
+		//discriminator
 		Net d = new Net();
 		int[] dSize = {784,10,2};
 		d.learningRate = 0.1;
@@ -72,6 +74,13 @@ public class GanExample {
 		odTrainData = d.makeData1DDouble(trainData);
 		odTestData = d.makeData1DDouble(testData);
 		
+		//shuffled order
+		ArrayList<Integer> shuffledOrder = new ArrayList<>();
+		for(int i = 0; i < trainData.length; i++)
+		{
+			shuffledOrder.add(i);
+		}
+		
 		for(epoch = 0; epoch < epochs; epoch++)
 		{
 		
@@ -81,10 +90,16 @@ public class GanExample {
 		double loss = 0;
 		
 		System.out.println("\n\n\n-----DISCRIMINATOR-----\n\n\n");
+		//shuffle
+		Collections.shuffle(shuffledOrder);
+		
 		
 		for(int i = 0; i < trainData.length; i++)
-		{
+		{	
 			//TRAIN DISCRIMINATOR
+			
+			int index = shuffledOrder.get(i);
+			
 			//generated
 			g.resetNodes();
 			Random r = new Random();
@@ -104,18 +119,17 @@ public class GanExample {
 			
 			//real
 			d.resetNodes();
-			d.forward(odTrainData[i], true);
+			d.forward(odTrainData[index], true);
 			d.backProp(1);
 			if(d.getDigit() == 1)
 			{
 				correct +=1;
 			}
 			loss += d.getLoss(1);
-			//System.out.println("loss = " + d.getLoss(1));
+			avgLoss = loss / ((i*2) + 2);
 			if(i % logInterval == 0)
 			{
 				accuracy = (double) correct / ((i*2) + 2);
-				avgLoss = loss / ((i*2) + 2);
 				System.out.println(i + " / " + trainData.length + " acc = " + accuracy + " avgLoss = " + avgLoss);
 			}	
 			
@@ -126,8 +140,12 @@ public class GanExample {
 		//TRAIN GENERATOR???
 		correct = 0;
 		loss = 0;
-		for(int i = 0; i < trainData.length; i++)
+		int i = 0;
+		while(i < trainData.length && loss < 100)
 		{
+			//shuffled
+			int index = shuffledOrder.get(i);
+			
 			//put discriminator weights on combined
 			for(int x = 0; x < d.weights.size(); x++)
 			{
@@ -146,22 +164,21 @@ public class GanExample {
 			
 			
 			d.resetNodes();
-			d.forward(odTrainData[i], false);
+			d.forward(odTrainData[index], false);
 			if(d.getDigit() == 1)
 			{
 				correct += 1;
 			}
 			loss += d.getLoss(1);
 			
-			
+			avgLoss = loss / ((i*2) + 2);
 			if(i % logInterval == 0)
 			{
 				accuracy = (double) correct / ((i*2) + 2);
-				avgLoss = loss / ((i*2) + 2);
 				System.out.println(i + " / " + trainData.length + " acc = " + accuracy + " avgLoss = " + avgLoss);
 			}	
 			
-			
+			i++;
 		}
 		
 		//put combined weights on generator
@@ -183,9 +200,9 @@ public class GanExample {
 			epoch0output = g.nodes.get(g.nodes.size() - 1);
 		}else {
 			double[] epochOutput = g.nodes.get(g.nodes.size() - 1);
-			for(int i = 0; i < epochOutput.length - 1; i++)
+			for(int j = 0; j < epochOutput.length - 1; j++)
 			{
-				System.out.println(Math.abs(epochOutput[i] - epoch0output[i]));
+				System.out.println(Math.abs(epochOutput[j] - epoch0output[j]));
 			}
 		}
 		
