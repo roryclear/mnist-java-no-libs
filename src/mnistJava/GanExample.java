@@ -3,6 +3,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -72,9 +74,17 @@ public class GanExample {
 		odTrainData = d.makeData1DDouble(trainData);
 		odTestData = d.makeData1DDouble(testData);
 		
+		
 		for(epoch = 0; epoch < epochs; epoch++)
 		{
-		
+		//shuffle
+		ArrayList<Integer> shuffled = new ArrayList<>();
+		for(int j = 0; j < trainData.length; j++)
+		{
+			shuffled.add(j);
+		}
+		Collections.shuffle(shuffled);
+			
 		System.out.println("\n\n\n----EPOCH " + epoch +"----\n\n\n\n");
 			
 		int correct = 0;
@@ -84,6 +94,10 @@ public class GanExample {
 		
 		for(int i = 0; i < trainData.length; i++)
 		{
+			
+			
+			int index = shuffled.get(i);
+			
 			//TRAIN DISCRIMINATOR
 			//generated
 			g.resetNodes();
@@ -104,7 +118,7 @@ public class GanExample {
 			
 			//real
 			d.resetNodes();
-			d.forward(odTrainData[i], true);
+			d.forward(odTrainData[index], true);
 			d.backProp(1);
 			if(d.getDigit() == 1)
 			{
@@ -128,6 +142,7 @@ public class GanExample {
 		loss = 0;
 		for(int i = 0; i < trainData.length; i++)
 		{
+			int index = shuffled.get(i);
 			//put discriminator weights on combined
 			for(int x = 0; x < d.weights.size(); x++)
 			{
@@ -146,7 +161,7 @@ public class GanExample {
 			
 			
 			d.resetNodes();
-			d.forward(odTrainData[i], false);
+			d.forward(odTrainData[index], false);
 			if(d.getDigit() == 1)
 			{
 				correct += 1;
