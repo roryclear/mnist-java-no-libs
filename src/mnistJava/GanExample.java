@@ -14,6 +14,8 @@ public class GanExample {
 	static MnistMatrix[] trainData;
 	static MnistMatrix[] testData;
 	
+	static MnistMatrix[] trainDataZeros;
+	static double[][] odTrainDataZeros;
 	
 	static double[][] odTrainData;
 	static double[][] odTestData;
@@ -23,34 +25,36 @@ public class GanExample {
 	static double avgLoss;
 	static double accuracy;
 	
-	static int logInterval = 10000;
+	static int logInterval = 1000;
 	static int epoch = 0;
 	
 	static double[] epoch0output;
+	static double largestChange;
 	
 	public static void main(String[] args) throws IOException
 	{
+		
 		System.out.println("GAN????");
 		int epochs = 100;
 		
 		//generator
 		Net g = new Net();
 		int[] gSize = {1,10,784};
-		g.learningRate = 0.1;
+		g.learningRate = 0.01;
 		g.layers = gSize;
 		g.activationFunction = "leakyrelu";
 		g.momentum = 0.5;
-		g.gradsSize = 5;
+		g.gradsSize = 0;
 		g.resetNodes();
 		g.initWeights();
 		
 		//disriminator
 		Net d = new Net();
-		int[] dSize = {784,10,2};
+		int[] dSize = {784,20,2};
 		d.learningRate = 0.1;
 		d.layers = dSize;
 		d.momentum = 0.5;
-		d.gradsSize = 5;
+		d.gradsSize = 0;
 		d.activationFunction = "leakyrelu";
 		d.resetNodes();
 		d.initWeights();
@@ -58,10 +62,10 @@ public class GanExample {
 		
 		//combined
 		Net c = new Net();
-		int[] cSize = {1,10,784,10,2};
+		int[] cSize = {1,10,784,20,2};
 		c.learningRate = 0.1;
 		c.momentum = 0.5;
-		c.gradsSize = 5;
+		c.gradsSize = 0;
 		c.layers = cSize;
 		c.activationFunction = "leakyrelu";
 		c.resetNodes();
@@ -71,6 +75,24 @@ public class GanExample {
 		trainData = d.readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
 		testData = d.readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
 		
+		
+		//make trainData be only zeros
+		ArrayList<MnistMatrix> zerosAl = new ArrayList<>(); 
+		for(int i = 0; i < trainData.length; i++)
+		{
+			if(trainData[i].getLabel() == 0)
+			{
+			zerosAl.add(trainData[i]);
+			}
+		}
+		trainDataZeros = new MnistMatrix[zerosAl.size()];
+		for(int i = 0; i < zerosAl.size(); i++)
+		{
+			trainDataZeros[i] = zerosAl.get(i);
+		}
+		
+		odTrainDataZeros = d.makeData1DDouble(trainDataZeros);
+		
 		odTrainData = d.makeData1DDouble(trainData);
 		odTestData = d.makeData1DDouble(testData);
 		
@@ -79,7 +101,7 @@ public class GanExample {
 		{
 		//shuffle
 		ArrayList<Integer> shuffled = new ArrayList<>();
-		for(int j = 0; j < trainData.length; j++)
+		for(int j = 0; j < trainDataZeros.length; j++)
 		{
 			shuffled.add(j);
 		}
@@ -92,7 +114,7 @@ public class GanExample {
 		
 		System.out.println("\n\n\n-----DISCRIMINATOR-----\n\n\n");
 		
-		for(int i = 0; i < trainData.length; i++)
+		for(int i = 0; i < trainDataZeros.length; i++)
 		{
 			
 			
@@ -118,7 +140,7 @@ public class GanExample {
 			
 			//real
 			d.resetNodes();
-			d.forward(odTrainData[index], true);
+			d.forward(odTrainDataZeros[index], true);
 			d.backProp(1);
 			if(d.getDigit() == 1)
 			{
@@ -130,7 +152,7 @@ public class GanExample {
 			{
 				accuracy = (double) correct / ((i*2) + 2);
 				avgLoss = loss / ((i*2) + 2);
-				System.out.println(i + " / " + trainData.length + " acc = " + accuracy + " avgLoss = " + avgLoss);
+				System.out.println(i + " / " + trainDataZeros.length + " acc = " + accuracy + " avgLoss = " + avgLoss);
 			}	
 			
 		}
@@ -140,7 +162,7 @@ public class GanExample {
 		//TRAIN GENERATOR???
 		correct = 0;
 		loss = 0;
-		for(int i = 0; i < trainData.length; i++)
+		for(int i = 0; i < trainDataZeros.length; i++)
 		{
 			int index = shuffled.get(i);
 			//put discriminator weights on combined
@@ -161,7 +183,7 @@ public class GanExample {
 			
 			
 			d.resetNodes();
-			d.forward(odTrainData[index], false);
+			d.forward(odTrainDataZeros[index], false);
 			if(d.getDigit() == 1)
 			{
 				correct += 1;
@@ -173,7 +195,7 @@ public class GanExample {
 			{
 				accuracy = (double) correct / ((i*2) + 2);
 				avgLoss = loss / ((i*2) + 2);
-				System.out.println(i + " / " + trainData.length + " acc = " + accuracy + " avgLoss = " + avgLoss);
+				System.out.println(i + " / " + trainDataZeros.length + " acc = " + accuracy + " avgLoss = " + avgLoss);
 			}	
 			
 			
@@ -198,10 +220,16 @@ public class GanExample {
 			epoch0output = g.nodes.get(g.nodes.size() - 1);
 		}else {
 			double[] epochOutput = g.nodes.get(g.nodes.size() - 1);
+			largestChange = 0;
 			for(int i = 0; i < epochOutput.length - 1; i++)
 			{
-				System.out.println(Math.abs(epochOutput[i] - epoch0output[i]));
+			//	System.out.println(Math.abs(epochOutput[i] - epoch0output[i]));
+				if(Math.abs(epochOutput[i] - epoch0output[i]) > largestChange)
+				{
+					largestChange = Math.abs(epochOutput[i] - epoch0output[i]);
+				}
 			}
+			System.out.println("largest change = " + largestChange);
 		}
 		
 		
