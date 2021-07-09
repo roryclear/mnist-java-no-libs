@@ -4,6 +4,7 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
@@ -237,6 +238,44 @@ public class GanExample {
 		
 	}
 	
+	public static int[] rotateAndMirror(int[] image){
+		int[] out = new int[image.length];
+		int res = (int) Math.sqrt(image.length);
+		int[][] image2d = new int[res][res];
+		int[][] image2dCopy = new int[res][res];
+		System.out.println("image res = " + (int) Math.sqrt(image.length));
+		
+		//copy
+		for(int y = 0; y < res; y++)
+		{
+			for(int x = 0; x < res; x++)
+			{
+				image2d[y][x] = image[y*28 + x];
+				image2dCopy[y][x] = image[y*28 + x];
+			}
+		}
+				
+		//rotate
+ 		for(int y = 0; y < res; y++)
+		{
+			for(int x = 0; x < res; x++)
+			{
+				image2d[y][x] = image2dCopy[x][y];
+			}
+		}
+		
+		
+		//copy back
+		for(int y = 0; y < res; y++)
+		{
+			for(int x = 0; x < res; x++)
+			{
+				out[y*28 + x] = image2d[y][x];
+			}
+		}
+		
+		return out;
+	}
 	
 	public static void saveOutputToBitmap(Net g) {
 		double[] ganOutput = g.getLayer(g.getShape().length - 1); // change
@@ -249,6 +288,9 @@ public class GanExample {
 			
 			ganOutputInt[i] = (int) (ganOutput[i] * 255);
 		}
+		
+		ganOutputInt = rotateAndMirror(ganOutputInt);
+		
 		BufferedImage newImage = BufferedImage(ganOutputInt);
 		saveBMP(newImage,"createdImg" + epoch +  ".bmp");
 	}
