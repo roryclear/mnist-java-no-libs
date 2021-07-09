@@ -15,8 +15,8 @@ public class GanExample {
 	static MnistMatrix[] trainData;
 	static MnistMatrix[] testData;
 	
-	static MnistMatrix[] trainDataZeros;
-	static double[][] odTrainDataZeros;
+	static MnistMatrix[] trainDataDigit;
+	static double[][] odTrainDataDigit;
 	
 	static double[][] odTrainData;
 	static double[][] odTestData;
@@ -34,6 +34,7 @@ public class GanExample {
 	
 	public static void main(String[] args) throws IOException
 	{
+		int digit = 0;
 		
 		System.out.println("GAN????");
 		int epochs = 100;
@@ -77,22 +78,22 @@ public class GanExample {
 		testData = d.readData("mnistdata/t10k-images.idx3-ubyte","mnistdata/t10k-labels.idx1-ubyte");
 		
 		
-		//make trainData be only zeros
-		ArrayList<MnistMatrix> zerosAl = new ArrayList<>(); 
+		//make trainData be only chosen digit
+		ArrayList<MnistMatrix> digitAl = new ArrayList<>(); 
 		for(int i = 0; i < trainData.length; i++)
 		{
-			if(trainData[i].getLabel() == 0)
+			if(trainData[i].getLabel() == digit)
 			{
-			zerosAl.add(trainData[i]);
+			digitAl.add(trainData[i]);
 			}
 		}
-		trainDataZeros = new MnistMatrix[zerosAl.size()];
-		for(int i = 0; i < zerosAl.size(); i++)
+		trainDataDigit = new MnistMatrix[digitAl.size()];
+		for(int i = 0; i < digitAl.size(); i++)
 		{
-			trainDataZeros[i] = zerosAl.get(i);
+			trainDataDigit[i] = digitAl.get(i);
 		}
 		
-		odTrainDataZeros = d.makeData1DDouble(trainDataZeros);
+		odTrainDataDigit = d.makeData1DDouble(trainDataDigit);
 		
 		odTrainData = d.makeData1DDouble(trainData);
 		odTestData = d.makeData1DDouble(testData);
@@ -102,7 +103,7 @@ public class GanExample {
 		{
 		//shuffle
 		ArrayList<Integer> shuffled = new ArrayList<>();
-		for(int j = 0; j < trainDataZeros.length; j++)
+		for(int j = 0; j < trainDataDigit.length; j++)
 		{
 			shuffled.add(j);
 		}
@@ -115,7 +116,7 @@ public class GanExample {
 		
 		System.out.println("\n\n\n-----DISCRIMINATOR-----\n\n\n");
 		
-		for(int i = 0; i < trainDataZeros.length; i++)
+		for(int i = 0; i < trainDataDigit.length; i++)
 		{
 			
 			
@@ -141,7 +142,7 @@ public class GanExample {
 			
 			//real
 			d.resetNodes();
-			d.forward(odTrainDataZeros[index], true);
+			d.forward(odTrainDataDigit[index], true);
 			d.backProp(1);
 			if(d.getDigit() == 1)
 			{
@@ -153,7 +154,7 @@ public class GanExample {
 			{
 				accuracy = (double) correct / ((i*2) + 2);
 				avgLoss = loss / ((i*2) + 2);
-				System.out.println(i + " / " + trainDataZeros.length + " acc = " + accuracy + " avgLoss = " + avgLoss);
+				System.out.println(i + " / " + trainDataDigit.length + " acc = " + accuracy + " avgLoss = " + avgLoss);
 			}	
 			
 		}
@@ -163,7 +164,7 @@ public class GanExample {
 		//TRAIN GENERATOR???
 		correct = 0;
 		loss = 0;
-		for(int i = 0; i < trainDataZeros.length; i++)
+		for(int i = 0; i < trainDataDigit.length; i++)
 		{
 			int index = shuffled.get(i);
 			//put discriminator weights on combined
@@ -184,7 +185,7 @@ public class GanExample {
 			
 			
 			d.resetNodes();
-			d.forward(odTrainDataZeros[index], false);
+			d.forward(odTrainDataDigit[index], false);
 			if(d.getDigit() == 1)
 			{
 				correct += 1;
@@ -196,7 +197,7 @@ public class GanExample {
 			{
 				accuracy = (double) correct / ((i*2) + 2);
 				avgLoss = loss / ((i*2) + 2);
-				System.out.println(i + " / " + trainDataZeros.length + " acc = " + accuracy + " avgLoss = " + avgLoss);
+				System.out.println(i + " / " + trainDataDigit.length + " acc = " + accuracy + " avgLoss = " + avgLoss);
 			}	
 			
 			
@@ -243,7 +244,6 @@ public class GanExample {
 		int res = (int) Math.sqrt(image.length);
 		int[][] image2d = new int[res][res];
 		int[][] image2dCopy = new int[res][res];
-		System.out.println("image res = " + (int) Math.sqrt(image.length));
 		
 		//copy
 		for(int y = 0; y < res; y++)
