@@ -278,7 +278,7 @@ public class GanExample {
 	}
 	
 	public static void saveOutputToBitmap(Net g) {
-		double[] ganOutput = g.getLayer(g.getShape().length - 1); // change
+		double[] ganOutput = g.nodes.get((g.layers.length - 1));
 		int[] ganOutputInt = new int[ganOutput.length];
 		for(int i = 0; i < ganOutput.length; i++)
 		{

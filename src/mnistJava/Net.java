@@ -96,20 +96,6 @@ public class Net {
 		}
 	}
 	
-	public double getNodeValue(int layer, int node)
-	{
-		return nodes.get(layer)[node];
-	}
-
-	public double[] getLayer(int layer)
-	{
-		return nodes.get(layer);
-	}
-	
-	public int[] getShape()
-	{
-		return layers;
-	}
 	
 	public void backProp(int answer) {
 		int numberOfLayers = layers.length;
