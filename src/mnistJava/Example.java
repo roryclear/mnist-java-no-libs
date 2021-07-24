@@ -62,7 +62,7 @@ public class Example {
 			{
 				correct += 1;
 			}
-			totalLoss += n.getLoss(trainData[i].getLabel());
+			totalLoss += n.getTotalOutputLoss(trainData[i].getLabel());
 			n.resetNodes();
 			
 			//delete
@@ -122,7 +122,7 @@ public class Example {
 				correct +=1;
 				correctGuesses.put(n.getDigit(),correctGuesses.get(n.getDigit())+1); //inc
 			}
-			totalLoss += n.getLoss(testData[i].getLabel());
+			totalLoss += n.getTotalOutputLoss(testData[i].getLabel());
 		}
 		
 		avgLoss = (double) totalLoss / testData.length;

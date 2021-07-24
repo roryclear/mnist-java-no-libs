@@ -138,7 +138,7 @@ public class GanExample {
 			{
 				correct += 1;
 			}
-			loss += d.getLoss(0);
+			loss += d.getTotalOutputLoss(0);
 			
 			//real
 			d.resetNodes();
@@ -148,7 +148,7 @@ public class GanExample {
 			{
 				correct +=1;
 			}
-			loss += d.getLoss(1);
+			loss += d.getTotalOutputLoss(1);
 			//System.out.println("loss = " + d.getLoss(1));
 			if(i % logInterval == 0)
 			{
@@ -181,7 +181,7 @@ public class GanExample {
 			{
 				correct += 1;
 			}
-			loss += c.getLoss(0);
+			loss += c.getTotalOutputLoss(0);
 			
 			
 			d.resetNodes();
@@ -190,7 +190,7 @@ public class GanExample {
 			{
 				correct += 1;
 			}
-			loss += d.getLoss(1);
+			loss += d.getTotalOutputLoss(1);
 			
 			
 			if(i % logInterval == 0)

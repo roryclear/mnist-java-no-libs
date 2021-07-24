@@ -311,7 +311,7 @@ public class Net {
 	}
 	
 	
-	public double getLoss(int answer)
+	public double getTotalOutputLoss(int answer)
 	{
 		double[] output = nodes.get(nodes.size() - 1);
 		double loss = 0;
