@@ -96,18 +96,25 @@ public class Net {
 		}
 	}
 	
+	public double[] getLoss(int answer)
+	{
+		double[] output = nodes.get(nodes.size() - 1);
+		double[] loss = new double[output.length];
+		for(int i = 0; i < output.length; i++)
+		{
+			if(i == answer)
+			{
+				loss[i] = output[i] - 1;
+			}else {
+				loss[i] = output[i]; 
+			}
+		}
+		return loss;
+	}
 	
 	public void backProp(int answer) {
 		int numberOfLayers = layers.length;
-		double[] expectedOutput = new double[layers[numberOfLayers - 1]];
-		for(int x = 0; x < layers[numberOfLayers - 1]; x++)
-		{
-			expectedOutput[x] = 0.0;
-			if(x==answer)
-			{
-				expectedOutput[x] = 1.0;
-			}
-		}
+		double loss[] = getLoss(answer);
 		
 		if(gradsSize > 1)
 		{
@@ -128,8 +135,7 @@ public class Net {
 			for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
 			{
 				double output = nodesTotal.get(numberOfLayers - 1)[x];
-				double expected = expectedOutput[x];
-				double dedw = (output - expected) * derivateActivationFunction(output) * prevOutput;
+				double dedw = loss[x] * derivateActivationFunction(output) * prevOutput;
 				grads.get(gradsSize - 1).get(numberOfLayers - 2)[y][x] += dedw;
 			}
 		}
@@ -195,8 +201,7 @@ public class Net {
 				for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
 				{
 					double output = nodesTotal.get(numberOfLayers - 1)[x];
-					double expected = expectedOutput[x];
-					double dedw = (output - expected) * derivateActivationFunction(output) * (prevOutput);
+					double dedw = loss[x] * derivateActivationFunction(output) * (prevOutput);
 					grads.get(numberOfLayers - 2)[y][x] += dedw;
 				}
 			}
@@ -310,21 +315,6 @@ public class Net {
 	
 	}
 	
-	public double[] getLoss(int answer)
-	{
-		double[] output = nodes.get(nodes.size() - 1);
-		double[] loss = new double[output.length];
-		for(int i = 0; i < output.length; i++)
-		{
-			if(i == answer)
-			{
-				loss[i] += (1 - output[i])*(1 - output[i]);
-			}else {
-				loss[i] += (0 - output[i])*(0 - output[i]);
-			}
-		}
-		return loss;
-	}
 	
 	public double getTotalOutputLoss(int answer)
 	{
