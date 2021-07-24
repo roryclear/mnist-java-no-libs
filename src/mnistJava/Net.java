@@ -33,6 +33,25 @@ public class Net {
 	String saveFile = "weights";
 	String loadFile = "weights";
 	
+	public Net(Net n)
+	{
+		this.learningRate = n.learningRate;
+		this.momentum = n.momentum;
+		this.gradsSize = n.gradsSize;
+		this.activationFunction = n.activationFunction;
+		this.layers = n.layers;
+		this.nodes = n.nodes;
+		this.nodesTotal = n.nodesTotal;
+		this.weights = n.weights;
+		this.grads = n.grads;
+		this.saveFile = n.saveFile;
+		this.loadFile = n.loadFile;
+	}
+	
+	public Net()
+	{
+		
+	}
 	
 	public void forward(int[] data, boolean train)
 	{		
