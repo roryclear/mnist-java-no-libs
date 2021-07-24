@@ -57,7 +57,8 @@ public class Example {
 		for(int i = 0; i < odTrainData.length; i++)
 		{
 			n.forward(odTrainData[i], true);
-			n.backProp(trainData[i].getLabel());
+			n.backProp(n.getLoss(trainData[i].getLabel()));
+			
 			if(n.getDigit() == trainData[i].getLabel())
 			{
 				correct += 1;
@@ -176,7 +177,7 @@ public class Example {
 		System.out.println("0-9 accuracy = " + accuracy);
 		if(Arrays.equals(desiredOutput, output))
 		{
-			System.exit(0);	
+	//		System.exit(0);	
 		}
 		
 		
