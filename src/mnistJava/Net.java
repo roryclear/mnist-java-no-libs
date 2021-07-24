@@ -310,6 +310,21 @@ public class Net {
 	
 	}
 	
+	public double[] getLoss(int answer)
+	{
+		double[] output = nodes.get(nodes.size() - 1);
+		double[] loss = new double[output.length];
+		for(int i = 0; i < output.length; i++)
+		{
+			if(i == answer)
+			{
+				loss[i] += (1 - output[i])*(1 - output[i]);
+			}else {
+				loss[i] += (0 - output[i])*(0 - output[i]);
+			}
+		}
+		return loss;
+	}
 	
 	public double getTotalOutputLoss(int answer)
 	{
