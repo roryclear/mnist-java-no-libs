@@ -34,7 +34,7 @@ public class GanExample {
 	
 	public static void main(String[] args) throws IOException
 	{
-		int digit = 2;
+		int digit = 0;
 		
 		System.out.println("GAN????");
 		int epochs = 100;

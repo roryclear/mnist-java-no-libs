@@ -28,6 +28,7 @@ public class Net {
 	ArrayList<double[][]> weights = new ArrayList<>();
 		
 	ArrayList<ArrayList<double[][]>> grads = new ArrayList<>();	
+	ArrayList<double[][]> grad = new ArrayList<>();
 	
 	
 	String saveFile = "weights";
@@ -187,11 +188,11 @@ public class Net {
 		}
 		}
 		}else {	//gradsSize < 2
-			ArrayList<double[][]> grads = new ArrayList<>();	
+			setGrad();
 			for(int r = 0; r < layers.length - 1; r++)
 			{
 				double[][] layerGrads = new double[weights.get(r).length][weights.get(r)[0].length];
-				grads.add(layerGrads);
+				grad.add(layerGrads);
 			} 
 
 			
@@ -203,7 +204,7 @@ public class Net {
 				{
 					double output = nodesTotal.get(numberOfLayers - 1)[x];
 					double dedw = loss[x] * derivateActivationFunction(output) * (prevOutput);
-					grads.get(numberOfLayers - 2)[y][x] += dedw;
+					grad.get(numberOfLayers - 2)[y][x] += dedw;
 				}
 			}
 			
@@ -220,12 +221,12 @@ public class Net {
 					double totalError = 0;
 					for(int n = 0; n < nodesTotal.get(r+2).length; n++)	
 					{
-						totalError += (weights.get(r+1)[x][n]*grads.get(r+1)[x][n])/nodes.get(r+2).length;
+						totalError += (weights.get(r+1)[x][n]*grad.get(r+1)[x][n])/nodes.get(r+2).length;
 					}
 					totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x]) * nodesTotal.get(r)[y];
 					
 					
-					grads.get(r)[y][x] += totalError;
+					grad.get(r)[y][x] += totalError;
 				}
 			}
 			
@@ -238,7 +239,7 @@ public class Net {
 			{
 				for(int x = 0; x < weights.get(r)[y].length; x++)
 				{
-					weights.get(r)[y][x] -= (learningRate*grads.get(r)[y][x]);
+					weights.get(r)[y][x] -= (learningRate*grad.get(r)[y][x]);
 				}
 			}
 			}
@@ -446,6 +447,11 @@ public class Net {
 			ArrayList<double[][]> layerGrads = new ArrayList<>();
 			grads.set(gradsSize - 1,  layerGrads);
 		}
+	}
+	
+	public void setGrad()
+	{
+		grad = new ArrayList<>();
 	}
 	
 	public void loadWeights()
