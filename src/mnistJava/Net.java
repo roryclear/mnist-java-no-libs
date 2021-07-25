@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Net {
+public class Net implements Cloneable{
 	double learningRate = 0.1;
 	
 	double momentum = 0.5;
@@ -34,6 +34,11 @@ public class Net {
 	String saveFile = "weights";
 	String loadFile = "weights";
 	
+	
+	public Net clone() throws CloneNotSupportedException {
+		Net out = (Net) super.clone();
+		return out;
+	}
 	
 	public void forward(int[] data, boolean train)
 	{		

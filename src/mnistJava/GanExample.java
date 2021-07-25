@@ -32,9 +32,9 @@ public class GanExample {
 	static double[] epoch0output;
 	static double largestChange;
 	
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws IOException, CloneNotSupportedException
 	{
-		int digit = 0;
+		int digit = 3;
 		
 		System.out.println("GAN????");
 		int epochs = 100;
@@ -44,7 +44,7 @@ public class GanExample {
 		int[] gSize = {1,10,784};
 		g.learningRate = 0.01;
 		g.layers = gSize;
-		g.activationFunction = "leakyrelu";
+		g.activationFunction = "tanh";
 		g.momentum = 0.5;
 		g.gradsSize = 0;
 		g.resetNodes();
@@ -53,25 +53,13 @@ public class GanExample {
 		//disriminator
 		Net d = new Net();
 		int[] dSize = {784,20,2};
-		d.learningRate = 0.1;
+		d.learningRate = 0.01;
 		d.layers = dSize;
 		d.momentum = 0.5;
 		d.gradsSize = 0;
 		d.activationFunction = "leakyrelu";
 		d.resetNodes();
 		d.initWeights();
-		
-		
-		//combined
-		Net c = new Net();
-		int[] cSize = {1,10,784,20,2};
-		c.learningRate = 0.1;
-		c.momentum = 0.5;
-		c.gradsSize = 0;
-		c.layers = cSize;
-		c.activationFunction = "leakyrelu";
-		c.resetNodes();
-		c.initWeights();
 		
 		//data
 		trainData = d.readData("mnistdata/train-images.idx3-ubyte","mnistdata/train-labels.idx1-ubyte");
@@ -170,24 +158,41 @@ public class GanExample {
 		for(int i = 0; i < trainDataDigit.length; i++)
 		{
 			int index = shuffled.get(i);
-			//put discriminator weights on combined
-			for(int x = 0; x < d.weights.size(); x++)
-			{
-				c.weights.set((x + g.weights.size()), d.weights.get(x));
-			}
-			c.resetNodes();
+			g.resetNodes();
 			Random r = new Random();
-			double[] cInput = {r.nextDouble()};
-			c.forward(cInput, true);
+			double[] gInput = {r.nextDouble()};
+			g.forward(gInput, true);
+			
+			//get gen output
+			double[] gOutput = g.nodes.get(g.nodes.size() - 1);
+			
+			Net dCopy = d.clone();
+			dCopy.forward(gOutput, true);
+			
+			dCopy.backProp(d.getLoss(1));
+			
+			//get dis loss
+			double[] dLoss = new double[gOutput.length];
+			double[][] d0grads = d.grad.get(0);
+			
+			for(int y = 0; y < d0grads.length; y++)
+			{
+				for(int x = 0; x < d0grads[y].length; x++)
+				{
+					dLoss[y] -= d0grads[y][x];
+				}
+			}
+			
 		//	c.backProp(1);
-			c.backProp(c.getLoss(1));
+		//	c.backProp(c.getLoss(1));
+
+			g.backProp(dLoss);
 			
-			
-			if(c.getDigit() == 0)
+			if(d.getDigit() == 0)
 			{
 				correct += 1;
 			}
-			loss += c.getTotalOutputLoss(0);
+			loss += d.getTotalOutputLoss(0);
 			
 			
 			d.resetNodes();
@@ -208,12 +213,7 @@ public class GanExample {
 			
 			
 		}
-		
-		//put combined weights on generator
-		for(int x = 0; x < g.weights.size(); x++)
-		{
-			g.weights.set(x, c.weights.get(x));
-		}
+
 		
 		
 		g.resetNodes();
