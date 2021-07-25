@@ -57,7 +57,10 @@ public class Example {
 		for(int i = 0; i < odTrainData.length; i++)
 		{
 			n.forward(odTrainData[i], true);
-			n.backProp(trainData[i].getLabel());
+			//n.backProp(trainData[i].getLabel());
+			
+			n.backProp(n.getLoss(trainData[i].getLabel()));
+			
 			if(n.getDigit() == trainData[i].getLabel())
 			{
 				correct += 1;
@@ -88,7 +91,7 @@ public class Example {
 		if(avgLoss < lowestLoss)
 		{
 			lowestLoss = avgLoss;
-			n.saveWeights();
+	//		n.saveWeights();
 		}
 		
 		n.resetNodes();

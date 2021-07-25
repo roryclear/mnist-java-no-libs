@@ -34,7 +34,7 @@ public class GanExample {
 	
 	public static void main(String[] args) throws IOException
 	{
-		int digit = 0;
+		int digit = 2;
 		
 		System.out.println("GAN????");
 		int epochs = 100;
@@ -132,7 +132,8 @@ public class GanExample {
 			
 			d.resetNodes();
 			d.forward(gOutput, true);
-			d.backProp(0);
+		//	d.backProp(0);
+			d.backProp(d.getLoss(0));
 			
 			if(d.getDigit() == 0)
 			{
@@ -143,7 +144,9 @@ public class GanExample {
 			//real
 			d.resetNodes();
 			d.forward(odTrainDataDigit[index], true);
-			d.backProp(1);
+			//d.backProp(1);
+			d.backProp(d.getLoss(1));
+			
 			if(d.getDigit() == 1)
 			{
 				correct +=1;
@@ -176,7 +179,10 @@ public class GanExample {
 			Random r = new Random();
 			double[] cInput = {r.nextDouble()};
 			c.forward(cInput, true);
-			c.backProp(1);
+		//	c.backProp(1);
+			c.backProp(c.getLoss(1));
+			
+			
 			if(c.getDigit() == 0)
 			{
 				correct += 1;

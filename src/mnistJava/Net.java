@@ -112,9 +112,10 @@ public class Net {
 		return loss;
 	}
 	
-	public void backProp(int answer) {
+	
+	
+	public void backProp(double[] loss) {
 		int numberOfLayers = layers.length;
-		double loss[] = getLoss(answer);
 		
 		if(gradsSize > 1)
 		{
