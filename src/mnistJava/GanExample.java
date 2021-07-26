@@ -50,6 +50,20 @@ public class GanExample {
 		g.resetNodes();
 		g.initWeights();
 		
+		//make weights on g positive
+		for(int i = 0; i < g.weights.size(); i++)
+		{
+			double[][] lw = g.weights.get(i);
+			for(int y = 0; y < lw.length; y++)
+			{
+				for(int x = 0; x < lw[y].length; x++)
+				{
+					lw[y][x] += -1/(Math.sqrt(lw.length));
+				}
+			}
+			g.weights.set(i, lw);
+		}
+		
 		//disriminator
 		Net d = new Net();
 		int[] dSize = {784,20,2};
@@ -108,7 +122,8 @@ public class GanExample {
 		{
 			
 			
-			int index = shuffled.get(i);
+			//int index = shuffled.get(i);shuffle 
+			int index = i;
 			
 			//TRAIN DISCRIMINATOR
 			//generated
@@ -157,7 +172,7 @@ public class GanExample {
 		loss = 0;
 		for(int i = 0; i < trainDataDigit.length; i++)
 		{
-			int index = shuffled.get(i);
+			int index = i;
 			g.resetNodes();
 			Random r = new Random();
 			double[] gInput = {r.nextDouble()};
