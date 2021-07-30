@@ -32,12 +32,16 @@ public class GanExample {
 	static double[] epoch0output;
 	static double largestChange;
 	
+	static int digit = 0;
+	
 	public static void main(String[] args) throws IOException, CloneNotSupportedException
 	{
-		int digit = 3;
+		for(int z = 0; z < 10; z++)
+		{
+		digit = z;
 		
 		System.out.println("GAN????");
-		int epochs = 100;
+		int epochs = 3;
 		
 		//generator
 		Net g = new Net();
@@ -257,7 +261,7 @@ public class GanExample {
 		
 		
 		}//epochs
-		
+		}
 	}
 	
 	public static int[] rotateAndMirror(int[] image){
@@ -303,17 +307,13 @@ public class GanExample {
 		int[] ganOutputInt = new int[ganOutput.length];
 		for(int i = 0; i < ganOutput.length; i++)
 		{
-			//delete
-		//	System.out.println(ganOutput[i]);
-			//
-			
 			ganOutputInt[i] = (int) (ganOutput[i] * 255);
 		}
 		
 		ganOutputInt = rotateAndMirror(ganOutputInt);
 		
 		BufferedImage newImage = BufferedImage(ganOutputInt);
-		saveBMP(newImage,"createdImg" + epoch +  ".bmp");
+		saveBMP(newImage,digit+"createdImg" + epoch +  ".bmp");
 	}
 	
 	
