@@ -40,7 +40,8 @@ public class GanExample {
 		{
 		digit = z;
 		
-		System.out.println("GAN????");
+		System.out.println("\ndigit = " + z +"\n");
+		
 		int epochs = 3;
 		
 		//generator
