@@ -18,6 +18,8 @@ public class Example {
 	static double avgLoss;
 	static double accuracy;
 
+	static int batchSize = 10;
+	
 	public static void main(String[] args) throws IOException
 	{	
 		Net n = new Net();
@@ -53,13 +55,25 @@ public class Example {
 		totalLoss = 0;
 		System.out.println("\n--------EPOCH " + epoch + "--------");
 		
+		double[] outputLoss = new double[n.layers[n.layers.length - 1]];
 			
 		for(int i = 0; i < odTrainData.length; i++)
 		{
 			n.forward(odTrainData[i], true);
 			//n.backProp(trainData[i].getLabel());
 			
-			n.backProp(n.getLoss(trainData[i].getLabel()));
+			double thisLoss[] =  n.getLoss(trainData[i].getLabel());
+			for(int x = 0; x < thisLoss.length; x++)
+			{
+				outputLoss[x] += thisLoss[x];
+			}
+			
+			if(i % batchSize == 0)
+			{
+			n.backProp(thisLoss);
+			outputLoss = new double[n.layers[n.layers.length - 1]];
+			}
+			
 			
 			if(n.getDigit() == trainData[i].getLabel())
 			{
