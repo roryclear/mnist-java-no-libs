@@ -18,6 +18,8 @@ public class Net implements Cloneable{
 	int gradsSize = 0;
 	
 	String activationFunction = "sigmoid";
+	
+	String[] activationFunctions;
 
 	int layers[] = {784,16,10};
 	
@@ -45,7 +47,7 @@ public class Net implements Cloneable{
 		
 		for(int x = 0; x < layers[0]; x++)
 		{
-			nodes.get(0)[x] = activationFunction(data[x]);
+			nodes.get(0)[x] = activationFunction(data[x],0);
 			if(train)
 			{
 				nodesTotal.get(0)[x] += data[x];
@@ -61,7 +63,7 @@ public class Net implements Cloneable{
 				{
 					total += nodes.get(i-1)[y]*weights.get(i-1)[y][x];
 				}
-				total = activationFunction(total);
+				total = activationFunction(total,i);
 				nodes.get(i)[x] = total;
 				if(train)
 				{
@@ -92,7 +94,7 @@ public class Net implements Cloneable{
 				{
 					total += nodes.get(i-1)[y]*weights.get(i-1)[y][x];
 				}
-				total = activationFunction(total);
+				total = activationFunction(total,i);
 				nodes.get(i)[x] = total;
 				if(train)
 				{
@@ -142,7 +144,7 @@ public class Net implements Cloneable{
 			for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
 			{
 				double output = nodesTotal.get(numberOfLayers - 1)[x];
-				double dedw = loss[x] * derivateActivationFunction(output) * prevOutput;
+				double dedw = loss[x] * derivateActivationFunction(output,numberOfLayers - 2) * prevOutput;
 				grads.get(gradsSize - 1).get(numberOfLayers - 2)[y][x] += dedw;
 			}
 		}
@@ -162,7 +164,7 @@ public class Net implements Cloneable{
 				{
 					totalError += (weights.get(r+1)[x][n]*grads.get(gradsSize - 1).get(r+1)[x][n])/nodes.get(r+2).length;
 				}
-				totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x]) * nodesTotal.get(r)[y];
+				totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x],r) * nodesTotal.get(r)[y];
 				
 				
 				grads.get(gradsSize - 1).get(r)[y][x] += totalError;
@@ -208,7 +210,7 @@ public class Net implements Cloneable{
 				for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
 				{
 					double output = nodesTotal.get(numberOfLayers - 1)[x];
-					double dedw = loss[x] * derivateActivationFunction(output) * (prevOutput);
+					double dedw = loss[x] * derivateActivationFunction(output,numberOfLayers - 2) * (prevOutput);
 					grad.get(numberOfLayers - 2)[y][x] += dedw;
 				}
 			}
@@ -228,7 +230,7 @@ public class Net implements Cloneable{
 					{
 						totalError += (weights.get(r+1)[x][n]*grad.get(r+1)[x][n])/nodes.get(r+2).length;
 					}
-					totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x]) * nodesTotal.get(r)[y];
+					totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x],r) * nodesTotal.get(r)[y];
 					
 					
 					grad.get(r)[y][x] += totalError;
@@ -251,15 +253,15 @@ public class Net implements Cloneable{
 		}
 	}
 	
-	public double activationFunction(double input)
+	public double activationFunction(double input, int layer)
 	{
 		//only sigmoid works atm
-		if(activationFunction.equalsIgnoreCase("sigmoid"))
+		if(activationFunctions[layer].equalsIgnoreCase("sigmoid"))
 		{
 		double output = 1 / (1 + Math.exp(-input));
 		return output;
 		}
-		if(activationFunction.equalsIgnoreCase("relu"))
+		if(activationFunctions[layer].equalsIgnoreCase("relu"))
 		{
 			if(input > 0)
 			{
@@ -268,7 +270,7 @@ public class Net implements Cloneable{
 			return 0;
 		}
 		
-		if(activationFunction.equalsIgnoreCase("leakyrelu"))
+		if(activationFunctions[layer].equalsIgnoreCase("leakyrelu"))
 		{
 			if(input > 0)
 			{
@@ -277,7 +279,7 @@ public class Net implements Cloneable{
 			return 0.01*input;
 		}
 		
-		if(activationFunction.equalsIgnoreCase("tanh"))
+		if(activationFunctions[layer].equalsIgnoreCase("tanh"))
 		{
 			return Math.tanh(input);
 		}
@@ -286,13 +288,13 @@ public class Net implements Cloneable{
 		return 1 / (1 + Math.exp(-input));
 	}
 	
-	public double derivateActivationFunction(double input)
+	public double derivateActivationFunction(double input, int layer)
 	{
-		if(activationFunction.equalsIgnoreCase("sigmoid"))
+		if(activationFunctions[layer].equalsIgnoreCase("sigmoid"))
 		{
 			return input * (1 - input);
 		}
-		if(activationFunction.equalsIgnoreCase("relu"))
+		if(activationFunctions[layer].equalsIgnoreCase("relu"))
 		{
 			if(input > 0)
 			{
@@ -302,7 +304,7 @@ public class Net implements Cloneable{
 			}
 		}
 		
-		if(activationFunction.equalsIgnoreCase("leakyrelu"))
+		if(activationFunctions[layer].equalsIgnoreCase("leakyrelu"))
 		{
 			if(input > 0)
 			{
@@ -312,7 +314,7 @@ public class Net implements Cloneable{
 			}
 		}
 		
-		if(activationFunction.equalsIgnoreCase("tanh"))
+		if(activationFunctions[layer].equalsIgnoreCase("tanh"))
 		{
 			return 1 - (Math.tanh(input) * Math.tanh(input)); //?
 		}
@@ -431,6 +433,16 @@ public class Net implements Cloneable{
 			}
 			
 			weights.add(layerWeights);
+		}
+		
+		//init activationFunctions
+		if(activationFunctions == null)
+		{
+			activationFunctions = new String[layers.length];
+			for(int i = 0; i < activationFunctions.length; i++)
+			{
+				activationFunctions[i] = activationFunction;
+			}
 		}
 	}
 	
