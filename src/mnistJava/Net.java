@@ -112,9 +112,9 @@ public class Net implements Cloneable{
 		{
 			if(i == answer)
 			{
-				loss[i] = output[i] - 1;
+				loss[i] = 1 - output[i];
 			}else {
-				loss[i] = output[i]; 
+				loss[i] = 0 - output[i]; 
 			}
 		}
 		return loss;
@@ -144,7 +144,7 @@ public class Net implements Cloneable{
 			for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
 			{
 				double output = nodesTotal.get(numberOfLayers - 1)[x];
-				double dedw = loss[x] * derivateActivationFunction(output,numberOfLayers - 2) * prevOutput;
+				double dedw = -loss[x] * derivateActivationFunction(output,numberOfLayers - 2) * prevOutput;
 				grads.get(gradsSize - 1).get(numberOfLayers - 2)[y][x] += dedw;
 			}
 		}
@@ -210,7 +210,7 @@ public class Net implements Cloneable{
 				for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
 				{
 					double output = nodesTotal.get(numberOfLayers - 1)[x];
-					double dedw = loss[x] * derivateActivationFunction(output,numberOfLayers - 2) * (prevOutput);
+					double dedw = -loss[x] * derivateActivationFunction(output,numberOfLayers - 2) * (prevOutput);
 					grad.get(numberOfLayers - 2)[y][x] += dedw;
 				}
 			}
