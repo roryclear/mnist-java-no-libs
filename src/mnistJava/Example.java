@@ -55,26 +55,11 @@ public class Example {
 		totalLoss = 0;
 		System.out.println("\n--------EPOCH " + epoch + "--------");
 		
-		double[] outputLoss = new double[n.layers[n.layers.length - 1]];
 			
 		for(int i = 0; i < odTrainData.length; i++)
 		{
 			n.forward(odTrainData[i], true);
-			//n.backProp(trainData[i].getLabel());
-			
-			double thisLoss[] =  n.getLoss(trainData[i].getLabel());
-			for(int x = 0; x < thisLoss.length; x++)
-			{
-				outputLoss[x] += thisLoss[x];
-			}
-			
-			if(i % batchSize == 0)
-			{
-			n.backProp(thisLoss);
-			outputLoss = new double[n.layers[n.layers.length - 1]];
-			}
-			
-			
+			n.backProp(n.getLoss(trainData[i].getLabel()));
 			if(n.getDigit() == trainData[i].getLabel())
 			{
 				correct += 1;
@@ -87,7 +72,6 @@ public class Example {
 			{
 				accuracy = (double) correct / (i+1);
 				avgLoss = (double) totalLoss / (i+1);
-				
 				System.out.println(i + "/" + trainData.length + ": acc = " + accuracy + "    avgLoss = " + avgLoss);
 			}
 		}
