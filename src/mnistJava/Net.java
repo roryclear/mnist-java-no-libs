@@ -36,7 +36,7 @@ public class Net implements Cloneable{
 	String saveFile = "weights";
 	String loadFile = "weights";
 	
-	
+	//
 	public Net clone() throws CloneNotSupportedException {
 		Net out = (Net) super.clone();
 		return out;
