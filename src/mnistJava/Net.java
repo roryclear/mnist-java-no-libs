@@ -188,8 +188,6 @@ public class Net implements Cloneable{
 					gradient += grads.get(gradsSize - 1 - g).get(r)[y][x]*(Math.pow(momentum, g));
 					}
 				}
-				gradient = gradient/gradsSize;
-				
 				weights.get(r)[y][x] -= (learningRate*gradient);
 			}
 		}
