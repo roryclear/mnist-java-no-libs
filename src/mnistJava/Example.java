@@ -59,7 +59,9 @@ public class Example {
 		for(int i = 0; i < odTrainData.length; i++)
 		{
 			n.forward(odTrainData[i], true);
-			n.backProp(n.getLoss(trainData[i].getLabel()));
+			n.backward(n.getLoss(trainData[i].getLabel()));
+			n.optimize();
+			//n.backProp(n.getLoss(trainData[i].getLabel()));
 			if(n.getDigit() == trainData[i].getLabel())
 			{
 				correct += 1;

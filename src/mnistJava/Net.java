@@ -250,6 +250,48 @@ public class Net implements Cloneable{
 		}
 	}
 	
+	
+	public void optimize() {
+		int numberOfLayers = layers.length;
+		
+		if(gradsSize > 1)
+		{
+		for(int r = 0; r < numberOfLayers - 1; r++)
+		{
+			
+		for(int y = 0; y < weights.get(r).length; y++)
+		{
+			for(int x = 0; x < weights.get(r)[y].length; x++)
+			{
+				double gradient = 0;
+				for(int g = 0; g < gradsSize; g++)
+				{
+					if(grads.get(gradsSize - 1 - g).size() > 0)
+					{
+					gradient += grads.get(gradsSize - 1 - g).get(r)[y][x]*(Math.pow(momentum, g));
+					}
+				}
+				weights.get(r)[y][x] -= (learningRate*gradient);
+			}
+		}
+		}
+		}else {	//gradsSize < 2
+		
+			for(int r = 0; r < numberOfLayers - 1; r++)
+			{
+			
+			for(int y = 0; y < weights.get(r).length; y++)
+			{
+				for(int x = 0; x < weights.get(r)[y].length; x++)
+				{
+					weights.get(r)[y][x] -= (learningRate*grad.get(r)[y][x]);
+				}
+			}
+			}
+		}
+		resetGrads();
+	}
+	
 	public void backward(double[] loss) {
 		int numberOfLayers = layers.length;
 		if(gradsSize > 1)
