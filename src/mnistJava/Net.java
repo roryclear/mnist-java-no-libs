@@ -119,15 +119,14 @@ public class Net implements Cloneable{
 		}
 		return loss;
 	}
-	
-	
+
 	
 	public void backProp(double[] loss) {
 		int numberOfLayers = layers.length;
 		
 		if(gradsSize > 1)
 		{
-		setGrads();
+		resetGrads();
 		ArrayList<double[][]> currentGrads = new ArrayList<>();	
 		for(int r = 0; r < layers.length - 1; r++)
 		{
@@ -444,7 +443,7 @@ public class Net implements Cloneable{
 		}
 	}
 	
-	public void setGrads()
+	public void resetGrads()
 	{
 		if(grads.size() < gradsSize)
 		{
