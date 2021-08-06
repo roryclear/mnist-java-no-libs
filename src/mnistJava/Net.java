@@ -250,6 +250,99 @@ public class Net implements Cloneable{
 		}
 	}
 	
+	public void backward(double[] loss) {
+		int numberOfLayers = layers.length;
+		if(gradsSize > 1)
+		{
+		ArrayList<double[][]> currentGrads = new ArrayList<>();	
+		for(int r = 0; r < layers.length - 1; r++)
+		{
+			double[][] layerGrads = new double[weights.get(r).length][weights.get(r)[0].length];
+			currentGrads.add(layerGrads);
+		} 	
+		grads.set(gradsSize - 1,  currentGrads);
+		
+		//output
+		for(int y = 0; y < weights.get(numberOfLayers - 2).length; y++)
+		{
+			double prevOutput = nodesTotal.get(numberOfLayers - 2)[y];
+			for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
+			{
+				double output = nodesTotal.get(numberOfLayers - 1)[x];
+				double dedw = -loss[x] * derivateActivationFunction(output,numberOfLayers - 2) * prevOutput;
+				grads.get(gradsSize - 1).get(numberOfLayers - 2)[y][x] += dedw;
+			}
+		}
+		
+		
+		
+		//all other weights
+		for(int r = numberOfLayers - 3; r > -1; r--)
+		{
+		
+		for(int y = 0; y < weights.get(r).length; y++)
+		{
+			for(int x = 0; x < weights.get(r)[y].length; x++)
+			{
+				double totalError = 0;
+				for(int n = 0; n < nodesTotal.get(r+2).length; n++)	
+				{
+					totalError += (weights.get(r+1)[x][n]*grads.get(gradsSize - 1).get(r+1)[x][n])/nodes.get(r+2).length;
+				}
+				totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x],r) * nodesTotal.get(r)[y];
+				
+				
+				grads.get(gradsSize - 1).get(r)[y][x] += totalError;
+			}
+		}
+		
+		}
+		}else {	//gradsSize < 2
+			for(int r = 0; r < layers.length - 1; r++)
+			{
+				double[][] layerGrads = new double[weights.get(r).length][weights.get(r)[0].length];
+				grad.add(layerGrads);
+			} 
+
+			
+			//output
+			for(int y = 0; y < weights.get(numberOfLayers - 2).length; y++)
+			{
+				double prevOutput = nodesTotal.get(numberOfLayers - 2)[y];
+				for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
+				{
+					double output = nodesTotal.get(numberOfLayers - 1)[x];
+					double dedw = -loss[x] * derivateActivationFunction(output,numberOfLayers - 2) * (prevOutput);
+					grad.get(numberOfLayers - 2)[y][x] += dedw;
+				}
+			}
+			
+			
+			
+			//all other weights
+			for(int r = numberOfLayers - 3; r > -1; r--)
+			{
+			
+			for(int y = 0; y < weights.get(r).length; y++)
+			{
+				for(int x = 0; x < weights.get(r)[y].length; x++)
+				{
+					double totalError = 0;
+					for(int n = 0; n < nodesTotal.get(r+2).length; n++)	
+					{
+						totalError += (weights.get(r+1)[x][n]*grad.get(r+1)[x][n])/nodes.get(r+2).length;
+					}
+					totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x],r) * nodesTotal.get(r)[y];
+					
+					
+					grad.get(r)[y][x] += totalError;
+				}
+			}
+			
+			}
+		}
+	}
+	
 	public double activationFunction(double input, int layer)
 	{
 		//only sigmoid works atm
