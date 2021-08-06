@@ -192,7 +192,7 @@ public class Net implements Cloneable{
 		}
 		}
 		}else {	//gradsSize < 2
-			setGrad();
+			resetGrads();
 			for(int r = 0; r < layers.length - 1; r++)
 			{
 				double[][] layerGrads = new double[weights.get(r).length][weights.get(r)[0].length];
@@ -445,6 +445,8 @@ public class Net implements Cloneable{
 	
 	public void resetGrads()
 	{
+		if(gradsSize > 1)
+		{
 		if(grads.size() < gradsSize)
 		{
 			for(int i = 0; i < gradsSize; i++)
@@ -461,11 +463,9 @@ public class Net implements Cloneable{
 			ArrayList<double[][]> layerGrads = new ArrayList<>();
 			grads.set(gradsSize - 1,  layerGrads);
 		}
-	}
-	
-	public void setGrad()
-	{
-		grad = new ArrayList<>();
+		}else {
+			grad = new ArrayList<>();
+		}
 	}
 	
 	public void loadWeights()
