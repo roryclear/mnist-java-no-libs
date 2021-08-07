@@ -3,7 +3,9 @@ package mnistJava;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
@@ -19,6 +21,8 @@ public class Example {
 	static double accuracy;
 
 	static int batchSize = 10;
+	
+	static boolean shuffle = true;
 	
 	public static void main(String[] args) throws IOException
 	{	
@@ -49,8 +53,23 @@ public class Example {
 		testNN(n);
 		double lowestLoss = avgLoss;
 		
+		
+		//shuffled index 
+		ArrayList<Integer> shuffled = new ArrayList<>();
+		if(shuffle)
+		{
+			for(int i = 0; i < trainData.length; i++)
+			{
+				shuffled.add(i);
+			}
+		}
+		
 		for(int epoch = 0; epoch < epochs; epoch++)
 		{
+		if(shuffle)
+		{
+			Collections.shuffle(shuffled);
+		}
 		correct = 0;
 		totalLoss = 0;
 		System.out.println("\n--------EPOCH " + epoch + "--------");
@@ -58,18 +77,24 @@ public class Example {
 			
 		for(int i = 0; i < odTrainData.length; i++)
 		{
-			n.forward(odTrainData[i], true);
-			n.backward(n.getLoss(trainData[i].getLabel()));
+			int index = i;
+			if(shuffle)
+			{
+				index = shuffled.get(i);
+			}
+			
+			n.forward(odTrainData[index], true);
+			n.backward(n.getLoss(trainData[index].getLabel()));
 			if(i % batchSize == 0)
 			{
 			n.optimize();
 			}
 			//n.backProp(n.getLoss(trainData[i].getLabel()));
-			if(n.getDigit() == trainData[i].getLabel())
+			if(n.getDigit() == trainData[index].getLabel())
 			{
 				correct += 1;
 			}
-			totalLoss += n.getTotalOutputLoss(trainData[i].getLabel());
+			totalLoss += n.getTotalOutputLoss(trainData[index].getLabel());
 			n.resetNodes();
 			
 			//delete
