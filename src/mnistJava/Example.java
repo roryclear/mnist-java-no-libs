@@ -60,7 +60,10 @@ public class Example {
 		{
 			n.forward(odTrainData[i], true);
 			n.backward(n.getLoss(trainData[i].getLabel()));
+			if(i % batchSize == 0)
+			{
 			n.optimize();
+			}
 			//n.backProp(n.getLoss(trainData[i].getLabel()));
 			if(n.getDigit() == trainData[i].getLabel())
 			{
