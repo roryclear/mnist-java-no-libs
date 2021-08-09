@@ -42,7 +42,7 @@ public class GanExample {
 		
 		System.out.println("\ndigit = " + z +"\n");
 		
-		int epochs = 3;
+		int epochs = 50;
 		
 		//generator
 		Net g = new Net();
@@ -127,8 +127,8 @@ public class GanExample {
 		{
 			
 			
-			//int index = shuffled.get(i);shuffle 
-			int index = i;
+			int index = shuffled.get(i); //shuffle 
+			//int index = i;
 			
 			//TRAIN DISCRIMINATOR
 			//generated
@@ -167,7 +167,6 @@ public class GanExample {
 				avgLoss = loss / ((i*2) + 2);
 				System.out.println(i + " / " + trainDataDigit.length + " acc = " + accuracy + " avgLoss = " + avgLoss);
 			}	
-			
 		}
 		
 		System.out.println("\n\n\n-----GENERATOR-----\n\n\n");
@@ -177,7 +176,8 @@ public class GanExample {
 		loss = 0;
 		for(int i = 0; i < trainDataDigit.length; i++)
 		{
-			int index = i;
+			int index = shuffled.get(i); // shuffle
+		//	int index = i;
 			g.resetNodes();
 			Random r = new Random();
 			double[] gInput = {r.nextDouble()};
@@ -186,14 +186,15 @@ public class GanExample {
 			//get gen output
 			double[] gOutput = g.nodes.get(g.nodes.size() - 1);
 			
+			d.resetGrads();
 			Net dCopy = d.clone();
 			dCopy.forward(gOutput, true);
 			
-			dCopy.backProp(d.getLoss(1));
+			dCopy.backProp(dCopy.getLoss(1));
 			
 			//get dis loss
 			double[] dLoss = new double[gOutput.length];
-			double[][] d0grads = d.grad.get(0);
+			double[][] d0grads = dCopy.grad.get(0);
 			
 			for(int y = 0; y < d0grads.length; y++)
 			{
