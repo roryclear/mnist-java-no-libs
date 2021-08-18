@@ -34,6 +34,8 @@ public class GanExample {
 	
 	static int digit = 0;
 	
+	static boolean shuffle = false;
+	
 	public static void main(String[] args) throws IOException, CloneNotSupportedException
 	{
 		for(int z = 0; z < 10; z++)
@@ -114,7 +116,10 @@ public class GanExample {
 		{
 			shuffled.add(j);
 		}
+		if(shuffle)
+		{
 		Collections.shuffle(shuffled);
+		}
 			
 		System.out.println("\n\n\n----EPOCH " + epoch +"----\n\n\n\n");
 			
