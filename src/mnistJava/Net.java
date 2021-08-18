@@ -26,7 +26,6 @@ public class Net implements Cloneable{
 	
 	ArrayList<double[]> nodes = new ArrayList<>();
 	
-	ArrayList<double[]> nodesTotal = new ArrayList<>();
 	ArrayList<double[][]> weights = new ArrayList<>();
 		
 	ArrayList<ArrayList<double[][]>> grads = new ArrayList<>();	
@@ -48,10 +47,6 @@ public class Net implements Cloneable{
 		for(int x = 0; x < layers[0]; x++)
 		{
 			nodes.get(0)[x] = activationFunction(data[x],0);
-			if(train)
-			{
-				nodesTotal.get(0)[x] += data[x];
-			}
 		}
 		
 		for(int i = 1; i < layers.length; i++)
@@ -65,10 +60,6 @@ public class Net implements Cloneable{
 				}
 				total = activationFunction(total,i);
 				nodes.get(i)[x] = total;
-				if(train)
-				{
-					nodesTotal.get(i)[x] += total;
-				}
 			}
 		}
 	}
@@ -79,10 +70,6 @@ public class Net implements Cloneable{
 		for(int x = 0; x < layers[0]; x++)
 		{
 			nodes.get(0)[x] = data[x];
-			if(train)
-			{
-				nodesTotal.get(0)[x] += data[x];
-			}
 		}
 		
 		for(int i = 1; i < layers.length; i++)
@@ -96,10 +83,6 @@ public class Net implements Cloneable{
 				}
 				total = activationFunction(total,i);
 				nodes.get(i)[x] = total;
-				if(train)
-				{
-					nodesTotal.get(i)[x] += total;
-				}
 			}
 		}
 	}
@@ -139,10 +122,10 @@ public class Net implements Cloneable{
 		//output
 		for(int y = 0; y < weights.get(numberOfLayers - 2).length; y++)
 		{
-			double prevOutput = nodesTotal.get(numberOfLayers - 2)[y];
+			double prevOutput = nodes.get(numberOfLayers - 2)[y];
 			for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
 			{
-				double output = nodesTotal.get(numberOfLayers - 1)[x];
+				double output = nodes.get(numberOfLayers - 1)[x];
 				double dedw = -loss[x] * derivateActivationFunction(output,numberOfLayers - 2) * prevOutput;
 				grads.get(gradsSize - 1).get(numberOfLayers - 2)[y][x] += dedw;
 			}
@@ -159,11 +142,11 @@ public class Net implements Cloneable{
 			for(int x = 0; x < weights.get(r)[y].length; x++)
 			{
 				double totalError = 0;
-				for(int n = 0; n < nodesTotal.get(r+2).length; n++)	
+				for(int n = 0; n < nodes.get(r+2).length; n++)	
 				{
 					totalError += (weights.get(r+1)[x][n]*grads.get(gradsSize - 1).get(r+1)[x][n])/nodes.get(r+2).length;
 				}
-				totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x],r) * nodesTotal.get(r)[y];
+				totalError = totalError * derivateActivationFunction(nodes.get(r+1)[x],r) * nodes.get(r)[y];
 				
 				
 				grads.get(gradsSize - 1).get(r)[y][x] += totalError;
@@ -203,10 +186,10 @@ public class Net implements Cloneable{
 			//output
 			for(int y = 0; y < weights.get(numberOfLayers - 2).length; y++)
 			{
-				double prevOutput = nodesTotal.get(numberOfLayers - 2)[y];
+				double prevOutput = nodes.get(numberOfLayers - 2)[y];
 				for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
 				{
-					double output = nodesTotal.get(numberOfLayers - 1)[x];
+					double output = nodes.get(numberOfLayers - 1)[x];
 					double dedw = -loss[x] * derivateActivationFunction(output,numberOfLayers - 2) * (prevOutput);
 					grad.get(numberOfLayers - 2)[y][x] += dedw;
 				}
@@ -223,11 +206,11 @@ public class Net implements Cloneable{
 				for(int x = 0; x < weights.get(r)[y].length; x++)
 				{
 					double totalError = 0;
-					for(int n = 0; n < nodesTotal.get(r+2).length; n++)	
+					for(int n = 0; n < nodes.get(r+2).length; n++)	
 					{
 						totalError += (weights.get(r+1)[x][n]*grad.get(r+1)[x][n])/nodes.get(r+2).length;
 					}
-					totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x],r) * nodesTotal.get(r)[y];
+					totalError = totalError * derivateActivationFunction(nodes.get(r+1)[x],r) * nodes.get(r)[y];
 					
 					
 					grad.get(r)[y][x] += totalError;
@@ -307,10 +290,10 @@ public class Net implements Cloneable{
 		//output
 		for(int y = 0; y < weights.get(numberOfLayers - 2).length; y++)
 		{
-			double prevOutput = nodesTotal.get(numberOfLayers - 2)[y];
+			double prevOutput = nodes.get(numberOfLayers - 2)[y];
 			for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
 			{
-				double output = nodesTotal.get(numberOfLayers - 1)[x];
+				double output = nodes.get(numberOfLayers - 1)[x];
 				double dedw = -loss[x] * derivateActivationFunction(output,numberOfLayers - 2) * prevOutput;
 				grads.get(gradsSize - 1).get(numberOfLayers - 2)[y][x] += dedw;
 			}
@@ -327,11 +310,11 @@ public class Net implements Cloneable{
 			for(int x = 0; x < weights.get(r)[y].length; x++)
 			{
 				double totalError = 0;
-				for(int n = 0; n < nodesTotal.get(r+2).length; n++)	
+				for(int n = 0; n < nodes.get(r+2).length; n++)	
 				{
 					totalError += (weights.get(r+1)[x][n]*grads.get(gradsSize - 1).get(r+1)[x][n])/nodes.get(r+2).length;
 				}
-				totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x],r) * nodesTotal.get(r)[y];
+				totalError = totalError * derivateActivationFunction(nodes.get(r+1)[x],r) * nodes.get(r)[y];
 				
 				
 				grads.get(gradsSize - 1).get(r)[y][x] += totalError;
@@ -350,10 +333,10 @@ public class Net implements Cloneable{
 			//output
 			for(int y = 0; y < weights.get(numberOfLayers - 2).length; y++)
 			{
-				double prevOutput = nodesTotal.get(numberOfLayers - 2)[y];
+				double prevOutput = nodes.get(numberOfLayers - 2)[y];
 				for(int x = 0; x < weights.get(numberOfLayers - 2)[y].length; x++)
 				{
-					double output = nodesTotal.get(numberOfLayers - 1)[x];
+					double output = nodes.get(numberOfLayers - 1)[x];
 					double dedw = -loss[x] * derivateActivationFunction(output,numberOfLayers - 2) * (prevOutput);
 					grad.get(numberOfLayers - 2)[y][x] += dedw;
 				}
@@ -370,11 +353,11 @@ public class Net implements Cloneable{
 				for(int x = 0; x < weights.get(r)[y].length; x++)
 				{
 					double totalError = 0;
-					for(int n = 0; n < nodesTotal.get(r+2).length; n++)	
+					for(int n = 0; n < nodes.get(r+2).length; n++)	
 					{
 						totalError += (weights.get(r+1)[x][n]*grad.get(r+1)[x][n])/nodes.get(r+2).length;
 					}
-					totalError = totalError * derivateActivationFunction(nodesTotal.get(r+1)[x],r) * nodesTotal.get(r)[y];
+					totalError = totalError * derivateActivationFunction(nodes.get(r+1)[x],r) * nodes.get(r)[y];
 					
 					
 					grad.get(r)[y][x] += totalError;
@@ -685,13 +668,11 @@ public class Net implements Cloneable{
 	public void resetNodes()
 	{
 		nodes = new ArrayList<>();
-		nodesTotal = new ArrayList<>();
 		for(int i = 0; i < layers.length; i++)
 		{
 			double[] layerNodes = new double[layers[i]];
 			double[] layerNodesTotal = new double[layers[i]];
 			nodes.add(layerNodes);
-			nodesTotal.add(layerNodesTotal);
 		}
 		
 	}
