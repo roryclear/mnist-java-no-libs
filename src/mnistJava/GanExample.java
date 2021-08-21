@@ -34,7 +34,9 @@ public class GanExample {
 	
 	static int digit = 0;
 	
-	static boolean shuffle = false;
+	static boolean shuffle = true;
+	
+	static int batchSize = 1;
 	
 	public static void main(String[] args) throws IOException, CloneNotSupportedException
 	{
@@ -145,8 +147,10 @@ public class GanExample {
 			
 			d.resetNodes();
 			d.forward(gOutput, true);
-		//	d.backProp(0);
-			d.backProp(d.getLoss(0));
+
+			
+			d.backward(d.getLoss(0));
+			d.optimize();
 			
 			if(d.getDigit() == 0)
 			{
@@ -157,8 +161,9 @@ public class GanExample {
 			//real
 			d.resetNodes();
 			d.forward(odTrainDataDigit[index], true);
-			//d.backProp(1);
-			d.backProp(d.getLoss(1));
+
+			d.backward(d.getLoss(1));
+			d.optimize();
 			
 			if(d.getDigit() == 1)
 			{
@@ -191,8 +196,8 @@ public class GanExample {
 			//get gen output
 			double[] gOutput = g.nodes.get(g.nodes.size() - 1);
 			
-			d.resetGrads();
 			Net dCopy = d.clone();
+			dCopy.resetGrads();
 			dCopy.forward(gOutput, true);
 			
 			dCopy.backProp(dCopy.getLoss(1));
@@ -209,10 +214,8 @@ public class GanExample {
 				}
 			}
 			
-		//	c.backProp(1);
-		//	c.backProp(c.getLoss(1));
-
-			g.backProp(dLoss);
+			g.backward(dLoss);
+			g.optimize();
 			
 			if(d.getDigit() == 0)
 			{
