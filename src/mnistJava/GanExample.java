@@ -150,7 +150,6 @@ public class GanExample {
 
 			
 			d.backward(d.getLoss(0));
-			d.optimize();
 			
 			if(d.getDigit() == 0)
 			{
