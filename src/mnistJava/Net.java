@@ -671,7 +671,6 @@ public class Net implements Cloneable{
 		for(int i = 0; i < layers.length; i++)
 		{
 			double[] layerNodes = new double[layers[i]];
-			double[] layerNodesTotal = new double[layers[i]];
 			nodes.add(layerNodes);
 		}
 		
