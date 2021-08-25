@@ -69,7 +69,7 @@ public class Net implements Cloneable{
 		
 		for(int x = 0; x < layers[0]; x++)
 		{
-			nodes.get(0)[x] = data[x];
+			nodes.get(0)[x] += data[x];
 		}
 		
 		for(int i = 1; i < layers.length; i++)
@@ -82,7 +82,7 @@ public class Net implements Cloneable{
 					total += nodes.get(i-1)[y]*weights.get(i-1)[y][x];
 				}
 				total = activationFunction(total,i);
-				nodes.get(i)[x] = total;
+				nodes.get(i)[x] += total;
 			}
 		}
 	}

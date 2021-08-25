@@ -148,7 +148,6 @@ public class GanExample {
 			d.resetNodes();
 			d.forward(gOutput, true);
 
-			
 			d.backward(d.getLoss(0));
 			
 			if(d.getDigit() == 0)
@@ -195,8 +194,11 @@ public class GanExample {
 			//get gen output
 			double[] gOutput = g.nodes.get(g.nodes.size() - 1);
 			
+		//	d.resetNodes(); //!!delete
+			
 			Net dCopy = d.clone();
 			dCopy.resetGrads();
+			
 			dCopy.forward(gOutput, true);
 			
 			dCopy.backProp(dCopy.getLoss(1));

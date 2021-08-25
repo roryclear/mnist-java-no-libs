@@ -184,6 +184,7 @@ public class Example {
 	    	}
 	    }
 	    
+	    n.resetNodes();
 	    n.forward(digitArray, false);
 		output[i] = n.getDigit();
 	    
