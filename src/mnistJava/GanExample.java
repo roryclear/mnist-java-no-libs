@@ -327,6 +327,16 @@ public class GanExample {
 		saveBMP(newImage,digit+"createdImg" + epoch +  ".bmp");
 	}
 	
+	public static void saveArrayToBitmap(Double[] arr, String name) {
+		int[] arrInt = new int[arr.length];
+		for(int i = 0; i < arr.length; i++)
+		{
+			arrInt[i] = (int) (arr[i] * 255);
+		}
+		arrInt = rotateAndMirror(arrInt);
+		BufferedImage newImage = BufferedImage(arrInt);
+		saveBMP(newImage,name +  ".bmp");
+	}
 	
     private static void saveBMP( final BufferedImage bi, final String path ){
         try {
