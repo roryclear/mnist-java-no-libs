@@ -20,9 +20,11 @@ public class Example {
 	static double avgLoss;
 	static double accuracy;
 
-	static int batchSize = 10;
+	static int batchSize = 1;
 	
 	static boolean shuffle = true;
+	
+	static boolean augment = false;
 	
 	public static void main(String[] args) throws IOException
 	{	
@@ -127,6 +129,11 @@ public class Example {
 		
 		
 		
+	}
+	
+	public static double[] augmentArray(double[] array)
+	{
+		return array;
 	}
 	
 	public static void testNN(Net n) throws IOException
