@@ -15,6 +15,7 @@ public class Example {
 	static MnistMatrix[] testData;
 	
 	static double[][] odTrainData;
+	static double[][] odTrainDataBackup;
 	static double[][] odTestData;
 	
 	static double avgLoss;
@@ -24,7 +25,7 @@ public class Example {
 	
 	static boolean shuffle = true;
 	
-	static boolean augment = false;
+	static boolean augment = true;
 	
 	public static void main(String[] args) throws IOException
 	{	
@@ -45,6 +46,8 @@ public class Example {
 		
 		odTrainData = n.makeData1DDouble(trainData);
 		odTestData = n.makeData1DDouble(testData);
+		
+		odTrainDataBackup = odTrainData;
 		
 		int showTrainAccuracyInterval = 10000;
 		int epochs = 10;
@@ -72,6 +75,16 @@ public class Example {
 		{
 			Collections.shuffle(shuffled);
 		}
+		
+		if(augment)
+		{
+			odTrainData = odTrainDataBackup;
+			for(int i = 0; i < odTrainData.length; i++)
+			{
+				odTrainData[i] = augmentArray(odTrainData[i]);
+			}
+		}
+		
 		correct = 0;
 		totalLoss = 0;
 		System.out.println("\n--------EPOCH " + epoch + "--------");
@@ -132,6 +145,31 @@ public class Example {
 	}
 	
 	public static double[] augmentArray(double[] array)
+	{
+		//make2d
+		double[][] array2d = new double[(int) Math.sqrt(array.length)][(int) Math.sqrt(array.length)];
+		for(int y = 0; y < array2d.length; y++)
+		{
+			for(int x = 0; x < array2d[0].length; x++)
+			{
+				array2d[y][x] = array[x + y*28];
+			}
+		}
+		
+		array2d = rotateArray(array2d,90);
+		
+		//make1d
+		for(int y = 0; y < array2d.length; y++) {
+			for(int x = 0; x < array2d[0].length; x++)
+			{
+				array[x + y*28] = array2d[x][y];
+			}
+		}
+		
+		return array;
+	}
+	
+	public static double[][] rotateArray(double[][] array, int degrees)
 	{
 		return array;
 	}
