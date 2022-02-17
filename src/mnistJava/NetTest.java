@@ -21,10 +21,13 @@ class NetTest {
 		n.gradsSize = 0;
 		n.momentum = 0.0;
 		
+		String saveFile = "testWeights";
+		String loadFile = "testWeights";
+		
 		int batchSize = 10;
 		
 		n.initWeights();
-	//	n.loadWeights();
+		n.loadWeights();
 		
 		n.resetNodes();
 		
@@ -60,9 +63,8 @@ class NetTest {
 			}
 			n.resetNodes();
 		}
-		
-		System.out.println("correcet = " + correct);
-		assertTrue(correct > 6000);
+		double accuracy = Double.valueOf(correct) / testData.length;
+		assertTrue(accuracy == 0.8933);
 	}
 
 }
