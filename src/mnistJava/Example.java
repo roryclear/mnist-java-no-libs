@@ -21,11 +21,11 @@ public class Example {
 	static double avgLoss;
 	static double accuracy;
 
-	static int batchSize = 1;
+	static int batchSize = 10;
 	
-	static boolean shuffle = true;
+	static boolean shuffle = false;
 	
-	static boolean augment = true;
+	static boolean augment = false;
 	
 	public static void main(String[] args) throws IOException
 	{	
