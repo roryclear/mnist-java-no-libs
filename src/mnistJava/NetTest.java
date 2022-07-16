@@ -41,7 +41,6 @@ class NetTest {
 		{
 			n.forward(odTrainData[i], true);
 			n.backward(n.getLoss(trainData[i].getLabel()));
-			n.backProp(n.getLoss(trainData[i].getLabel()));
 			if(i % batchSize == 0)
 			{
 				n.optimize();
@@ -64,7 +63,7 @@ class NetTest {
 			n.resetNodes();
 		}
 		double accuracy = Double.valueOf(correct) / testData.length;
-		assertTrue(accuracy == 0.8933);
+		assertTrue(accuracy == 0.8606);
 	}
 
 }
