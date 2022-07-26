@@ -46,7 +46,7 @@ public class Net implements Cloneable{
 		
 		for(int x = 0; x < layers[0]; x++)
 		{
-			nodes.get(0)[x] = activationFunction(data[x],0);
+			nodes.get(0)[x] += data[x];
 		}
 		
 		for(int i = 1; i < layers.length; i++)
