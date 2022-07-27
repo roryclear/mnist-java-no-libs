@@ -89,7 +89,7 @@ public class Example {
 		totalLoss = 0;
 		System.out.println("\n--------EPOCH " + epoch + "--------");
 		
-			
+		n.resetNodes();
 		for(int i = 0; i < odTrainData.length; i++)
 		{
 			int index = i;
