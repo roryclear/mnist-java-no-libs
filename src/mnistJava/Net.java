@@ -347,22 +347,22 @@ public class Net implements Cloneable{
 			//all other weights
 			for(int r = numberOfLayers - 3; r > -1; r--)
 			{
-			
-			for(int y = 0; y < weights.get(r).length; y++)
-			{
-				for(int x = 0; x < weights.get(r)[y].length; x++)
+				
+				double totalErrors[] = new double[weights.get(r).length];
+				for(int x = 0; x < weights.get(r)[0].length; x++)
 				{
-					double totalError = 0;
 					for(int n = 0; n < nodes.get(r+2).length; n++)	
 					{
-						totalError += (weights.get(r+1)[x][n]*grad.get(r+1)[x][n])/nodes.get(r+2).length;
+						totalErrors[x] += (weights.get(r+1)[x][n]*grad.get(r+1)[x][n])/nodes.get(r+2).length;
 					}
-					totalError = totalError * derivateActivationFunction(nodes.get(r+1)[x],r) * nodes.get(r)[y];
-					
-					
-					grad.get(r)[y][x] += totalError;
 				}
-			}
+				for(int y = 0; y < weights.get(r).length; y++)
+				{
+					for(int x = 0; x < weights.get(r)[0].length; x++)
+					{
+						grad.get(r)[y][x] += totalErrors[x] * derivateActivationFunction(nodes.get(r+1)[x],r) * nodes.get(r)[y];;
+					}
+				}
 			
 			}
 		}
