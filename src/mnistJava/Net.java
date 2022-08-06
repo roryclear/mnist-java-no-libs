@@ -348,7 +348,7 @@ public class Net implements Cloneable{
 			for(int r = numberOfLayers - 3; r > -1; r--)
 			{
 				
-				double totalErrors[] = new double[weights.get(r).length];
+				double totalErrors[] = new double[weights.get(r+1).length];
 				for(int x = 0; x < weights.get(r)[0].length; x++)
 				{
 					for(int n = 0; n < nodes.get(r+2).length; n++)	
