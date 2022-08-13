@@ -21,9 +21,6 @@ class NetTest {
 		n.gradsSize = 0;
 		n.momentum = 0.0;
 		
-		String saveFile = "testWeights";
-		String loadFile = "testWeights";
-		
 		int batchSize = 10;
 		
 		n.initWeights();
@@ -63,7 +60,7 @@ class NetTest {
 			n.resetNodes();
 		}
 		double accuracy = Double.valueOf(correct) / testData.length;
-		assertTrue(accuracy == 0.8606);
+		assertTrue(accuracy == 0.9032);
 	}
 
 }
