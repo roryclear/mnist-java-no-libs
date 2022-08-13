@@ -11,6 +11,7 @@ class NetTest {
 	double[][] odTrainData;
 	double[][] odTestData;
 	Net n;
+	int batchSize = 10;
 	
 	@BeforeEach
 	void setUp() throws Exception {
@@ -20,8 +21,7 @@ class NetTest {
 		n.learningRate = 0.1;
 		n.gradsSize = 0;
 		n.momentum = 0.0;
-		
-		int batchSize = 10;
+	
 		
 		n.initWeights();
 		n.loadWeights();
@@ -33,7 +33,12 @@ class NetTest {
 		
 		odTrainData = n.makeData1DDouble(trainData);
 		odTestData = n.makeData1DDouble(testData);
-		
+	
+	}
+
+	@Test
+	void testNetLearns() {
+		int correct = 0;
 		for(int i = 0; i < odTrainData.length; i++)
 		{
 			n.forward(odTrainData[i], true);
@@ -44,11 +49,7 @@ class NetTest {
 			}
 			n.resetNodes();
 		}
-	}
-
-	@Test
-	void testNet() {
-		int correct = 0;
+		
 		for(int i = 0; i < odTestData.length; i++)
 		{
 			n.forward(odTestData[i], false);
