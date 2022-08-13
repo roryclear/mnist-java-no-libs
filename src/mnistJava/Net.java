@@ -310,7 +310,7 @@ public class Net implements Cloneable{
 			{
 				for(int n = 0; n < nodes.get(r+2).length; n++)	
 				{
-					totalErrors[x] += (weights.get(r+1)[x][n]*grad.get(r+1)[x][n])/nodes.get(r+2).length;
+					totalErrors[x] += (weights.get(r+1)[x][n]*grads.get(gradsSize - 1).get(r+1)[x][n])/nodes.get(r+2).length;
 				}
 			}
 			for(int y = 0; y < weights.get(r).length; y++)

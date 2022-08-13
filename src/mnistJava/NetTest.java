@@ -63,5 +63,38 @@ class NetTest {
 		double accuracy = Double.valueOf(correct) / testData.length;
 		assertTrue(accuracy == 0.9032);
 	}
+	
+	@Test
+	void testNetLearnsWithMomentum() {
+		int correct = 0;
+		n.loadWeights();
+		n.gradsSize = 2;
+		n.momentum = 0.5;
+		n.resetGrads();
+		for(int i = 0; i < odTrainData.length; i++)
+		{
+			n.forward(odTrainData[i], true);
+			n.backward(n.getLoss(trainData[i].getLabel()));
+			if(i % batchSize == 0)
+			{
+				n.optimize();
+			}
+			n.resetNodes();
+		}
+		
+		for(int i = 0; i < odTestData.length; i++)
+		{
+			n.forward(odTestData[i], false);
+			
+			if(n.getDigit() == testData[i].getLabel())
+			{
+				correct += 1;
+			}
+			n.resetNodes();
+		}
+		double accuracy = Double.valueOf(correct) / testData.length;
+		System.out.println("accuracy = " + accuracy);
+		assertTrue(accuracy == 0.9043);
+	}
 
 }
