@@ -665,6 +665,36 @@ public class Net implements Cloneable{
 	      }
 	}
 	
+	public void saveWeights1d()
+	{
+		String layersString = ""+layers[0];
+		for(int i = 1; i < layers.length; i++)
+		{
+			layersString+="-" + layers[i];
+		}
+	    try {
+	        FileWriter myWriter = new FileWriter(activationFunction + "-" + saveFile+layersString+"-1d.txt");
+	        System.out.println("weights.size = " + weights.size());
+	        for(int i = 0; i < weights.size(); i++)
+	        {
+	        	for(int y = 0; y < weights.get(i)[0].length; y++)
+	        	{
+	        		for(int x = 0; x < weights.get(i).length; x++)
+	        		{
+	    	        	myWriter.append(weights.get(i)[x][y] + "\n");
+	        		}
+	        	}
+	        
+	        }
+	        
+	        myWriter.close();
+	        System.out.println("weights saved");
+	      } catch (IOException e) {
+	        System.out.println("An error occurred.");
+	        e.printStackTrace();
+	      }
+	}
+	
 	public void resetNodes()
 	{
 		nodes = new ArrayList<>();
